@@ -94,9 +94,10 @@ const InputGroup = styled.div`
 export interface LoginFormProps {
   onSuccess?: () => void;
   onSwitchToSignup?: () => void;
+  onForgotPassword?: () => void;
 }
 
-export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, onSwitchToSignup, onForgotPassword }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -185,7 +186,7 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
           autoComplete="current-password"
         />
 
-        <ForgotPasswordLink type="button" onClick={() => alert("Password reset coming soon")}>
+        <ForgotPasswordLink type="button" onClick={onForgotPassword} disabled={loading}>
           Forgot password?
         </ForgotPasswordLink>
       </InputGroup>

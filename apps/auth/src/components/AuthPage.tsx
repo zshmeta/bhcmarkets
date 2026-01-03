@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Card, CardBody, CardHeader } from "@repo/ui";
 import { LoginForm } from "./Forms/LoginForm";
 import { RegisterForm } from "./Forms/RegisterForm";
+import { PasswordResetForm } from "./Forms/PasswordResetForm";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -13,6 +14,10 @@ const PageContainer = styled.div`
   background: ${({ theme }) => theme.gradients.primarySoft};
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => theme.spacing.md};
+  }
 
   &::before {
     content: "";
@@ -52,6 +57,10 @@ const AuthCard = styled(Card)`
   position: relative;
   z-index: 1;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 
   &::before {
     content: "";
@@ -188,7 +197,7 @@ const SecurityBadge = styled.div`
   }
 `;
 
-type AuthMode = "login" | "signup";
+type AuthMode = "login" | "signup" | "reset-password";
 
 export const AuthPage = () => {
   const [mode, setMode] = useState<AuthMode>("login");
@@ -198,47 +207,63 @@ export const AuthPage = () => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer role="main" aria-label="Authentication">
       <AuthCard>
         <CardHeader>
           <Logo>
-            <LogoIcon>B</LogoIcon>
+            <LogoIcon aria-hidden="true">B</LogoIcon>
             <LogoText>BHC Markets</LogoText>
             <Subtitle>Institutional Trading Platform</Subtitle>
           </Logo>
         </CardHeader>
         <CardBody>
-          <TabContainer>
-            <TabIndicator $activeIndex={mode === "login" ? 0 : 1} />
-            <Tab $active={mode === "login"} onClick={() => setMode("login")}>
-              Sign In
-            </Tab>
-            <Tab $active={mode === "signup"} onClick={() => setMode("signup")}>
-              Create Account
-            </Tab>
-          </TabContainer>
+          {mode !== "reset-password" && (
+            <TabContainer role="tablist" aria-label="Authentication mode">
+              <TabIndicator $activeIndex={mode === "login" ? 0 : 1} aria-hidden="true" />
+              <Tab
+                role="tab"
+                aria-selected={mode === "login"}
+                $active={mode === "login"}
+                onClick={() => setMode("login")}
+              >
+                Sign In
+              </Tab>
+              <Tab
+                role="tab"
+                aria-selected={mode === "signup"}
+                $active={mode === "signup"}
+                onClick={() => setMode("signup")}
+              >
+                Create Account
+              </Tab>
+            </TabContainer>
+          )}
 
           {mode === "login" ? (
             <LoginForm
               onSuccess={handleAuthSuccess}
               onSwitchToSignup={() => setMode("signup")}
+              onForgotPassword={() => setMode("reset-password")}
             />
-          ) : (
+          ) : mode === "signup" ? (
             <RegisterForm
               onSuccess={handleAuthSuccess}
               onSwitchToLogin={() => setMode("login")}
             />
+          ) : (
+            <PasswordResetForm onBackToLogin={() => setMode("login")} />
           )}
 
           <FooterText>
             By continuing, you agree to BHC Markets' Terms of Service and Privacy
             Policy.
-            <SecurityBadge>
+            <SecurityBadge aria-label="Security information">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
+                aria-hidden="true"
               >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
