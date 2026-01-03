@@ -7,5 +7,6 @@ export function isLikelyEmail(value: string): boolean {
 
 export function isAcceptablePassword(value: string): boolean {
 	// Frontend validation is UX only; backend remains the source of truth.
-	return value.length >= 8;
+	// Backend default policy is stricter (currently 12+), so we mirror the baseline.
+	return value.length >= 12;
 }

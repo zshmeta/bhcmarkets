@@ -1,3 +1,5 @@
+import { tokenStorage } from "./storage.js";
+
 /**
  * HTTP Client for Auth API.
  * 
@@ -67,6 +69,8 @@ const DEFAULT_CONFIG: Required<Pick<HttpOptions, "timeout" | "retries" | "retryD
  * Create HTTP client with base configuration.
  */
 export function createHttpClient(baseURL: string) {
+  const normalizedBaseUrl = baseURL.replace(/\/+$/, "");
+
   /**
    * Make HTTP request with retry logic.
    */
@@ -81,7 +85,8 @@ export function createHttpClient(baseURL: string) {
       ...fetchOptions
     } = options;
 
-    const url = new URL(path, baseURL).toString();
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    const url = `${normalizedBaseUrl}${normalizedPath}`;
     let lastError: Error | null = null;
 
     // Retry logic
@@ -91,13 +96,20 @@ export function createHttpClient(baseURL: string) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+        // Inject Authorization header if available
+        const token = tokenStorage.getAccessToken();
+        const headers = new Headers(fetchOptions.headers);
+        if (token && !headers.has("Authorization")) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+
         // Make request
         const response = await fetch(url, {
           ...fetchOptions,
           signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
-            ...fetchOptions.headers,
+            ...Object.fromEntries(headers.entries()),
           },
         });
 
@@ -193,5 +205,15 @@ function sleep(ms: number): Promise<void> {
  * Uses API base URL from environment or defaults to /api.
  */
 export const http = createHttpClient(
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api"
+  getApiBaseUrl()
 );
+
+function getApiBaseUrl(): string {
+  const w = window as unknown as { __API_BASE?: string };
+  return (
+    w.__API_BASE ||
+    import.meta.env.VITE_API_BASE ||
+    import.meta.env.VITE_API_BASE_URL ||
+    "http://localhost:3001/api"
+  );
+}

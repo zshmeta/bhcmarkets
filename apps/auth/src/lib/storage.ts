@@ -174,4 +174,9 @@ export function createTokenStorage(strategy: StorageStrategy = "localStorage"): 
  * 2. Using httpOnly cookies (requires backend support)
  * 3. Implementing token refresh on app initialization
  */
-export const tokenStorage = createTokenStorage("localStorage");
+const configuredStrategy = (import.meta.env.VITE_TOKEN_STORAGE || "sessionStorage") as StorageStrategy;
+export const tokenStorage = createTokenStorage(
+  configuredStrategy === "memory" || configuredStrategy === "sessionStorage" || configuredStrategy === "localStorage"
+    ? configuredStrategy
+    : "sessionStorage",
+);

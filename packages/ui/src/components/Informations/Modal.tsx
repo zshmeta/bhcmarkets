@@ -41,7 +41,8 @@ const Backdrop = styled.div<{ $open: boolean }>`
 	opacity: ${({ $open }) => ($open ? 1 : 0)};
 	visibility: ${({ $open }) => ($open ? "visible" : "hidden")};
 	transition: opacity 0.3s ease, visibility 0.3s ease;
-	animation: ${({ $open }) => ($open ? css\`\${fadeIn} 0.3s ease\` : "none")};
+
+	animation: ${({ $open }) => ($open ? css`${fadeIn} 0.3s ease` : "none")};
 `;
 
 const ModalContainer = styled.div<{ $size: string; $open: boolean }>`
@@ -54,7 +55,7 @@ const ModalContainer = styled.div<{ $size: string; $open: boolean }>`
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	animation: ${({ $open }) => ($open ? css\`\${slideUp} 0.3s cubic-bezier(0.4, 0, 0.2, 1)\` : "none")};
+	animation: ${({ $open }) => ($open ? css`${slideUp} 0.3s cubic-bezier(0.4, 0, 0.2, 1)` : "none")};
 
 	${({ $size }) => {
 		const sizes = {
@@ -64,12 +65,13 @@ const ModalContainer = styled.div<{ $size: string; $open: boolean }>`
 			xl: "1000px",
 			full: "calc(100vw - 48px)",
 		};
-		return css\`width: 100%; max-width: \${sizes[$size] || sizes.md};\`;
+		
+		return css`width: 100%; max-width: ${sizes[$size] || sizes.md};`;
 	}}
 `;
 
 const ModalHeader = styled.div`
-	padding: ${({ theme }) => \`\${theme.spacing.lg} \${theme.spacing.xl}\`};
+	padding: ${({ theme }) => `${theme.spacing.lg} ${theme.spacing.xl}`};
 	border-bottom: 1px solid ${({ theme }) => theme.colors.border.subtle};
 	display: flex;
 	align-items: center;
@@ -113,7 +115,7 @@ const ModalBody = styled.div`
 `;
 
 const ModalFooter = styled.div`
-	padding: ${({ theme }) => \`\${theme.spacing.lg} \${theme.spacing.xl}\`};
+	padding: ${({ theme }) => `${theme.spacing.lg} ${theme.spacing.xl}`};
 	border-top: 1px solid ${({ theme }) => theme.colors.border.subtle};
 	display: flex;
 	align-items: center;

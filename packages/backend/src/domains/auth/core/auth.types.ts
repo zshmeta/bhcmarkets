@@ -147,3 +147,19 @@ export interface UserSessionRepository {
   replaceRefreshToken(params: RotateSessionParams): Promise<UserSession | null>;
   touch(sessionId: UUID, params: { lastSeenAt: string; ipAddress?: string; userAgent?: string }): Promise<void>;
 }
+
+/**
+ * Authorization Code for cross-domain handoff.
+ */
+export interface AuthCode {
+  code: string;
+  userId: UUID;
+  expiresAt: string;
+  usedAt?: string;
+}
+
+export interface AuthCodeRepository {
+  save(code: AuthCode): Promise<void>;
+  findByCode(code: string): Promise<AuthCode | null>;
+  markUsed(code: string): Promise<void>;
+}

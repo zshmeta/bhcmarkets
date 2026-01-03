@@ -44,3 +44,10 @@ export * from "./Menus/MenuLink";
 // Navigation Components
 export * from "./Navigations/Breadcrumb";
 export * from "./Navigations/Tabs";
+
+// Layout Components
+export * from "./Header/Header";
+export * from "./Footer/Footer";
+
+// Pages
+export * from "./Page404/Page404";

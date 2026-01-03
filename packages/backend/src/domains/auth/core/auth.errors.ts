@@ -48,6 +48,10 @@ export type AuthErrorCode =
   | "PASSWORD_MISMATCH"
   | "PASSWORD_HISTORY_CONFLICT"
   | "PASSWORD_EXPIRED"
+
+  // Auth Code errors
+  | "AUTH_CODE_INVALID"
+  | "AUTH_CODE_EXPIRED";
   
   // MFA errors
   | "MFA_REQUIRED"
@@ -122,6 +126,10 @@ export const AUTH_ERROR_DESCRIPTIONS: Record<AuthErrorCode, string> = {
   PASSWORD_HISTORY_CONFLICT: "Password has been used recently and cannot be reused",
   PASSWORD_EXPIRED: "Password has expired and must be changed",
   
+  // Auth Code
+  AUTH_CODE_INVALID: "Invalid authorization code",
+  AUTH_CODE_EXPIRED: "Authorization code has expired",
+
   // MFA
   MFA_REQUIRED: "Multi-factor authentication is required",
   MFA_CODE_INVALID: "MFA verification code is invalid",
@@ -195,7 +203,9 @@ export const AUTH_ERROR_HTTP_STATUS: Record<AuthErrorCode, number> = {
   PASSWORD_MISMATCH: 401,
   PASSWORD_HISTORY_CONFLICT: 400,
   PASSWORD_EXPIRED: 403,
-  
+  // Auth Code - 400 Bad Request
+  AUTH_CODE_INVALID: 400,
+  AUTH_CODE_EXPIRED: 400,  
   // MFA - 401 Unauthorized or 400 Bad Request
   MFA_REQUIRED: 401,
   MFA_CODE_INVALID: 401,

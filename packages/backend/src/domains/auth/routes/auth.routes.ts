@@ -15,6 +15,10 @@ import {
   createListSessionsController,
   createRevokeAllSessionsController,
 } from "../controllers/sessions.controller.js";
+import {
+  createGenerateCodeController,
+  createExchangeCodeController,
+} from "../controllers/code.controller.js";
 
 /**
  * Logger interface (minimal).
@@ -48,6 +52,8 @@ export function registerAuthRoutes(
   router.route("POST", "/auth/login", loginController);
   router.route("POST", "/auth/register", registerController);
   router.route("POST", "/auth/refresh", refreshController);
+  router.route("POST", "/auth/code", createGenerateCodeController(services.auth));
+  router.route("POST", "/auth/exchange", createExchangeCodeController(services.auth));
   
   // Session management endpoints
   router.route("POST", "/auth/logout", logoutController);

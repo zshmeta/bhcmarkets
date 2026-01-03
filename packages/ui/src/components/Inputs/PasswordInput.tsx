@@ -1,5 +1,6 @@
 import { forwardRef, useState, type InputHTMLAttributes } from "react";
 import styled from "styled-components";
+import { toRgba } from "../../theme/tokens";
 
 export interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
 	label?: string;
@@ -58,7 +59,7 @@ const StyledInput = styled.input<{ $hasError: boolean }>`
 		border-color: ${({ theme, $hasError }) =>
 			$hasError ? theme.colors.status.danger : theme.colors.primary};
 		box-shadow: 0 0 0 4px ${({ theme, $hasError }) =>
-			$hasError ? 'rgba(255, 90, 95, 0.2)' : theme.colors.focus};
+			$hasError ? toRgba(theme.colors.status.danger, 0.22) : theme.colors.focus};
 	}
 
 	&:disabled {

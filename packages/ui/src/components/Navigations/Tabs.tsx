@@ -67,8 +67,7 @@ const Tab = styled.button<{ $active: boolean; $variant: string; $disabled: boole
 
 	${({ $variant, $active, theme }) =>
 		$variant === "line" &&
-		$active &&
-		\`
+		$active && `
 			&::after {
 				content: "";
 				position: absolute;
@@ -79,7 +78,7 @@ const Tab = styled.button<{ $active: boolean; $variant: string; $disabled: boole
 				background: \${theme.gradients.primary};
 				border-radius: 2px 2px 0 0;
 			}
-		\`}
+		`}
 `;
 
 const TabContent = styled.div`

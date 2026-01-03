@@ -1,4 +1,12 @@
 {
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@repo/ui": ["src/ui/src/index.ts"],
+      "@repo/ui/*": ["src/ui/src/*"]
+    }
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

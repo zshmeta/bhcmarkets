@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { Logger } from "../../../config/logger.js";
 import type {
+  AuthCodeRepository,
   CreateCredentialParams,
   CreateSessionParams,
   CreateUserParams,
@@ -18,31 +19,11 @@ import type {
   UUID,
 } from "./auth.types.js";
 import type { AccountService } from "../../account/account.service.js";
+import { AuthError } from "./auth.errors.js";
 
 const DEFAULT_ACCESS_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
 const DEFAULT_REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
 const DEFAULT_MAX_SESSIONS_PER_USER = 10;
-
-export type AuthErrorCode =
-  | "EMAIL_ALREADY_REGISTERED"
-  | "INVALID_CREDENTIALS"
-  | "USER_NOT_ACTIVE"
-  | "USER_SUSPENDED"
-  | "SESSION_NOT_FOUND"
-  | "SESSION_REVOKED"
-  | "SESSION_EXPIRED"
-  | "REFRESH_TOKEN_INVALID"
-  | "REFRESH_TOKEN_REUSED"
-  | "REFRESH_TOKEN_EXPIRED"
-  | "UNKNOWN_USER"
-  | "PASSWORD_MISMATCH";
-
-export class AuthError extends Error {
-  constructor(public readonly code: AuthErrorCode, message?: string) {
-    super(message ?? code);
-    this.name = "AuthError";
-  }
-}
 
 export interface SecretHasher {
   hash(plain: string): Promise<string>;
@@ -87,6 +68,7 @@ export interface AuthServiceConfig {
 
 export interface AuthServiceDependencies {
   userRepository: UserRepository;
+  authCodeRepository: AuthCodeRepository;
   credentialRepository: UserCredentialRepository;
   sessionRepository: UserSessionRepository;
   passwordHasher: SecretHasher;
@@ -161,6 +143,8 @@ export interface AuthService {
   updatePassword(input: UpdatePasswordInput): Promise<void>;
   getUserById(id: UUID): Promise<User | null>;
   listActiveSessions(userId: UUID): Promise<SessionView[]>;
+  generateAuthCode(userId: UUID, targetUrl: string): Promise<string>;
+  exchangeAuthCode(code: string): Promise<AuthenticationResult>;
 }
 
 const defaultClock: Clock = { now: () => new Date() };
@@ -223,6 +207,7 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     userRepository,
     credentialRepository,
     sessionRepository,
+    authCodeRepository,
     passwordHasher,
     tokenHasher = passwordHasher,
     tokenManager,
@@ -539,6 +524,53 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     return sessions.map(toSessionView);
   };
 
+  const generateAuthCode: AuthService["generateAuthCode"] = async (userId, targetUrl) => {
+    // In a real implementation, we might bind the code to the targetUrl to prevent redirection attacks.
+    // For now, we just generate a secure random code.
+    const code = idFactory().replace(/-/g, "") + idFactory().replace(/-/g, "");
+    const expiresAt = new Date(clock.now().getTime() + 30 * 1000).toISOString(); // 30 seconds
+
+    await authCodeRepository.save({
+      code,
+      userId,
+      expiresAt,
+    });
+
+    return code;
+  };
+
+  const exchangeAuthCode: AuthService["exchangeAuthCode"] = async (code) => {
+    const authCode = await authCodeRepository.findByCode(code);
+    if (!authCode) {
+      throw new AuthError("AUTH_CODE_INVALID");
+    }
+
+    if (authCode.usedAt) {
+      // Re-use attempt! Security risk.
+      throw new AuthError("AUTH_CODE_INVALID");
+    }
+
+    if (new Date(authCode.expiresAt) < clock.now()) {
+      throw new AuthError("AUTH_CODE_EXPIRED");
+    }
+
+    await authCodeRepository.markUsed(code);
+
+    const user = await userRepository.findById(authCode.userId);
+    if (!user) {
+      throw new AuthError("UNKNOWN_USER");
+    }
+    ensureUserActive(user);
+
+    const credential = await credentialRepository.getByUserId(user.id);
+    if (!credential) {
+      throw new AuthError("UNKNOWN_USER");
+    }
+
+    // Issue new session
+    return issueInitialSession(user, credential);
+  };
+
   return {
     register,
     authenticate,
@@ -548,6 +580,8 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     updatePassword,
     getUserById,
     listActiveSessions,
+    generateAuthCode,
+    exchangeAuthCode,
   };
 };
 

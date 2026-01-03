@@ -1,126 +1,159 @@
-import { useState, type FormEvent } from "react";
-import styled from "styled-components";
-import { Button, EmailInput, Notification, PasswordInput } from "@repo/ui";
-import { authApi } from "../../lib/authApi";
-import { useAuth } from "../AuthContext";
-import { useToast } from "../ToastContext";
+/**
+ * Register Page.
+ * 
+ * User registration interface with email and password.
+ */
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-  width: 100%;
-`;
+import { useMemo, useState, type FormEvent, type ChangeEvent } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Button, EmailInput, Notification, PasswordInput, Text } from "@repo/ui";
+import { useAuth } from "../../auth/auth.hooks.js";
+import { authApi } from "../../auth/auth.api.js";
+import { AuthShell } from "../AuthShell.js";
+import { isAcceptablePassword, isLikelyEmail } from "../../lib/validation.js";
+import { resolveReturnTo, redirectToReturnTo } from "../../lib/redirectUtils.js";
 
-const Banner = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-export interface RegisterFormProps {
-  onSuccess?: () => void;
-  onSwitchToLogin?: () => void;
+function buildLink(path: string, returnTo?: string): string {
+	if (!returnTo) return path;
+	return `${path}?returnTo=${encodeURIComponent(returnTo)}`;
 }
 
-export const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) => {
+export function RegisterPage() {
+  const { register, loading, error, clearError } = useAuth();
+  const navigate = useNavigate();
+	const location = useLocation();
+
+	const safeReturnTo = useMemo(() => resolveReturnTo(new URLSearchParams(location.search)), [location.search]);
+
+	const returnTo = safeReturnTo?.value;
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const { login } = useAuth();
+	const canSubmit =
+		isLikelyEmail(email) &&
+		isAcceptablePassword(password) &&
+		password === confirmPassword &&
+		!loading;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLocalError(null);
+    clearError();
 
+    // Validate basic inputs (UX only; backend is source of truth)
+    if (!isLikelyEmail(email)) {
+      setLocalError("Enter a valid email address");
+      return;
+    }
+
+    // Validate passwords match
     if (password !== confirmPassword) {
-      showError("Passwords do not match", "Validation Error");
+      setLocalError("Passwords do not match");
       return;
     }
 
-    if (password.length < 8) {
-      showError("Password must be at least 8 characters long", "Validation Error");
+    if (!isAcceptablePassword(password)) {
+			setLocalError("Password must be at least 12 characters");
       return;
     }
-
-    setLoading(true);
 
     try {
-      const result = await authApi.register({ email: email.trim(), password, issueSession: true });
+      await register({ 
+        email, 
+        password,
+        issueSession: true // Automatically log in after registration
+      });
 
-      if ("tokens" in result) {
-        login(result.user, result.tokens.accessToken, result.tokens.refreshToken);
-      }
-
-      showSuccess("Registration successful! Redirecting...", "Welcome");
-
-      if (onSuccess) {
-        setTimeout(() => {
-          onSuccess();
-        }, 500);
+      // If we have an external return URL, we need to perform a secure handoff.
+      if (safeReturnTo?.kind === "absolute") {
+        try {
+          const { code } = await authApi.generateAuthCode({ targetUrl: safeReturnTo.value });
+          const url = new URL(safeReturnTo.value);
+          url.searchParams.set("code", code);
+          window.location.replace(url.toString());
+          return;
+        } catch (handoffError) {
+          console.error("Handoff failed", handoffError);
+          redirectToReturnTo(safeReturnTo, navigate);
+        }
+      } else {
+        redirectToReturnTo(safeReturnTo, navigate);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
+      setLocalError(err instanceof Error ? err.message : "Registration failed");
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      {(error || success) && (
-        <Banner>
-		  {error && <Notification variant="danger" title="Sign-up failed" message={error} />}
-		  {success && <Notification variant="success" title="Account created" message="Redirecting…" />}
-        </Banner>
-      )}
+		<AuthShell title="Create account" subtitle="Set up your account in minutes">
+			{(error || localError) ? (
+				<Notification
+					variant="danger"
+					title="Unable to create account"
+					message={error || localError || undefined}
+					onClose={() => {
+						setLocalError(null);
+						clearError();
+					}}
+				/>
+			) : null}
 
-      <EmailInput
-        id="email"
-        label="Email"
-        placeholder="your@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        disabled={loading}
-        helpText="We'll never share your email with anyone else."
-        showValidation
-      />
+			<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+				<EmailInput
+					label="Email"
+					value={email}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+					placeholder="you@company.com"
+					autoComplete="email"
+					autoCapitalize="none"
+					spellCheck={false}
+					autoFocus
+					required
+					disabled={loading}
+					showValidation
+				/>
 
-      <PasswordInput
-        id="password"
-        label="Password"
-        placeholder="••••••••"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        disabled={loading}
-        helpText="Minimum 8 characters"
-        showStrength
-      />
+				<PasswordInput
+					label="Password"
+					value={password}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+					placeholder="Minimum 12 characters"
+					helpText="Use at least 12 characters."
+					autoComplete="new-password"
+					showStrength
+					required
+					disabled={loading}
+				/>
 
-      <PasswordInput
-        id="confirmPassword"
-        label="Confirm Password"
-        placeholder="••••••••"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        required
-        disabled={loading}
-      />
+				<PasswordInput
+					label="Confirm password"
+					value={confirmPassword}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
+					placeholder="Re-enter password"
+					autoComplete="new-password"
+					required
+					disabled={loading}
+				/>
 
-      <Button type="submit" disabled={loading} loading={loading} fullWidth>
-        {loading ? "Creating account..." : "Sign Up"}
-      </Button>
+				<Button type="submit" variant="primary" fullWidth loading={loading} disabled={!canSubmit}>
+					Create account
+				</Button>
+			</form>
 
-      {onSwitchToLogin && (
-        <Button type="button" variant="ghost" onClick={onSwitchToLogin} disabled={loading} fullWidth>
-          Already have an account? Log in
-        </Button>
-      )}
-    </Form>
+			<div style={{ marginTop: 12, display: "flex", justifyContent: "center" }}>
+				<Text variant="caption" color="tertiary" align="center">
+					You can manage and revoke sessions after sign in.
+				</Text>
+			</div>
+
+			<div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+				<Text color="secondary">
+					Already have an account? <Link to={buildLink("/login", returnTo)}>Sign in</Link>
+				</Text>
+			</div>
+		</AuthShell>
   );
-};
-
-export default RegisterForm;
+}

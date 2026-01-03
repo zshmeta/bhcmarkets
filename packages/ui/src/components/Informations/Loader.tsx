@@ -87,8 +87,8 @@ export const Loader = forwardRef<HTMLDivElement, LoaderProps>(
 						</>
 					);
 				case "pulse":
-					return <Spinner $size={pixelSize} $color={loaderColor} style={{ animation: \`\${pulse} 1.5s ease-in-out infinite\` }} />;
-				default:
+					return <Spinner $size={pixelSize} $color={loaderColor} style={{ animation: `${pulse} 1.5s ease-in-out infinite
+						` }} />; 	default:
 					return <Spinner $size={pixelSize} $color={loaderColor} />;
 			}
 		};

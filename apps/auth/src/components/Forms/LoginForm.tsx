@@ -1,100 +1,139 @@
-import { useState, type FormEvent } from "react";
-import styled from "styled-components";
-import { Button, EmailInput, Notification, PasswordInput } from "@repo/ui";
-import { authApi } from "../../lib/authApi";
-import { useAuth } from "../AuthContext";
-import { useToast } from "../ToastContext";
+/**
+ * Login Page.
+ * 
+ * User login interface with email and password.
+ */
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-  width: 100%;
-`;
+import { useMemo, useState, type FormEvent, type ChangeEvent } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Button, EmailInput, Notification, PasswordInput, Text } from "@repo/ui";
+import { useAuth } from "../../auth/auth.hooks.js";
+import { authApi } from "../../auth/auth.api.js";
+import { resolveReturnTo, redirectToReturnTo } from "../../lib/redirectUtils.js";
+import { AuthShell } from "../AuthShell.js";
+import { isLikelyEmail } from "../../lib/validation.js";
 
-const Banner = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-export interface LoginFormProps {
-  onSuccess?: () => void;
-  onSwitchToSignup?: () => void;
+function buildLink(path: string, returnTo?: string): string {
+	if (!returnTo) return path;
+	return `${path}?returnTo=${encodeURIComponent(returnTo)}`;
 }
 
-export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
+export function LoginPage() {
+  const { login, loading, error, clearError } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const { login } = useAuth();
+	const canSubmit = isLikelyEmail(email) && password.length > 0 && !loading;
 
-  // Keep the error string generic; avoid account enumeration.
+	const safeReturnTo = useMemo(() => resolveReturnTo(new URLSearchParams(location.search)), [location.search]);
+
+	const returnTo = safeReturnTo?.value;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setLocalError(null);
+    clearError();
+
+		if (!isLikelyEmail(email)) {
+			setLocalError("Enter a valid email address");
+			return;
+		}
 
     try {
-      const result = await authApi.login({ email: email.trim(), password });
-      login(result.user, result.tokens.accessToken, result.tokens.refreshToken);
+      await login({ email, password });
 
-      showSuccess("Login successful! Redirecting...", "Welcome back");
-
-      if (onSuccess) {
-        setTimeout(() => {
-          onSuccess();
-        }, 500);
+      // If we have an external return URL, we need to perform a secure handoff.
+      // The local login established a session on THIS domain (auth.example.com).
+      // Now we need to pass a one-time code to the target domain (app.example.com)
+      // so it can exchange it for its own tokens.
+      if (safeReturnTo?.kind === "absolute") {
+        try {
+          const { code } = await authApi.generateAuthCode({ targetUrl: safeReturnTo.value });
+          
+          // Append code to the return URL
+          const url = new URL(safeReturnTo.value);
+          url.searchParams.set("code", code);
+          
+          // Redirect to the target app with the code
+          window.location.replace(url.toString());
+          return;
+        } catch (handoffError) {
+          console.error("Handoff failed", handoffError);
+          // Fallback: just redirect (user might need to login again or SSO cookie might work)
+          redirectToReturnTo(safeReturnTo, navigate);
+        }
+      } else {
+        redirectToReturnTo(safeReturnTo, navigate);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
-    } finally {
-      setLoading(false);
+      setLocalError(err instanceof Error ? err.message : "Login failed");
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      {(error || success) && (
-        <Banner>
-		  {error && <Notification variant="danger" title="Sign-in failed" message={error} />}
-		  {success && <Notification variant="success" title="Signed in" message="Redirecting…" />}
-        </Banner>
-      )}
+		<AuthShell title="Sign in" subtitle="Access your account securely">
+			{(error || localError) ? (
+				<Notification
+					variant="danger"
+					title="Unable to sign in"
+					message={error || localError || undefined}
+					onClose={() => {
+						setLocalError(null);
+						clearError();
+					}}
+				/>
+			) : null}
 
-      <EmailInput
-        id="email"
-        label="Email"
-        placeholder="your@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        disabled={loading}
-        showValidation
-      />
+			<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+				<EmailInput
+					label="Email"
+					value={email}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+					placeholder="you@company.com"
+					autoComplete="email"
+					autoCapitalize="none"
+					spellCheck={false}
+					autoFocus
+					required
+					disabled={loading}
+					showValidation
+				/>
 
-      <PasswordInput
-        id="password"
-        label="Password"
-        placeholder="••••••••"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        disabled={loading}
-      />
+				<PasswordInput
+					label="Password"
+					value={password}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+					placeholder="Your password"
+					autoComplete="current-password"
+					required
+					disabled={loading}
+				/>
 
-      <Button type="submit" disabled={loading} loading={loading} fullWidth>
-        {loading ? "Logging in..." : "Log In"}
-      </Button>
+				<Button type="submit" variant="primary" fullWidth loading={loading} disabled={!canSubmit}>
+					Sign in
+				</Button>
+			</form>
 
-      {onSwitchToSignup && (
-        <Button type="button" variant="ghost" onClick={onSwitchToSignup} disabled={loading} fullWidth>
-          Don't have an account? Sign up
-        </Button>
-      )}
-    </Form>
+			<div style={{ marginTop: 12, display: "flex", justifyContent: "center" }}>
+				<Text variant="caption" color="tertiary" align="center">
+					Use a trusted device. Sessions can be revoked anytime.
+				</Text>
+			</div>
+
+			<div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+				<Text color="secondary">
+					No account? <Link to={buildLink("/register", returnTo)}>Create one</Link>
+				</Text>
+			</div>
+			<div style={{ marginTop: 8, display: "flex", justifyContent: "center" }}>
+				<Text color="tertiary">
+					<Link to={buildLink("/forgot-password", returnTo)}>Forgot password?</Link>
+				</Text>
+			</div>
+		</AuthShell>
   );
-};
-
-export default LoginForm;
+}

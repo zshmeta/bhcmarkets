@@ -1,6 +1,6 @@
 /*
   Keep app-level CSS minimal.
-  Global styles (colors/typography/background) are applied by @repo/ui ThemeManager.
+  Global styles (colors/typography/background) are applied by ./ui ThemeManager.
 */
 
 html,

@@ -6,6 +6,8 @@
 
 import type { Pool } from "pg";
 import type {
+  AuthCode,
+  AuthCodeRepository,
 	CreateCredentialParams,
 	CreateSessionParams,
 	CreateUserParams,
@@ -239,3 +241,38 @@ export function createSessionRepository(pool: Pool): UserSessionRepository {
 		},
 	};
 }
+
+export class PgAuthCodeRepository implements AuthCodeRepository {
+  constructor(private readonly pool: Pool) {}
+
+  async save(authCode: AuthCode): Promise<void> {
+    await this.pool.query(
+      `INSERT INTO auth_codes (code, user_id, expires_at, used_at)
+       VALUES ($1, $2, $3, $4)`,
+      [authCode.code, authCode.userId, authCode.expiresAt, authCode.usedAt ?? null]
+    );
+  }
+
+  async findByCode(code: string): Promise<AuthCode | null> {
+    const { rows } = await this.pool.query(
+      `SELECT * FROM auth_codes WHERE code = $1`,
+      [code]
+    );
+    if (rows.length === 0) return null;
+    const r = rows[0];
+    return {
+      code: String(r.code),
+      userId: String(r.user_id),
+      expiresAt: toIsoString(r.expires_at),
+      usedAt: r.used_at ? toIsoString(r.used_at) : undefined,
+    };
+  }
+
+  async markUsed(code: string): Promise<void> {
+    await this.pool.query(
+      `UPDATE auth_codes SET used_at = NOW() WHERE code = $1`,
+      [code]
+    );
+  }
+}
+

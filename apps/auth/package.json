@@ -10,14 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@repo/ui": "*",
+    "@repo/ui": "file:./src/ui",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^6.20.0",
     "styled-components": "^6.1.19"
   },
   "devDependencies": {
-    "@repo/backend": "*",
     "@eslint/js": "^9.25.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
