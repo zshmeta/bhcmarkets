@@ -1,19 +1,19 @@
 /**
- * Login Page.
+ * Register Page.
  * 
- * User login interface with email and password.
+ * User registration interface with email and password.
  */
 
 import { useState, FormEvent } from "react";
-import { useAuth, useAuthRedirect } from "../features/auth/auth.hooks.js";
+import { useAuth } from "../features/auth/auth.hooks.js";
 import { EmailInput, PasswordInput, Button } from "@repo/ui";
 
-export function LoginPage() {
-  const { login, loading, error, clearError } = useAuth();
-  const redirectUrl = useAuthRedirect();
+export function RegisterPage() {
+  const { register, loading, error, clearError } = useAuth();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -21,19 +21,35 @@ export function LoginPage() {
     setLocalError(null);
     clearError();
 
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setLocalError("Passwords do not match");
+      return;
+    }
+
+    // Validate password strength (basic check)
+    if (password.length < 8) {
+      setLocalError("Password must be at least 8 characters");
+      return;
+    }
+
     try {
-      await login({ email, password });
+      await register({ 
+        email, 
+        password,
+        issueSession: true // Automatically log in after registration
+      });
       
-      // Redirect after successful login
-      window.location.href = redirectUrl;
+      // Redirect after successful registration
+      window.location.href = "/";
     } catch (err) {
-      setLocalError(err instanceof Error ? err.message : "Login failed");
+      setLocalError(err instanceof Error ? err.message : "Registration failed");
     }
   };
 
   return (
     <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px" }}>
-      <h1>Login</h1>
+      <h1>Register</h1>
       
       {(error || localError) && (
         <div style={{ 
@@ -67,6 +83,19 @@ export function LoginPage() {
             required
             disabled={loading}
           />
+          <small style={{ color: "#666", fontSize: "0.85em" }}>
+            Minimum 8 characters
+          </small>
+        </div>
+
+        <div style={{ marginBottom: "20px" }}>
+          <PasswordInput
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm Password"
+            required
+            disabled={loading}
+          />
         </div>
 
         <Button
@@ -74,20 +103,15 @@ export function LoginPage() {
           disabled={loading}
           style={{ width: "100%" }}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Creating account..." : "Register"}
         </Button>
       </form>
 
       <div style={{ marginTop: "20px", textAlign: "center" }}>
         <p>
-          Don't have an account?{" "}
-          <a href="/register" style={{ color: "#0066cc" }}>
-            Register
-          </a>
-        </p>
-        <p>
-          <a href="/forgot-password" style={{ color: "#0066cc" }}>
-            Forgot password?
+          Already have an account?{" "}
+          <a href="/login" style={{ color: "#0066cc" }}>
+            Login
           </a>
         </p>
       </div>

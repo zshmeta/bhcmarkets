@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Logger } from "../../config/logger.js";
+import type { Logger } from "../../../config/logger.js";
 import type {
   CreateCredentialParams,
   CreateSessionParams,
@@ -16,8 +16,8 @@ import type {
   UserSessionRepository,
   UserStatus,
   UUID,
-} from "./auth.types.ts";
-import type { AccountService } from "../account/account.service.js";
+} from "./auth.types.js";
+import type { AccountService } from "../../account/account.service.js";
 
 const DEFAULT_ACCESS_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
 const DEFAULT_REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
