@@ -1,0 +1,1196 @@
+
+
+
+./packages/backend/src/domains/auth/auth.types.ts
+
+
+export type UserStatus = "active" | "pending" | "suspended" | "deleted";
+export type UserRole = "user" | "admin" | "support";
+
+export interface User {
+  id: string;
+  email: string;
+  status: UserStatus;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Lightweight UUID alias while database abstractions settle.
+ */
+export type UUID = User["id"];
+
+/**
+ * Normalized email string used throughout the auth domain.
+ */
+export type NormalizedEmail = string;
+
+/**
+ * Public-facing representation of a user account.
+ */
+export type UserEntity = User;
+
+/**
+ * Input contract for creating a new user record.
+ */
+export interface CreateUserParams {
+  id: UUID;
+  email: NormalizedEmail;
+  role: UserRole;
+  status: UserStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Stored credential metadata for a user. `version` is incremented each time the password changes,
+ * enabling session invalidation on credential rotation.
+ */
+export interface UserCredential {
+  userId: UUID;
+  passwordHash: string;
+  version: number;
+  failedAttemptCount: number;
+  lockedUntil?: string;
+  passwordUpdatedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCredentialParams {
+  userId: UUID;
+  passwordHash: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  passwordUpdatedAt: string;
+}
+
+export type SessionStatus = "active" | "revoked" | "expired" | "replaced";
+export type SessionInvalidationReason =
+  | "manual"
+  | "password_rotated"
+  | "refresh_rotated"
+  | "session_limit"
+  | "suspicious_activity"
+  | "user_disabled"
+  | "logout_all"
+  | "expired";
+
+export interface UserSession {
+  id: UUID;
+  userId: UUID;
+  refreshTokenHash: string;
+  refreshTokenVersion: number;
+  passwordVersion: number;
+  status: SessionStatus;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+  lastSeenAt: string;
+  expiresAt: string;
+  revokedAt?: string;
+  revokedReason?: SessionInvalidationReason;
+}
+
+export interface CreateSessionParams {
+  id: UUID;
+  userId: UUID;
+  refreshTokenHash: string;
+  refreshTokenVersion: number;
+  passwordVersion: number;
+  status: SessionStatus;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+  lastSeenAt: string;
+  expiresAt: string;
+}
+
+export interface RotateSessionParams {
+  sessionId: UUID;
+  refreshTokenHash: string;
+  refreshTokenVersion: number;
+  expiresAt: string;
+  lastSeenAt: string;
+  ipAddress?: string;
+  userAgent?: string;
+}
+
+export interface SessionView extends Omit<UserSession, "refreshTokenHash"> {}
+
+export interface DeviceMetadata {
+  ipAddress?: string;
+  userAgent?: string;
+  platform?: string;
+}
+
+export interface UserRepository {
+  create(input: CreateUserParams): Promise<UserEntity>;
+  findByEmail(email: NormalizedEmail): Promise<UserEntity | null>;
+  findById(id: UUID): Promise<UserEntity | null>;
+  updateStatus(id: UUID, status: UserStatus): Promise<void>;
+  updateLastLogin?(id: UUID, at: string): Promise<void>;
+}
+
+export interface UserCredentialRepository {
+  create(input: CreateCredentialParams): Promise<UserCredential>;
+  getByUserId(userId: UUID): Promise<UserCredential | null>;
+  updatePassword(userId: UUID, params: { passwordHash: string; version: number; passwordUpdatedAt: string; updatedAt: string }): Promise<void>;
+  recordFailedAttempt?(userId: UUID, at: string): Promise<void>;
+  resetFailedAttempts?(userId: UUID): Promise<void>;
+  lock?(userId: UUID, until: string): Promise<void>;
+  unlock?(userId: UUID): Promise<void>;
+}
+
+export interface UserSessionRepository {
+  create(input: CreateSessionParams): Promise<UserSession>;
+  getById(id: UUID): Promise<UserSession | null>;
+  listActiveByUser(userId: UUID): Promise<UserSession[]>;
+  markInactive(sessionId: UUID, reason: SessionInvalidationReason, at: string): Promise<void>;
+  markInactiveByUser(userId: UUID, reason: SessionInvalidationReason, at: string, options?: { excludeSessionId?: UUID }): Promise<void>;
+  replaceRefreshToken(params: RotateSessionParams): Promise<UserSession | null>;
+  touch(sessionId: UUID, params: { lastSeenAt: string; ipAddress?: string; userAgent?: string }): Promise<void>;
+}
+
+
+
+./packages/backend/src/domains/auth/authController.ts
+
+
+import type { HttpRequest, HttpResponse } from "../../api/types.js";
+import { validateLogin } from "./authValidator.js";
+import type { AuthServiceConfig, AuthService } from "./authService.js";
+
+export const createLoginController = (authService: AuthService) => {
+	return async (req: HttpRequest): Promise<HttpResponse> => {
+		try {
+			const { email, password } = validateLogin(req.body);
+
+			const result = await authService.authenticate({
+				email,
+				password,
+				// Device metadata extraction could go here if we expand HttpRequest type
+			});
+
+			return {
+				status: 200,
+				body: result, // Returns { user, session, tokens }
+			};
+		} catch (error: any) {
+			// Basic error handling mapping; strictly could use a centralized error mapper
+			// similar to what's in src/index.ts, but keeping it simple for the controller unit.
+			const errorMessage = error.message || "Unknown error";
+
+			if (errorMessage.includes("validation_error")) {
+				return { status: 400, body: { error: errorMessage } };
+			}
+
+			// AuthErrors from AuthService
+			if (["INVALID_CREDENTIALS", "USER_NOT_ACTIVE", "USER_SUSPENDED"].includes(error.code)) {
+				return { status: 401, body: { error: error.code } };
+			}
+
+			// Fallback
+			return { status: 500, body: { error: "internal_error" } };
+		}
+	};
+};
+
+
+
+./packages/backend/src/domains/auth/authRoutes.ts
+
+
+import type { Router } from "../../api/types.js";
+import type { AuthService } from "./authService.js";
+import type { SessionInvalidationReason } from "./auth.types.js";
+import { createLoginController } from "./authController.js";
+import { toHttpErrorResponse } from "../../api/errors.js";
+import { validateLogout, validateLogoutAll, validateRefresh, validateRegister } from "./authValidator.js";
+
+type LoggerLike = {
+	error: (msg: string, meta?: Record<string, unknown>) => void;
+};
+
+export function registerAuthRoutes(
+	router: Router,
+	services: { auth: AuthService },
+	logger: LoggerLike,
+): void {
+	router.route("POST", "/auth/register", async (req) => {
+		try {
+			const body = validateRegister(req.body);
+			const result = await services.auth.register({
+				email: body.email,
+				password: body.password,
+				issueSession: body.issueSession,
+			});
+			return { status: 200, body: result };
+		} catch (e) {
+			if (e instanceof Error && e.message.startsWith("validation_error")) {
+				return { status: 400, body: { error: "invalid_body" } };
+			}
+			return toHttpErrorResponse(e, logger);
+		}
+	});
+
+	router.route("POST", "/auth/login", createLoginController(services.auth));
+
+	router.route("POST", "/auth/refresh", async (req) => {
+		try {
+			const body = validateRefresh(req.body);
+			const result = await services.auth.refreshSession({ refreshToken: body.refreshToken });
+			return { status: 200, body: result };
+		} catch (e) {
+			if (e instanceof Error && e.message.startsWith("validation_error")) {
+				return { status: 400, body: { error: "invalid_body" } };
+			}
+			return toHttpErrorResponse(e, logger);
+		}
+	});
+
+	router.route("POST", "/auth/logout", async (req) => {
+		try {
+			const body = validateLogout(req.body);
+			await services.auth.logout({
+				sessionId: body.sessionId,
+				userId: body.userId,
+				reason: body.reason as SessionInvalidationReason | undefined,
+			});
+			return { status: 204 };
+		} catch (e) {
+			if (e instanceof Error && e.message.startsWith("validation_error")) {
+				return { status: 400, body: { error: "invalid_body" } };
+			}
+			return toHttpErrorResponse(e, logger);
+		}
+	});
+
+	router.route("POST", "/auth/logout-all", async (req) => {
+		try {
+			const body = validateLogoutAll(req.body);
+			await services.auth.logoutAll({
+				userId: body.userId,
+				excludeSessionId: body.excludeSessionId,
+				reason: body.reason as SessionInvalidationReason | undefined,
+			});
+			return { status: 204 };
+		} catch (e) {
+			if (e instanceof Error && e.message.startsWith("validation_error")) {
+				return { status: 400, body: { error: "invalid_body" } };
+			}
+			return toHttpErrorResponse(e, logger);
+		}
+	});
+
+	router.route("GET", "/auth/sessions", async (req) => {
+		const userId = req.query["userId"];
+		if (!userId) return { status: 400, body: { error: "user_id_required" } };
+
+		const sessions = await services.auth.listActiveSessions(userId);
+		return { status: 200, body: { sessions } };
+	});
+}
+
+
+
+./packages/backend/src/domains/auth/authService.ts
+
+
+import { randomUUID } from "node:crypto";
+import type { Logger } from "../../config/logger.js";
+import type {
+  CreateCredentialParams,
+  CreateSessionParams,
+  CreateUserParams,
+  DeviceMetadata,
+  SessionInvalidationReason,
+  SessionView,
+  User,
+  UserCredential,
+  UserCredentialRepository,
+  UserRepository,
+  UserRole,
+  UserSession,
+  UserSessionRepository,
+  UserStatus,
+  UUID,
+} from "./auth.types.ts";
+import type { AccountService } from "../account/account.service.js";
+
+const DEFAULT_ACCESS_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
+const DEFAULT_REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
+const DEFAULT_MAX_SESSIONS_PER_USER = 10;
+
+export type AuthErrorCode =
+  | "EMAIL_ALREADY_REGISTERED"
+  | "INVALID_CREDENTIALS"
+  | "USER_NOT_ACTIVE"
+  | "USER_SUSPENDED"
+  | "SESSION_NOT_FOUND"
+  | "SESSION_REVOKED"
+  | "SESSION_EXPIRED"
+  | "REFRESH_TOKEN_INVALID"
+  | "REFRESH_TOKEN_REUSED"
+  | "REFRESH_TOKEN_EXPIRED"
+  | "UNKNOWN_USER"
+  | "PASSWORD_MISMATCH";
+
+export class AuthError extends Error {
+  constructor(public readonly code: AuthErrorCode, message?: string) {
+    super(message ?? code);
+    this.name = "AuthError";
+  }
+}
+
+export interface SecretHasher {
+  hash(plain: string): Promise<string>;
+  verify(plain: string, hashed: string): Promise<boolean>;
+}
+
+export interface Clock {
+  now(): Date;
+}
+
+export type IdFactory = () => UUID;
+
+export interface AccessTokenClaims {
+  sub: UUID;
+  sessionId: UUID;
+  role: UserRole;
+  version: number;
+  issuedAt: string;
+  expiresAt: string;
+}
+
+export interface RefreshTokenClaims {
+  sub: UUID;
+  sessionId: UUID;
+  sessionVersion: number;
+  passwordVersion: number;
+  issuedAt: string;
+  expiresAt: string;
+}
+
+export interface TokenManager {
+  issueAccessToken(payload: AccessTokenClaims, ttlSeconds: number): Promise<string>;
+  issueRefreshToken(payload: RefreshTokenClaims, ttlSeconds: number): Promise<string>;
+  parseRefreshToken(token: string): Promise<RefreshTokenClaims | null>;
+}
+
+export interface AuthServiceConfig {
+  accessTokenTtlSeconds: number;
+  refreshTokenTtlSeconds: number;
+  maxSessionsPerUser: number;
+}
+
+export interface AuthServiceDependencies {
+  userRepository: UserRepository;
+  credentialRepository: UserCredentialRepository;
+  sessionRepository: UserSessionRepository;
+  passwordHasher: SecretHasher;
+  tokenHasher?: SecretHasher;
+  tokenManager: TokenManager;
+  clock?: Clock;
+  idFactory?: IdFactory;
+  logger?: Logger;
+  config?: Partial<AuthServiceConfig>;
+  accountService?: AccountService;
+}
+
+export interface AuthTokens {
+  tokenType: "Bearer";
+  accessToken: string;
+  accessTokenExpiresAt: string;
+  refreshToken: string;
+  refreshTokenExpiresAt: string;
+}
+
+export interface AuthenticationResult {
+  user: User;
+  session: SessionView;
+  tokens: AuthTokens;
+}
+
+export interface RegistrationInput {
+  email: string;
+  password: string;
+  role?: UserRole;
+  status?: UserStatus;
+  device?: DeviceMetadata;
+  issueSession?: boolean;
+}
+
+export interface AuthenticationInput {
+  email: string;
+  password: string;
+  device?: DeviceMetadata;
+}
+
+export interface RefreshSessionInput {
+  refreshToken: string;
+  device?: DeviceMetadata;
+}
+
+export interface LogoutInput {
+  sessionId: UUID;
+  userId?: UUID;
+  reason?: SessionInvalidationReason;
+}
+
+export interface LogoutAllInput {
+  userId: UUID;
+  excludeSessionId?: UUID;
+  reason?: SessionInvalidationReason;
+}
+
+export interface UpdatePasswordInput {
+  userId: UUID;
+  currentPassword?: string;
+  newPassword: string;
+  invalidateOtherSessions?: boolean;
+}
+
+export interface AuthService {
+  register(input: RegistrationInput): Promise<AuthenticationResult | { user: User }>;
+  authenticate(input: AuthenticationInput): Promise<AuthenticationResult>;
+  refreshSession(input: RefreshSessionInput): Promise<AuthenticationResult>;
+  logout(input: LogoutInput): Promise<void>;
+  logoutAll(input: LogoutAllInput): Promise<void>;
+  updatePassword(input: UpdatePasswordInput): Promise<void>;
+  getUserById(id: UUID): Promise<User | null>;
+  listActiveSessions(userId: UUID): Promise<SessionView[]>;
+}
+
+const defaultClock: Clock = { now: () => new Date() };
+const defaultIdFactory: IdFactory = () => randomUUID();
+
+const toSessionView = (session: UserSession): SessionView => {
+  const { refreshTokenHash: _hash, ...rest } = session;
+  return rest;
+};
+
+const ensureUserActive = (user: User): void => {
+  if (user.status === "pending" || user.status === "deleted") {
+    throw new AuthError("USER_NOT_ACTIVE");
+  }
+  if (user.status === "suspended") {
+    throw new AuthError("USER_SUSPENDED");
+  }
+};
+
+const verifyRefreshTokenFreshness = (
+  session: UserSession,
+  claims: RefreshTokenClaims,
+): void => {
+  if (session.refreshTokenVersion !== claims.sessionVersion) {
+    throw new AuthError("REFRESH_TOKEN_INVALID");
+  }
+  if (session.passwordVersion !== claims.passwordVersion) {
+    throw new AuthError("REFRESH_TOKEN_INVALID");
+  }
+};
+
+const pruneSessions = async (
+  sessionRepository: UserSessionRepository,
+  userId: UUID,
+  limit: number,
+  excludeSessionId: UUID | undefined,
+  clock: Clock,
+): Promise<void> => {
+  if (!limit || limit < 1) return;
+  const sessions = await sessionRepository.listActiveByUser(userId);
+  if (sessions.length <= limit) return;
+
+  const ordered = sessions
+    .filter((session) => (excludeSessionId ? session.id !== excludeSessionId : true))
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+  const surplus = ordered.slice(0, Math.max(0, ordered.length - limit));
+  if (!surplus.length) return;
+
+  const closedAt = clock.now().toISOString();
+  await Promise.all(
+    surplus.map((session) =>
+      sessionRepository.markInactive(session.id, "session_limit", closedAt),
+    ),
+  );
+};
+
+export const createAuthService = (deps: AuthServiceDependencies): AuthService => {
+  const {
+    userRepository,
+    credentialRepository,
+    sessionRepository,
+    passwordHasher,
+    tokenHasher = passwordHasher,
+    tokenManager,
+    clock = defaultClock,
+    idFactory = defaultIdFactory,
+    logger,
+    accountService,
+  } = deps;
+
+  const config: AuthServiceConfig = {
+    accessTokenTtlSeconds: deps.config?.accessTokenTtlSeconds ?? DEFAULT_ACCESS_TOKEN_TTL_SECONDS,
+    refreshTokenTtlSeconds: deps.config?.refreshTokenTtlSeconds ?? DEFAULT_REFRESH_TOKEN_TTL_SECONDS,
+    maxSessionsPerUser: deps.config?.maxSessionsPerUser ?? DEFAULT_MAX_SESSIONS_PER_USER,
+  };
+
+  const normalizeEmail = (email: string): string => email.trim().toLowerCase();
+
+  const issueInitialSession = async (
+    user: User,
+    credential: UserCredential,
+    device?: DeviceMetadata,
+  ): Promise<AuthenticationResult> => {
+    const issuedAt = clock.now();
+    const refreshExpiresAt = new Date(issuedAt.getTime() + config.refreshTokenTtlSeconds * 1000);
+    const accessExpiresAt = new Date(issuedAt.getTime() + config.accessTokenTtlSeconds * 1000);
+    const sessionId = idFactory();
+
+    const refreshToken = await tokenManager.issueRefreshToken(
+      {
+        sub: user.id,
+        sessionId,
+        sessionVersion: 1,
+        passwordVersion: credential.version,
+        issuedAt: issuedAt.toISOString(),
+        expiresAt: refreshExpiresAt.toISOString(),
+      },
+      config.refreshTokenTtlSeconds,
+    );
+
+    const refreshTokenHash = await tokenHasher.hash(refreshToken);
+
+    const sessionRecord: CreateSessionParams = {
+      id: sessionId,
+      userId: user.id,
+      refreshTokenHash,
+      refreshTokenVersion: 1,
+      passwordVersion: credential.version,
+      status: "active",
+      ipAddress: device?.ipAddress,
+      userAgent: device?.userAgent,
+      createdAt: issuedAt.toISOString(),
+      lastSeenAt: issuedAt.toISOString(),
+      expiresAt: refreshExpiresAt.toISOString(),
+    };
+
+    const storedSession = await sessionRepository.create(sessionRecord);
+    const accessToken = await tokenManager.issueAccessToken(
+      {
+        sub: user.id,
+        sessionId: storedSession.id,
+        role: user.role,
+        version: storedSession.refreshTokenVersion,
+        issuedAt: issuedAt.toISOString(),
+        expiresAt: accessExpiresAt.toISOString(),
+      },
+      config.accessTokenTtlSeconds,
+    );
+
+    return {
+      user,
+      session: toSessionView(storedSession),
+      tokens: {
+        tokenType: "Bearer",
+        accessToken,
+        accessTokenExpiresAt: accessExpiresAt.toISOString(),
+        refreshToken,
+        refreshTokenExpiresAt: refreshExpiresAt.toISOString(),
+      },
+    };
+  };
+
+  const rotateSession = async (
+    session: UserSession,
+    user: User,
+    device?: DeviceMetadata,
+  ): Promise<AuthenticationResult> => {
+    const issuedAt = clock.now();
+    const refreshExpiresAt = new Date(issuedAt.getTime() + config.refreshTokenTtlSeconds * 1000);
+    const accessExpiresAt = new Date(issuedAt.getTime() + config.accessTokenTtlSeconds * 1000);
+    const nextVersion = session.refreshTokenVersion + 1;
+
+    const refreshToken = await tokenManager.issueRefreshToken(
+      {
+        sub: user.id,
+        sessionId: session.id,
+        sessionVersion: nextVersion,
+        passwordVersion: session.passwordVersion,
+        issuedAt: issuedAt.toISOString(),
+        expiresAt: refreshExpiresAt.toISOString(),
+      },
+      config.refreshTokenTtlSeconds,
+    );
+
+    const refreshTokenHash = await tokenHasher.hash(refreshToken);
+
+    const updatedSession = await sessionRepository.replaceRefreshToken({
+      sessionId: session.id,
+      refreshTokenHash,
+      refreshTokenVersion: nextVersion,
+      expiresAt: refreshExpiresAt.toISOString(),
+      lastSeenAt: issuedAt.toISOString(),
+      ipAddress: device?.ipAddress,
+      userAgent: device?.userAgent,
+    });
+
+    if (!updatedSession) {
+      throw new AuthError("SESSION_NOT_FOUND");
+    }
+
+    const accessToken = await tokenManager.issueAccessToken(
+      {
+        sub: user.id,
+        sessionId: updatedSession.id,
+        role: user.role,
+        version: updatedSession.refreshTokenVersion,
+        issuedAt: issuedAt.toISOString(),
+        expiresAt: accessExpiresAt.toISOString(),
+      },
+      config.accessTokenTtlSeconds,
+    );
+
+    return {
+      user,
+      session: toSessionView(updatedSession),
+      tokens: {
+        tokenType: "Bearer",
+        accessToken,
+        accessTokenExpiresAt: accessExpiresAt.toISOString(),
+        refreshToken,
+        refreshTokenExpiresAt: refreshExpiresAt.toISOString(),
+      },
+    };
+  };
+
+  const register: AuthService["register"] = async (input) => {
+    const email = normalizeEmail(input.email);
+    const existing = await userRepository.findByEmail(email);
+    if (existing) {
+      throw new AuthError("EMAIL_ALREADY_REGISTERED");
+    }
+
+    const timestamp = clock.now().toISOString();
+    const userId = idFactory();
+
+    const userRecord: CreateUserParams = {
+      id: userId,
+      email,
+      role: input.role ?? "user",
+      status: input.status ?? "active",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+
+    const user = await userRepository.create(userRecord);
+
+    const passwordHash = await passwordHasher.hash(input.password);
+    const credentialRecord: CreateCredentialParams = {
+      userId: user.id,
+      passwordHash,
+      version: 1,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      passwordUpdatedAt: timestamp,
+    };
+
+    const credential = await credentialRepository.create(credentialRecord);
+
+    if (accountService) {
+      await accountService.createAccount(user.id);
+    }
+
+    if (input.issueSession === false) {
+      return { user };
+    }
+
+    const result = await issueInitialSession(user, credential, input.device);
+    await pruneSessions(sessionRepository, user.id, config.maxSessionsPerUser, result.session.id, clock);
+    await userRepository.updateLastLogin?.(user.id, result.session.createdAt);
+    return result;
+  };
+
+  const authenticate: AuthService["authenticate"] = async (input) => {
+    const email = normalizeEmail(input.email);
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      throw new AuthError("INVALID_CREDENTIALS");
+    }
+
+    ensureUserActive(user);
+
+    const credential = await credentialRepository.getByUserId(user.id);
+    if (!credential) {
+      throw new AuthError("INVALID_CREDENTIALS");
+    }
+
+    const passwordMatches = await passwordHasher.verify(input.password, credential.passwordHash);
+    if (!passwordMatches) {
+      await credentialRepository.recordFailedAttempt?.(user.id, clock.now().toISOString());
+      logger?.warn("Invalid login attempt", { userId: user.id });
+      throw new AuthError("INVALID_CREDENTIALS");
+    }
+
+    await credentialRepository.resetFailedAttempts?.(user.id);
+
+    const result = await issueInitialSession(user, credential, input.device);
+    await pruneSessions(sessionRepository, user.id, config.maxSessionsPerUser, result.session.id, clock);
+    await userRepository.updateLastLogin?.(user.id, result.session.createdAt);
+    return result;
+  };
+
+  const refreshSession: AuthService["refreshSession"] = async ({ refreshToken, device }) => {
+    const claims = await tokenManager.parseRefreshToken(refreshToken);
+    if (!claims) {
+      throw new AuthError("REFRESH_TOKEN_INVALID");
+    }
+
+    const session = await sessionRepository.getById(claims.sessionId);
+    if (!session) {
+      throw new AuthError("SESSION_NOT_FOUND");
+    }
+
+    if (session.status !== "active") {
+      throw new AuthError("SESSION_REVOKED");
+    }
+
+    const now = clock.now();
+    if (new Date(session.expiresAt) <= now) {
+      await sessionRepository.markInactive(session.id, "expired", now.toISOString());
+      throw new AuthError("SESSION_EXPIRED");
+    }
+
+    const tokenMatches = await tokenHasher.verify(refreshToken, session.refreshTokenHash);
+    if (!tokenMatches) {
+      await sessionRepository.markInactive(session.id, "suspicious_activity", now.toISOString());
+      throw new AuthError("REFRESH_TOKEN_REUSED");
+    }
+
+    verifyRefreshTokenFreshness(session, claims);
+
+    const user = await userRepository.findById(session.userId);
+    if (!user) {
+      throw new AuthError("UNKNOWN_USER");
+    }
+
+    ensureUserActive(user);
+
+    return rotateSession(session, user, device);
+  };
+
+  const logout: AuthService["logout"] = async ({ sessionId, userId, reason }) => {
+    const session = await sessionRepository.getById(sessionId);
+    if (!session) return;
+    if (userId && session.userId !== userId) {
+      throw new AuthError("SESSION_NOT_FOUND");
+    }
+    if (session.status !== "active") return;
+    await sessionRepository.markInactive(session.id, reason ?? "manual", clock.now().toISOString());
+  };
+
+  const logoutAll: AuthService["logoutAll"] = async ({ userId, excludeSessionId, reason }) => {
+    await sessionRepository.markInactiveByUser(userId, reason ?? "logout_all", clock.now().toISOString(), {
+      excludeSessionId,
+    });
+  };
+
+  const updatePassword: AuthService["updatePassword"] = async ({
+    userId,
+    currentPassword,
+    newPassword,
+    invalidateOtherSessions = true,
+  }) => {
+    const credential = await credentialRepository.getByUserId(userId);
+    if (!credential) {
+      throw new AuthError("UNKNOWN_USER");
+    }
+
+    if (currentPassword) {
+      const matches = await passwordHasher.verify(currentPassword, credential.passwordHash);
+      if (!matches) {
+        throw new AuthError("PASSWORD_MISMATCH");
+      }
+    }
+
+    const nextHash = await passwordHasher.hash(newPassword);
+    const timestamp = clock.now().toISOString();
+    const nextVersion = credential.version + 1;
+
+    await credentialRepository.updatePassword(userId, {
+      passwordHash: nextHash,
+      version: nextVersion,
+      passwordUpdatedAt: timestamp,
+      updatedAt: timestamp,
+    });
+
+    if (invalidateOtherSessions) {
+      await sessionRepository.markInactiveByUser(userId, "password_rotated", timestamp);
+    }
+  };
+
+  const getUserById: AuthService["getUserById"] = (id) => userRepository.findById(id);
+
+  const listActiveSessions: AuthService["listActiveSessions"] = async (userId) => {
+    const sessions = await sessionRepository.listActiveByUser(userId);
+    return sessions.map(toSessionView);
+  };
+
+  return {
+    register,
+    authenticate,
+    refreshSession,
+    logout,
+    logoutAll,
+    updatePassword,
+    getUserById,
+    listActiveSessions,
+  };
+};
+
+export type { AuthService as AuthDomainService };
+
+
+
+./packages/backend/src/domains/auth/authValidator.ts
+
+
+import { z } from "zod";
+
+const emailSchema = z.string().trim().email();
+const passwordSchema = z.string().min(1);
+
+const loginSchema = z
+	.object({
+		email: emailSchema,
+		password: passwordSchema,
+	})
+	.strict();
+
+const registerSchema = z
+	.object({
+		email: emailSchema,
+		password: passwordSchema,
+		issueSession: z.boolean().optional(),
+	})
+	.strict();
+
+const refreshSchema = z
+	.object({
+		refreshToken: z.string().min(1),
+	})
+	.strict();
+
+const logoutSchema = z
+	.object({
+		sessionId: z.string().min(1),
+		userId: z.string().min(1).optional(),
+		reason: z.string().min(1).optional(),
+	})
+	.strict();
+
+const logoutAllSchema = z
+	.object({
+		userId: z.string().min(1),
+		excludeSessionId: z.string().min(1).optional(),
+		reason: z.string().min(1).optional(),
+	})
+	.strict();
+
+export type LoginBody = z.infer<typeof loginSchema>;
+export type RegisterBody = z.infer<typeof registerSchema>;
+export type RefreshBody = z.infer<typeof refreshSchema>;
+export type LogoutBody = z.infer<typeof logoutSchema>;
+export type LogoutAllBody = z.infer<typeof logoutAllSchema>;
+
+const fail = (msg: string): never => {
+	throw new Error(`validation_error: ${msg}`);
+};
+
+export const validateLogin = (body: unknown): LoginBody => {
+	const parsed = loginSchema.safeParse(body);
+	if (parsed.success) return parsed.data;
+	fail("email and password required");
+	// Unreachable, but keeps TS happy in some configs.
+	return undefined as never;
+};
+
+export const validateRegister = (body: unknown): RegisterBody => {
+	const parsed = registerSchema.safeParse(body);
+	if (parsed.success) return parsed.data;
+	fail("email and password required");
+	return undefined as never;
+};
+
+export const validateRefresh = (body: unknown): RefreshBody => {
+	const parsed = refreshSchema.safeParse(body);
+	if (parsed.success) return parsed.data;
+	fail("refreshToken required");
+	return undefined as never;
+};
+
+export const validateLogout = (body: unknown): LogoutBody => {
+	const parsed = logoutSchema.safeParse(body);
+	if (parsed.success) return parsed.data;
+	fail("sessionId required");
+	return undefined as never;
+};
+
+export const validateLogoutAll = (body: unknown): LogoutAllBody => {
+	const parsed = logoutAllSchema.safeParse(body);
+	if (parsed.success) return parsed.data;
+	fail("userId required");
+	return undefined as never;
+};
+
+
+
+
+./packages/backend/src/domains/auth/repositories.pg.ts
+
+
+/*
+  repositories.pg.ts
+  Postgres-backed repository implementations for the auth domain.
+  We keep SQL explicit and minimal to teach data flow and ease future migrations.
+*/
+
+import type { Pool } from "pg";
+import type {
+	CreateCredentialParams,
+	CreateSessionParams,
+	CreateUserParams,
+	SessionInvalidationReason,
+	User,
+	UserCredential,
+	UserCredentialRepository,
+	UserRepository,
+	UserSession,
+	UserSessionRepository,
+	UUID,
+} from "./auth.types.js";
+
+type Row = Record<string, unknown>;
+
+const toIsoString = (value: unknown): string => {
+	if (!value) return new Date().toISOString();
+	if (value instanceof Date) return value.toISOString();
+	const parsed = new Date(String(value));
+	return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
+};
+
+const mapUser = (r: Row): User => ({
+	id: String(r.id),
+	email: String(r.email),
+	status: r.status as User["status"],
+	role: r.role as User["role"],
+	createdAt: toIsoString(r.created_at),
+	updatedAt: toIsoString(r.updated_at),
+});
+
+const mapCredential = (r: Row): UserCredential => ({
+	userId: String(r.user_id),
+	passwordHash: String(r.password_hash),
+	version: Number(r.version ?? 1),
+	failedAttemptCount: Number(r.failed_attempt_count ?? 0),
+	lockedUntil: r.locked_until ? String(r.locked_until) : undefined,
+	passwordUpdatedAt: toIsoString(r.password_updated_at),
+	createdAt: toIsoString(r.created_at),
+	updatedAt: toIsoString(r.updated_at),
+});
+
+const mapSession = (r: Row): UserSession => ({
+	id: String(r.id),
+	userId: String(r.user_id),
+	refreshTokenHash: String(r.refresh_token_hash),
+	refreshTokenVersion: Number(r.refresh_token_version ?? 1),
+	passwordVersion: Number(r.password_version ?? 1),
+	status: r.status as UserSession["status"],
+	ipAddress: r.ip_address ? String(r.ip_address) : undefined,
+	userAgent: r.user_agent ? String(r.user_agent) : undefined,
+	createdAt: toIsoString(r.created_at),
+	lastSeenAt: toIsoString(r.last_seen_at ?? r.created_at),
+	expiresAt: toIsoString(r.expires_at),
+	revokedAt: r.revoked_at ? toIsoString(r.revoked_at) : undefined,
+	revokedReason: r.revoked_reason
+		? (String(r.revoked_reason) as SessionInvalidationReason)
+		: undefined,
+});
+
+export function createUserRepository(pool: Pool): UserRepository {
+	return {
+		async create(input: CreateUserParams) {
+			const { rows } = await pool.query(
+				`INSERT INTO users (id, email, status, role, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6)
+         RETURNING *`,
+				[input.id, input.email, input.status, input.role, input.createdAt, input.updatedAt],
+			);
+			return mapUser(rows[0]);
+		},
+		async findByEmail(email: string) {
+			const { rows } = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
+			return rows[0] ? mapUser(rows[0]) : null;
+		},
+		async findById(id: UUID) {
+			const { rows } = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
+			return rows[0] ? mapUser(rows[0]) : null;
+		},
+		async updateStatus(id: UUID, status: User["status"]) {
+			await pool.query(`UPDATE users SET status = $2, updated_at = now() WHERE id = $1`, [id, status]);
+		},
+		async updateLastLogin(id: UUID, at: string) {
+			await pool.query(`UPDATE users SET last_login_at = $2, updated_at = now() WHERE id = $1`, [id, at]);
+		},
+	};
+}
+
+export function createCredentialRepository(pool: Pool): UserCredentialRepository {
+	return {
+		async create(input: CreateCredentialParams) {
+			const { rows } = await pool.query(
+				`INSERT INTO user_credentials (user_id, password_hash, version, password_updated_at, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6)
+         RETURNING *`,
+				[
+					input.userId,
+					input.passwordHash,
+					input.version,
+					input.passwordUpdatedAt,
+					input.createdAt,
+					input.updatedAt,
+				],
+			);
+			return mapCredential(rows[0]);
+		},
+		async getByUserId(userId: UUID) {
+			const { rows } = await pool.query(`SELECT * FROM user_credentials WHERE user_id = $1`, [userId]);
+			return rows[0] ? mapCredential(rows[0]) : null;
+		},
+		async updatePassword(
+			userId: UUID,
+			params: { passwordHash: string; version: number; passwordUpdatedAt: string; updatedAt: string },
+		) {
+			await pool.query(
+				`UPDATE user_credentials
+           SET password_hash=$2, version=$3, password_updated_at=$4, updated_at=$5
+         WHERE user_id=$1`,
+				[userId, params.passwordHash, params.version, params.passwordUpdatedAt, params.updatedAt],
+			);
+		},
+		async recordFailedAttempt(userId: UUID, at: string) {
+			await pool.query(
+				`UPDATE user_credentials
+           SET failed_attempt_count = COALESCE(failed_attempt_count,0) + 1, updated_at=$2
+         WHERE user_id=$1`,
+				[userId, at],
+			);
+		},
+		async resetFailedAttempts(userId: UUID) {
+			await pool.query(`UPDATE user_credentials SET failed_attempt_count = 0 WHERE user_id=$1`, [userId]);
+		},
+	};
+}
+
+export function createSessionRepository(pool: Pool): UserSessionRepository {
+	return {
+		async create(input: CreateSessionParams) {
+			const { rows } = await pool.query(
+				`INSERT INTO auth_sessions (id, user_id, refresh_token_hash, refresh_token_version, password_version, status, user_agent, ip_address, device_fingerprint, created_at, last_seen_at, expires_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NULL,$9,$10,$11)
+         RETURNING *`,
+				[
+					input.id,
+					input.userId,
+					input.refreshTokenHash,
+					input.refreshTokenVersion,
+					input.passwordVersion,
+					input.status,
+					input.userAgent ?? null,
+					input.ipAddress ?? null,
+					input.createdAt,
+					input.lastSeenAt,
+					input.expiresAt,
+				],
+			);
+			return mapSession(rows[0]);
+		},
+		async getById(id: UUID) {
+			const { rows } = await pool.query(`SELECT * FROM auth_sessions WHERE id = $1`, [id]);
+			return rows[0] ? mapSession(rows[0]) : null;
+		},
+		async listActiveByUser(userId: UUID) {
+			const { rows } = await pool.query(
+				`SELECT * FROM auth_sessions WHERE user_id = $1 AND status = 'active' AND expires_at > now() ORDER BY created_at ASC`,
+				[userId],
+			);
+			return rows.map(mapSession);
+		},
+		async markInactive(sessionId: UUID, reason: SessionInvalidationReason, at: string) {
+			const status = reason === "expired" ? "expired" : "revoked";
+			await pool.query(
+				`UPDATE auth_sessions
+           SET status = $2, revoked_reason = $3, revoked_at = $4
+         WHERE id = $1 AND status = 'active'`,
+				[sessionId, status, reason, at],
+			);
+		},
+		async markInactiveByUser(
+			userId: UUID,
+			reason: SessionInvalidationReason,
+			at: string,
+			options?: { excludeSessionId?: UUID },
+		) {
+			const status = reason === "expired" ? "expired" : "revoked";
+			if (options?.excludeSessionId) {
+				await pool.query(
+					`UPDATE auth_sessions
+             SET status = $3, revoked_reason = $4, revoked_at = $5
+           WHERE user_id = $1 AND id <> $2 AND status = 'active'`,
+					[userId, options.excludeSessionId, status, reason, at],
+				);
+			} else {
+				await pool.query(
+					`UPDATE auth_sessions
+             SET status = $2, revoked_reason = $3, revoked_at = $4
+           WHERE user_id = $1 AND status = 'active'`,
+					[userId, status, reason, at],
+				);
+			}
+		},
+		async replaceRefreshToken(params) {
+			const { rows } = await pool.query(
+				`UPDATE auth_sessions
+            SET refresh_token_hash = $2,
+                refresh_token_version = $3,
+                expires_at = $4,
+                last_seen_at = $5,
+                user_agent = $6,
+                ip_address = $7,
+                status = 'active'
+          WHERE id=$1
+          RETURNING *`,
+				[
+					params.sessionId,
+					params.refreshTokenHash,
+					params.refreshTokenVersion,
+					params.expiresAt,
+					params.lastSeenAt,
+					params.userAgent ?? null,
+					params.ipAddress ?? null,
+				],
+			);
+			return rows[0] ? mapSession(rows[0]) : null;
+		},
+		async touch(sessionId, { lastSeenAt, ipAddress, userAgent }) {
+			await pool.query(
+				`UPDATE auth_sessions SET last_seen_at=$2, ip_address=$3, user_agent=$4 WHERE id=$1`,
+				[sessionId, lastSeenAt, ipAddress ?? null, userAgent ?? null],
+			);
+		},
+	};
+}
