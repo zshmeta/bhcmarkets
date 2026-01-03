@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Button, EmailInput, Notification, PasswordInput } from "@repo/ui";
 import { authApi } from "../../lib/authApi";
 import { useAuth } from "../AuthContext";
+import { useToast } from "../ToastContext";
 
 const Form = styled.form`
   display: flex;
@@ -26,8 +27,6 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const { login } = useAuth();
 
@@ -35,15 +34,13 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(false);
     setLoading(true);
 
     try {
       const result = await authApi.login({ email: email.trim(), password });
       login(result.user, result.tokens.accessToken, result.tokens.refreshToken);
 
-      setSuccess(true);
+      showSuccess("Login successful! Redirecting...", "Welcome back");
 
       if (onSuccess) {
         setTimeout(() => {

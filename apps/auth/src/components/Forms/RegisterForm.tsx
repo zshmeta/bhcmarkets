@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Button, EmailInput, Notification, PasswordInput } from "@repo/ui";
 import { authApi } from "../../lib/authApi";
 import { useAuth } from "../AuthContext";
+import { useToast } from "../ToastContext";
 
 const Form = styled.form`
   display: flex;
@@ -27,23 +28,19 @@ export const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const { login } = useAuth();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(false);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      showError("Passwords do not match", "Validation Error");
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      showError("Password must be at least 8 characters long", "Validation Error");
       return;
     }
 
@@ -56,7 +53,7 @@ export const RegisterForm = ({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
         login(result.user, result.tokens.accessToken, result.tokens.refreshToken);
       }
 
-      setSuccess(true);
+      showSuccess("Registration successful! Redirecting...", "Welcome");
 
       if (onSuccess) {
         setTimeout(() => {

@@ -1,15 +1,30 @@
-import { RouterProvider } from "react-router-dom";
-import { AuthProvider } from "./components/AuthContext";
-import { router } from "./router";
-import "./App.css";
+import { ThemeProvider } from "@repo/ui";
+import { AuthProvider, useAuth } from "./components/AuthContext";
+import { ToastProvider } from "./components/ToastContext";
+import { AuthPage } from "./components/AuthPage";
+import { SuccessPage } from "./components/SuccessPage";
+import { LoadingScreen } from "./components/LoadingScreen";
 
-export default function App() {
+import './App.css'
+
+const AppContent = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingScreen message="Initializing..." />;
+  }
+
+  return isAuthenticated ? <SuccessPage /> : <AuthPage />;
+};
+
+function App() {
   return (
-    <div className="app-root">
-      {/* AuthProvider owns session state; routing stays separate. */}
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </div>
-  );
+    <ThemeProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </ToastProvider>
+    </ThemeProvider>
+  )
 }

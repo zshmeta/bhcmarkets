@@ -144,8 +144,12 @@ export const PasswordResetForm = ({ onBackToLogin }: PasswordResetFormProps) => 
             setError("Network error. Please check your connection and try again.");
             break;
           default:
-            // For security, don't reveal if email exists or not
-            setSuccess(true);
+            // For security, always show success
+            setEmailSent(true);
+            showSuccess(
+              "If an account exists with that email, we've sent password reset instructions.",
+              "Email Sent"
+            );
         }
       } else {
         setError(err instanceof Error ? err.message : "Failed to send reset email.");
@@ -211,8 +215,8 @@ export const PasswordResetForm = ({ onBackToLogin }: PasswordResetFormProps) => 
         autoFocus
       />
 
-      <Button type="submit" disabled={loading || success} loading={loading} fullWidth size="lg">
-        {loading ? "Sending..." : success ? "Email Sent" : "Send Reset Link"}
+      <Button type="submit" disabled={loading || emailSent} loading={loading} fullWidth size="lg">
+        {loading ? "Sending..." : emailSent ? "Email Sent" : "Send Reset Link"}
       </Button>
 
       {success && onBackToLogin && (
