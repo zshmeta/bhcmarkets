@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useAuth } from "@repo/auth";
 
 const Container = styled.div`
   padding: 16px;
@@ -62,7 +61,7 @@ const ActionButton = styled.button<{ $side: 'buy' | 'sell' }>`
   cursor: pointer;
   background: ${({ theme, $side }: any) => $side === 'buy' ? theme.colors.success : theme.colors.danger};
   color: ${({ theme }: any) => theme.colors.text.onAccent};
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;

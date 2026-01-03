@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { TradingWorkspace } from "../features/workspace/TradingWorkspace";
-import { AuthPage, RequireAuth } from "@repo/auth";
 import { AdminPage } from "../features/admin/AdminPage";
 import { DashboardShell } from "./layout/DashboardShell";
 import { DashboardOverviewPage } from "../features/overview/DashboardOverviewPage";

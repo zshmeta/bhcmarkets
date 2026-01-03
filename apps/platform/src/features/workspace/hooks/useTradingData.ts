@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from "@repo/auth";
 
 const API_BASE = (window as unknown as { __API_BASE?: string }).__API_BASE || 'http://localhost:8080';
 
