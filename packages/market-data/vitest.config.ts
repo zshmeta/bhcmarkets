@@ -5,11 +5,11 @@ export default defineConfig({
     // Run tests from the tests directory
     include: ['tests/**/*.test.ts'],
 
-    // Exclude integration tests by default (require running service)
+    // Exclude integration tests from default run
+    // Run them explicitly with: npm run test:integration
     exclude: [
-      'tests/routes.test.ts',           // Requires running HTTP server
-      'tests/binance.collector.test.ts', // Requires network connection to Binance
-      'tests/api/**/*.test.ts',          // API integration tests
+      'tests/**/*.integration.test.ts',  // Integration tests
+      'tests/routes.test.ts',             // Requires running HTTP server
     ],
 
     // Environment
