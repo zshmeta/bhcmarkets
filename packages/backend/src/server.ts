@@ -19,9 +19,12 @@ import {
   createBcryptHasher,
   createJwtTokenManager,
 } from "./domains/auth/index.js";
+
 import { OrderService } from "./domains/order/order.service.js";
 import { PositionService } from "./domains/position/position.service.js";
 import { AccountService } from "./domains/account/account.service.js";
+
+
 import { createNodeRouter } from "./api/nodeRouter.js";
 import { registerApiRoutes } from "./api/index.js";
 
@@ -70,8 +73,10 @@ const services = await (async () => {
     },
     accountService,
   });
+
   const positionService = new PositionService(drizzleClient);
   const orderService = new OrderService(drizzleClient, positionService);
+
   // accountService is already initialized above
 
   // Hydrate order matching engine
