@@ -57,7 +57,7 @@ import { RestApiServer } from './api/rest-api.js';
 import { HealthService } from './domains/health/health-service.js';
 import { PositionManager } from './domains/positions/position-manager.js';
 import { TradeProcessor } from './domains/trades/trade-processor.js';
-import { LedgerService } from './domains/ledger/ledger-service.js';
+import { LedgerService } from './domains/ledger/ledger-adapter.js';
 import { RiskService } from './domains/risk/risk-service.js';
 
 const log = logger.child({ component: 'order-engine' });
@@ -396,7 +396,16 @@ export type {
   TradeStats,
 } from './domains/trades/trade.types.js';
 
-export { LedgerService } from './domains/ledger/ledger-service.js';
+// Ledger (backward-compatible adapter wrapping @repo/ledger)
+export { LedgerService, LedgerAdapter, createLedgerAdapter } from './domains/ledger/ledger-adapter.js';
+export type {
+  LegacyBalance,
+  LegacyHoldRequest,
+  LegacyTradeSettlement,
+  LegacyBalanceChange,
+} from './domains/ledger/ledger-adapter.js';
+
+// Re-export @repo/ledger types for direct usage
 export type {
   Balance,
   LedgerEntry,
@@ -405,7 +414,7 @@ export type {
   TradeSettlementInput,
   AccountSummary,
   LedgerEvent,
-} from './domains/ledger/ledger.types.js';
+} from '@repo/ledger';
 
 export { RiskService } from './domains/risk/risk-service.js';
 export type {
@@ -419,6 +428,19 @@ export type {
   RiskEvent,
 } from './domains/risk/risk.types.js';
 
+// Risk Gateway (fast pre-trade checks)
+export {
+  RiskGateway,
+  createRiskGateway,
+  getDefaultSymbolLimits,
+  type RiskOrderInput,
+  type CachedSymbolLimits,
+  type CachedUserLimits,
+  type RiskCheckResult,
+  type RiskGatewayConfig,
+} from './risk-gateway.js';
+
 // Re-export config and utils
 export { env } from './config/env.js';
 export { logger } from './utils/logger.js';
+

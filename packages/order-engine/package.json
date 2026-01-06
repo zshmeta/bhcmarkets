@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@repo/database": "*",
+    "@repo/ledger": "*",
     "@repo/types": "*",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.29.0",

@@ -24,7 +24,7 @@ import type {
 } from './trade.types.js';
 import { FeeCalculator, type FeeTier } from './fee-calculator.js';
 import type { PositionManager } from '../positions/position-manager.js';
-import type { LedgerService } from '../ledger/ledger-service.js';
+import type { LedgerService } from '../ledger/ledger-adapter.js';
 import { logger } from '../../utils/logger.js';
 
 const log = logger.child({ component: 'trade-processor' });
