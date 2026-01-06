@@ -2,14 +2,7 @@
   "name": "bhcmarkets",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
-    "db:start": "sudo docker compose up -d postgres redis",
-    "db:migrate": "npm run db:migrate --workspace=@repo/backend"
+
   },
   "devDependencies": {
     "@swc/core": "^1.15.3",

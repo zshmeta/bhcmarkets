@@ -1,0 +1,36 @@
+{
+  "name": "@repo/order-engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@repo/database": "*",
+    "@repo/types": "*",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.29.0",
+    "ioredis": "^5.3.2",
+    "pino": "^8.17.0",
+    "pino-pretty": "^10.3.0",
+    "postgres": "^3.4.3",
+    "ws": "^8.16.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/node": "^20.10.0",
+    "@types/ws": "^8.5.10",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  }
+}

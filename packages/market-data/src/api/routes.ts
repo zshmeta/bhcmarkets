@@ -37,6 +37,7 @@ import { HealthService } from '../domains/health/health.service.js';
 import { TIMEFRAME_MS, type Timeframe } from '../domains/normalizer/data.validators.js';
 import { candleQuerySchema, parseQueryParams, formatZodErrors } from './validators.js';
 import { metrics } from '../domains/health/metrics.collector.js';
+import { handleOnDemandRequest } from './ondemand.routes.js';
 
 const log = logger.child({ component: 'api' });
 
@@ -75,6 +76,13 @@ export function createApiServer(deps: ApiDependencies): http.Server {
     const pathname = url.pathname;
 
     try {
+      // =====================================
+      // ON-DEMAND FETCH ENDPOINTS (/api/fetch/*)
+      // These fetch data only when requested
+      // =====================================
+      const handled = await handleOnDemandRequest(req, res);
+      if (handled) return;
+
       // Route handling
       // =====================================
       // HEALTH ENDPOINTS

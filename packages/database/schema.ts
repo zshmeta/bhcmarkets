@@ -170,3 +170,182 @@ export const ledgerEntries = pgTable('ledger_entries', {
         refIdx: index('idx_ledger_ref').on(table.referenceId),
     };
 });
+
+// =============================================================================
+// RISK MANAGEMENT TABLES
+// =============================================================================
+
+// Circuit breaker trigger types
+export const circuitBreakerTriggerEnum = pgEnum('circuit_breaker_trigger', [
+    'manual',           // Admin manually triggered
+    'house_exposure',   // House exposure limit breached
+    'price_volatility', // Price moved too fast
+    'system_error',     // Technical issue detected
+    'external_event',   // News or external market event
+]);
+
+/**
+ * Symbol Risk Limits - Controls per-symbol trading limits
+ *
+ * These limits protect both users and the house from excessive risk on any single symbol.
+ * Can be adjusted by admins based on liquidity, volatility, and business needs.
+ */
+export const symbolRiskLimits = pgTable('symbol_risk_limits', {
+    symbol: varchar('symbol', { length: 32 }).primaryKey(),
+    tradingEnabled: boolean('trading_enabled').default(true).notNull(),
+    minOrderSize: numeric('min_order_size', { precision: 28, scale: 8 }).default('0.0001').notNull(),
+    maxOrderSize: numeric('max_order_size', { precision: 28, scale: 8 }).default('1000').notNull(),
+    lotSize: numeric('lot_size', { precision: 28, scale: 8 }).default('0.0001').notNull(),
+    maxPriceDeviation: numeric('max_price_deviation', { precision: 8, scale: 4 }).default('0.05').notNull(),
+    maxUserPosition: numeric('max_user_position', { precision: 28, scale: 8 }).default('100').notNull(),
+    maxHouseExposure: numeric('max_house_exposure', { precision: 28, scale: 8 }).default('10000').notNull(),
+    maxHouseNotionalExposure: numeric('max_house_notional_exposure', { precision: 28, scale: 2 }).default('1000000').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+/**
+ * User Risk Limits - Per-user trading restrictions
+ *
+ * Allows fine-grained control over individual users based on:
+ * - VIP status (higher limits)
+ * - Risk profile (historical behavior)
+ * - Compliance requirements (restrictions)
+ */
+export const userRiskLimits = pgTable('user_risk_limits', {
+    userId: uuid('user_id').primaryKey().references(() => users.id, { onDelete: 'cascade' }),
+    tradingRestricted: boolean('trading_restricted').default(false).notNull(),
+    restrictionReason: text('restriction_reason'),
+    maxOrdersPerMinute: integer('max_orders_per_minute').default(30).notNull(),
+    dailyLossLimit: numeric('daily_loss_limit', { precision: 28, scale: 2 }).default('10000').notNull(),
+    maxSymbolPositionValue: numeric('max_symbol_position_value', { precision: 28, scale: 2 }).default('100000').notNull(),
+    maxTotalPositionValue: numeric('max_total_position_value', { precision: 28, scale: 2 }).default('500000').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+/**
+ * Circuit Breaker Events - Audit trail for trading halts
+ *
+ * Records every time trading was halted (platform-wide or per-symbol).
+ * Critical for compliance and post-incident review.
+ */
+export const circuitBreakerEvents = pgTable('circuit_breaker_events', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    symbol: varchar('symbol', { length: 32 }), // null = platform-wide
+    trigger: circuitBreakerTriggerEnum('trigger').notNull(),
+    reason: text('reason').notNull(),
+    activatedAt: timestamp('activated_at', { withTimezone: true }).notNull(),
+    activatedBy: uuid('activated_by').references(() => users.id),
+    deactivatedAt: timestamp('deactivated_at', { withTimezone: true }),
+    deactivatedBy: uuid('deactivated_by').references(() => users.id),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => {
+    return {
+        symbolIdx: index('idx_circuit_breaker_symbol').on(table.symbol),
+        activeIdx: index('idx_circuit_breaker_active').on(table.symbol, table.deactivatedAt),
+    };
+});
+
+/**
+ * Order Attempts - Rate limiting tracking
+ *
+ * Records every order attempt (successful or not) for rate limiting.
+ * Should be periodically cleaned up to prevent unbounded growth.
+ */
+export const orderAttempts = pgTable('order_attempts', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    symbol: varchar('symbol', { length: 32 }),
+    wasApproved: boolean('was_approved').default(true).notNull(),
+    rejectionCode: varchar('rejection_code', { length: 32 }),
+    attemptedAt: timestamp('attempted_at', { withTimezone: true }).notNull(),
+}, (table) => {
+    return {
+        userTimeIdx: index('idx_order_attempts_user_time').on(table.userId, table.attemptedAt),
+    };
+});
+
+/**
+ * Daily User PnL - Aggregated daily P&L for loss limit tracking
+ *
+ * Pre-aggregated table to avoid expensive real-time queries.
+ * Updated by trade settlement process.
+ */
+export const dailyUserPnl = pgTable('daily_user_pnl', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    date: date('date').notNull(),
+    realizedPnl: numeric('realized_pnl', { precision: 28, scale: 2 }).default('0').notNull(),
+    tradingFees: numeric('trading_fees', { precision: 28, scale: 2 }).default('0').notNull(),
+    tradeCount: integer('trade_count').default(0).notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => {
+    return {
+        userDateIdx: uniqueIndex('uq_daily_user_pnl_user_date').on(table.userId, table.date),
+    };
+});
+
+
+// =============================================================================
+// ADMIN DOMAIN TABLES
+// =============================================================================
+
+/**
+ * Admin Audit Log - Immutable record of all admin actions
+ *
+ * CRITICAL TABLE - This is the compliance and security audit trail.
+ * Every admin action (user suspensions, balance adjustments, config changes)
+ * must be recorded here with:
+ * - Who did it (adminUserId)
+ * - What they did (action)
+ * - What was affected (targetType, targetId)
+ * - Before/after state (oldValue, newValue)
+ * - Why they did it (reason - REQUIRED)
+ * - Context (ipAddress, userAgent)
+ *
+ * This table is APPEND-ONLY. Records are NEVER updated or deleted.
+ */
+export const adminAuditLog = pgTable('admin_audit_log', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    adminUserId: uuid('admin_user_id').notNull().references(() => users.id),
+    adminEmail: varchar('admin_email', { length: 255 }), // Denormalized for easy reading
+    action: varchar('action', { length: 100 }).notNull(),
+    targetType: varchar('target_type', { length: 50 }).notNull(),
+    targetId: uuid('target_id'),
+    targetIdentifier: varchar('target_identifier', { length: 255 }), // Human-readable identifier
+    oldValue: jsonb('old_value'), // State before action
+    newValue: jsonb('new_value'), // State after action
+    reason: varchar('reason', { length: 1000 }).notNull(),
+    ipAddress: varchar('ip_address', { length: 45 }),
+    userAgent: varchar('user_agent', { length: 500 }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => {
+    return {
+        adminUserIdx: index('idx_admin_audit_admin').on(table.adminUserId),
+        actionIdx: index('idx_admin_audit_action').on(table.action),
+        targetIdx: index('idx_admin_audit_target').on(table.targetType, table.targetId),
+        timeIdx: index('idx_admin_audit_time').on(table.createdAt),
+    };
+});
+
+/**
+ * Symbols - Trading pair configuration
+ *
+ * Defines all tradeable symbols/pairs with their configuration.
+ * Admins can enable/disable trading and adjust fees/limits.
+ */
+export const symbols = pgTable('symbols', {
+    symbol: varchar('symbol', { length: 20 }).primaryKey(),
+    baseCurrency: varchar('base_currency', { length: 10 }).notNull(),
+    quoteCurrency: varchar('quote_currency', { length: 10 }).notNull(),
+    tradingEnabled: boolean('trading_enabled').default(true).notNull(),
+    minOrderSize: numeric('min_order_size', { precision: 24, scale: 8 }).default('0.0001').notNull(),
+    maxOrderSize: numeric('max_order_size', { precision: 24, scale: 8 }).default('1000').notNull(),
+    makerFee: numeric('maker_fee', { precision: 8, scale: 6 }).default('0.001').notNull(), // 0.1%
+    takerFee: numeric('taker_fee', { precision: 8, scale: 6 }).default('0.002').notNull(), // 0.2%
+    priceDecimals: integer('price_decimals').default(2).notNull(),
+    quantityDecimals: integer('quantity_decimals').default(8).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});

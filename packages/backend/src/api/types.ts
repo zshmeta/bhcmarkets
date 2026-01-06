@@ -27,3 +27,13 @@ export interface Router {
 }
 
 export type RouteRegistrar = (router: Router) => void;
+
+/**
+ * RouteContext is an alias for HttpRequest, used in route handlers.
+ * Provides access to body, params, query, headers, and authenticated user.
+ */
+export type RouteContext<
+  TBody = unknown,
+  TQuery = Record<string, string>,
+  TParams = Record<string, string>
+> = HttpRequest<TBody, TQuery, TParams>;

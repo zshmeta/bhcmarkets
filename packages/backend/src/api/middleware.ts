@@ -49,3 +49,41 @@ export async function getAuthUser(req: HttpRequest, services: AuthServices): Pro
 
   return claims;
 }
+
+/**
+ * Extracts the Bearer token from request headers.
+ * Returns null if no valid Bearer token is present.
+ */
+export function extractBearerToken(headers: Record<string, string | string[] | undefined>): string | null {
+  const authHeader = headers["authorization"];
+
+  // Handle both string and array cases
+  const headerValue = Array.isArray(authHeader) ? authHeader[0] : authHeader;
+
+  if (!headerValue?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const parts = headerValue.split(" ");
+  if (parts.length !== 2) {
+    return null;
+  }
+
+  return parts[1] || null;
+}
+
+/**
+ * Verifies an access token and returns its claims.
+ * Returns null if the token is invalid or expired.
+ */
+export async function verifyAccessToken(
+  token: string,
+  tokenManager: TokenManager
+): Promise<AuthenticatedClaims | null> {
+  try {
+    const claims = await tokenManager.parseAccessToken(token);
+    return claims as AuthenticatedClaims | null;
+  } catch {
+    return null;
+  }
+}

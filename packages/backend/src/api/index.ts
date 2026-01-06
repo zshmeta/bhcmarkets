@@ -7,25 +7,26 @@
 
 import type { Router } from "./types.js";
 import type { TokenManager, UserSessionRepository, AuthService } from "../domains/auth/index.js";
-import type { AccountService } from "../domains/account/account.service.js";
-import type { OrderService } from "../domains/order/order.service.js";
-import type { PositionService } from "../domains/position/position.service.js";
+import type { AccountServiceInterface } from "../domains/account/index.js";
+import type { RiskService } from "../domains/risk/index.js";
 import { registerAuthRoutes } from "../domains/auth/index.js";
-import { registerPositionRoutes } from "../domains/position/positionRoutes.js";
-import { registerOrderHttpRoutes } from "../domains/order/orderHttpRoutes.js";
-import { registerAdminRoutes } from "../domains/admin/adminRoutes.js";
+import { registerAccountRoutes } from "../domains/account/index.js";
+import { registerAdminApiRoutes } from "../domains/admin/index.js";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 export type ApiServices = {
 	auth: AuthService;
 	tokenManager: TokenManager;
 	sessionRepository: UserSessionRepository;
-	account: AccountService;
-	order: OrderService;
-	position: PositionService;
+	account: AccountServiceInterface;
+	risk: RiskService;
+	db: NodePgDatabase<Record<string, unknown>>;
 };
 
 type LoggerLike = {
 	error: (msg: string, meta?: Record<string, unknown>) => void;
+	info: (msg: string, meta?: Record<string, unknown>) => void;
+	warn?: (msg: string, meta?: Record<string, unknown>) => void;
 };
 
 export function registerApiRoutes(router: Router, services: ApiServices, logger: LoggerLike) {
@@ -36,9 +37,24 @@ export function registerApiRoutes(router: Router, services: ApiServices, logger:
 	// Auth routes live in the auth domain module.
 	registerAuthRoutes(router, { auth: services.auth }, logger);
 
-	// Domain-owned routes (enterprise boundary)
-	registerPositionRoutes(router, services);
-	registerOrderHttpRoutes(router, services, logger);
-	registerAdminRoutes(router, services, logger);
+	// Account routes - wallet and balance management
+	registerAccountRoutes(router, {
+		accountService: services.account,
+		tokenManager: services.tokenManager,
+	}, logger);
+
+	// Admin routes - comprehensive admin panel with audit trail
+	registerAdminApiRoutes(router, {
+		db: services.db,
+		tokenManager: services.tokenManager,
+		sessionRepository: services.sessionRepository,
+		accountService: services.account,
+		riskService: services.risk,
+		logger: {
+			info: logger.info,
+			warn: logger.warn || logger.info,
+			error: logger.error,
+		},
+	});
 }
 

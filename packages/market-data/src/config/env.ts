@@ -26,7 +26,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Database - required for storing candles
-  
+
   DATABASE_URL: z.string().default('postgres://bhc:bhc@localhost:5432/bhc'),
 
   // Redis - used for price caching and pub/sub between services
@@ -44,6 +44,11 @@ const envSchema = z.object({
   // - Commodities/FX update less frequently, 30 seconds is fine
   YAHOO_POLL_INTERVAL_MS: z.coerce.number().default(15000),
   YAHOO_BATCH_SIZE: z.coerce.number().default(20), // Symbols per request
+
+  // FMP (Financial Modeling Prep) API
+  // Get your free API key at: https://financialmodelingprep.com/
+  // Free tier: 250 API calls per day
+  FMP_API_KEY: z.string().optional(),
 
   // Circuit breaker settings
   // WHAT IS A CIRCUIT BREAKER:
