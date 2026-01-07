@@ -2,7 +2,22 @@
   "name": "bhcmarkets",
   "private": true,
   "scripts": {
-
+    "dev": "turbo dev",
+    "dev:backend": "turbo dev --filter=@repo/backend",
+    "dev:market-data": "turbo dev --filter=@repo/market-data",
+    "dev:order-engine": "turbo dev --filter=@repo/order-engine",
+    "dev:apps": "turbo dev --filter=./apps/*",
+    "build": "turbo build",
+    "build:packages": "turbo build --filter=./packages/*",
+    "start": "turbo start",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "db:generate": "turbo db:generate --filter=@repo/database",
+    "db:migrate": "turbo db:migrate --filter=@repo/database",
+    "db:seed": "turbo db:seed --filter=@repo/backend",
+    "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {
     "@swc/core": "^1.15.3",
@@ -15,7 +30,7 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "npm@11.6.2",
+  "packageManager": "yarn@1.22.22",
   "workspaces": [
     "apps/*",
     "packages/*",

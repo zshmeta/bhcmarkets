@@ -2,14 +2,28 @@
  * Redis Client
  * ============
  *
- * Redis connection for pub/sub and caching.
+ * Centralized Redis connection for pub/sub and caching.
+ * Includes in-memory fallback for development without Redis.
+ *
+ * USAGE:
+ * ```typescript
+ * import { getRedis, publish, subscribe, redisGet, redisSet } from '@repo/database';
+ *
+ * // Pub/sub
+ * await publish('orders', JSON.stringify(order));
+ * subscribe('orders', (msg) => handleOrder(JSON.parse(msg)));
+ *
+ * // Key-value
+ * await redisSet('price:BTCUSD', '50000', 60); // 60s TTL
+ * const price = await redisGet('price:BTCUSD');
+ * ```
  */
 
-import Redis from 'ioredis';
-import { env, isDev } from '../config/env.js';
-import { logger } from '../utils/logger.js';
+import { Redis } from 'ioredis';
 
-const log = logger.child({ component: 'redis' });
+// =============================================================================
+// STATE
+// =============================================================================
 
 let redis: Redis | null = null;
 let pubClient: Redis | null = null;
@@ -20,12 +34,37 @@ let usingFallback = false;
 const memoryStore = new Map<string, string>();
 const memoryChannels = new Map<string, Set<(message: string) => void>>();
 
+// =============================================================================
+// CONFIGURATION
+// =============================================================================
+
+export interface RedisConfig {
+  url?: string;
+  requireInProduction?: boolean;
+}
+
+function getRedisUrl(): string | undefined {
+  return process.env.REDIS_URL;
+}
+
+function isDev(): boolean {
+  return process.env.NODE_ENV !== 'production';
+}
+
+// =============================================================================
+// CONNECTION MANAGEMENT
+// =============================================================================
+
 /**
  * Get Redis client.
+ * Returns null in dev if REDIS_URL is not set (uses fallback).
+ * Throws in production if REDIS_URL is not set.
  */
 export function getRedis(): Redis | null {
-  if (!env.REDIS_URL) {
-    if (isDev) {
+  const url = getRedisUrl();
+
+  if (!url) {
+    if (isDev()) {
       usingFallback = true;
       return null;
     }
@@ -33,7 +72,7 @@ export function getRedis(): Redis | null {
   }
 
   if (!redis) {
-    redis = new Redis(env.REDIS_URL, {
+    redis = new Redis(url, {
       maxRetriesPerRequest: 3,
       retryStrategy: (times) => {
         if (times > 3) return null;
@@ -42,11 +81,11 @@ export function getRedis(): Redis | null {
     });
 
     redis.on('error', (err) => {
-      log.error({ error: err }, 'Redis connection error');
+      console.error('[redis] Connection error:', err.message);
     });
 
     redis.on('connect', () => {
-      log.info('Redis connected');
+      console.log('[redis] Connected');
     });
   }
 
@@ -57,21 +96,23 @@ export function getRedis(): Redis | null {
  * Get pub/sub clients.
  */
 export function getPubSub(): { pub: Redis | null; sub: Redis | null } {
-  if (!env.REDIS_URL) {
+  const url = getRedisUrl();
+
+  if (!url) {
     return { pub: null, sub: null };
   }
 
   if (!pubClient) {
-    pubClient = new Redis(env.REDIS_URL);
+    pubClient = new Redis(url);
     pubClient.on('error', (err) => {
-      log.error({ error: err }, 'Redis pub client error');
+      console.error('[redis:pub] Error:', err.message);
     });
   }
 
   if (!subClient) {
-    subClient = new Redis(env.REDIS_URL);
+    subClient = new Redis(url);
     subClient.on('error', (err) => {
-      log.error({ error: err }, 'Redis sub client error');
+      console.error('[redis:sub] Error:', err.message);
     });
   }
 
@@ -109,7 +150,7 @@ export async function closeRedis(): Promise<void> {
   }
 
   await Promise.all(promises);
-  log.info('Redis connections closed');
+  console.log('[redis] Connections closed');
 }
 
 // =============================================================================

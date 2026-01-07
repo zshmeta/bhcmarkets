@@ -30,7 +30,7 @@ import {
   saveTrades,
 } from './order-repository.js';
 import { OrderBookManager, type MatchResult, type ManagerEvent } from '../matching/index.js';
-import { publish } from '../../db/redis.js';
+import { publish } from '@repo/database';
 import { logger } from '../../utils/logger.js';
 import { env } from '../../config/env.js';
 

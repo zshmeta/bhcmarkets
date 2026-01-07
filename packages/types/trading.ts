@@ -1,8 +1,8 @@
 export type UUID = string;
 
 export type OrderSide = "buy" | "sell";
-export type OrderType = "market" | "limit" | "stop" | "take_profit";
-export type OrderStatus = "new" | "partially_filled" | "filled" | "cancelled" | "rejected";
+export type OrderType = "market" | "limit" | "stop" | "stop_limit" | "take_profit";
+export type OrderStatus = "new" | "open" | "partially_filled" | "filled" | "cancelled" | "rejected" | "expired";
 
 export interface Order {
 	id: UUID;

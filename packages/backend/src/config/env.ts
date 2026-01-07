@@ -31,7 +31,7 @@ export type AppConfig = {
 export function loadEnv(): AppConfig {
   const nodeEnv = process.env.NODE_ENV || "development";
   const port = toInt(process.env.PORT, 8080);
-  const databaseUrl = process.env.DATABASE_URL || "postgres://user:password@localhost:5432/bhcmarkets";
+  const databaseUrl = process.env.DATABASE_URL || "postgresql://bhcm:bhcm@100.100.13.10:5432/bhcmarkets";
   const redisUrl = process.env.REDIS_URL;
 
   // IMPORTANT: use a strong secret in non-dev environments. For MVP we fallback in dev.

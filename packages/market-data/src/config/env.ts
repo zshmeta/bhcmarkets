@@ -27,7 +27,7 @@ const envSchema = z.object({
 
   // Database - required for storing candles
 
-  DATABASE_URL: z.string().default('postgres://bhc:bhc@localhost:5432/bhc'),
+  DATABASE_URL: z.string().default('postgresql://bhcm:bhcm@100.100.13.10:5432/bhcmarkets'),
 
   // Redis - used for price caching and pub/sub between services
   // Optional in dev (will use in-memory fallback), required in production

@@ -315,9 +315,9 @@ export interface PlatformRiskMetrics {
 /**
  * Order status types.
  */
-export type OrderStatus = "new" | "partially_filled" | "filled" | "cancelled" | "rejected";
+export type OrderStatus = "new" | "open" | "partially_filled" | "filled" | "cancelled" | "rejected" | "expired";
 export type OrderSide = "buy" | "sell";
-export type OrderType = "market" | "limit" | "stop" | "take_profit";
+export type OrderType = "market" | "limit" | "stop" | "stop_limit" | "take_profit";
 
 /**
  * Order details visible to admins.

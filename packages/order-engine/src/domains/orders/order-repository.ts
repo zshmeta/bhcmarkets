@@ -6,7 +6,7 @@
  * Uses the shared @repo/database schema.
  */
 
-import { getDbClient, withTransaction } from '../../db/connection.js';
+import { getDbClient, withTransaction } from '@repo/database';
 import type { EngineOrder, EngineTrade, Order } from '../../types/order.types.js';
 import { logger } from '../../utils/logger.js';
 

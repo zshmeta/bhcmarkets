@@ -21,7 +21,7 @@ import type {
   UUID,
   CircuitBreakerEvent,
 } from "../core/risk.types.js";
-import type { DrizzleClient } from "../../../../db/pg.js";
+import type { DrizzleClient } from "@repo/database";
 
 // Import schema tables from shared database package
 import {

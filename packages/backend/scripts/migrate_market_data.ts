@@ -1,9 +1,16 @@
+// DEPRECATED: This file is broken and references non-existent paths.
+// Please perform migrations using the standard mechanism in packages/database.
+console.error("This script is deprecated and broken. Please use 'yarn migrate' from packages/backend.");
+process.exit(1);
+
+/*
 import pg from "pg";
 import fs from "fs";
 import path from "path";
 import { DATABASE_URL } from "../src/market-data/config.js";
 
 const pool = new pg.Pool({ connectionString: DATABASE_URL });
+*/
 
 async function migrate() {
     console.log("Migrating market data...");

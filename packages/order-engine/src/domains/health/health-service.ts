@@ -5,8 +5,7 @@
  * Monitors the health of all order engine components.
  */
 
-import { isDatabaseConnected, getDbClient } from '../../db/connection.js';
-import { isRedisConnected, isUsingFallback } from '../../db/redis.js';
+import { isDatabaseConnected, getDbClient, isRedisConnected, isUsingFallback } from '@repo/database';
 import { logger } from '../../utils/logger.js';
 
 const log = logger.child({ component: 'health-service' });

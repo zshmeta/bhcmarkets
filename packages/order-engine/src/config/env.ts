@@ -21,7 +21,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Database - required for order persistence
-  DATABASE_URL: z.string().default('postgres://bhc:bhc@localhost:5432/bhc'),
+  DATABASE_URL: z.string().default('postgresql://bhcm:bhcm@100.100.13.10:5432/bhcmarkets'),
 
   // Redis - used for pub/sub between services and order book snapshots
   REDIS_URL: z.string().optional(),

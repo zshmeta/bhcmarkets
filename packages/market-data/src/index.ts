@@ -79,7 +79,7 @@ import { metrics } from './domains/health/metrics.collector.js';
 import { createApiServer } from './api/routes.js';
 
 // Database
-import { getDbClient, isDatabaseConnected, closeDb } from './db/connection.js';
+import { getDbClient, isDatabaseConnected, closeDb } from '@repo/database';
 
 const log = logger.child({ component: 'bootstrap' });
 

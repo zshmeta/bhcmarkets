@@ -5,7 +5,7 @@
  * Handles position persistence to PostgreSQL database.
  */
 
-import { getDbClient } from '../../db/connection.js';
+import { getDbClient } from '@repo/database';
 import type { EnginePosition, PositionSnapshot } from './position.types.js';
 import { logger } from '../../utils/logger.js';
 

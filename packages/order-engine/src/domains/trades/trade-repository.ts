@@ -5,7 +5,7 @@
  * Handles trade persistence to PostgreSQL database.
  */
 
-import { getDbClient, withTransaction } from '../../db/connection.js';
+import { getDbClient, withTransaction } from '@repo/database';
 import type { Trade, AccountTrade, TradeStats } from './trade.types.js';
 import { logger } from '../../utils/logger.js';
 

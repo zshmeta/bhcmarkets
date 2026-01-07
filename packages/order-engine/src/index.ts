@@ -49,16 +49,15 @@
 
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
-import { isDatabaseConnected, closeDb } from './db/connection.js';
-import { isRedisConnected, closeRedis, subscribe } from './db/redis.js';
+import { isDatabaseConnected, closeDb, isRedisConnected, closeRedis, subscribe, getDbClient } from '@repo/database';
 import { OrderManager } from './domains/orders/order-manager.js';
 import { OrderEngineWebSocket } from './domains/stream/websocket-server.js';
 import { RestApiServer } from './api/rest-api.js';
 import { HealthService } from './domains/health/health-service.js';
 import { PositionManager } from './domains/positions/position-manager.js';
 import { TradeProcessor } from './domains/trades/trade-processor.js';
-import { LedgerService } from './domains/ledger/ledger-adapter.js';
-import { RiskService } from './domains/risk/risk-service.js';
+import { createLedgerService, type LedgerService } from '@repo/ledger';
+import { RiskGateway } from './risk-gateway.js';
 
 const log = logger.child({ component: 'order-engine' });
 
@@ -74,7 +73,7 @@ export class OrderEngineService {
   private positionManager: PositionManager | null = null;
   private tradeProcessor: TradeProcessor | null = null;
   private ledgerService: LedgerService | null = null;
-  private riskService: RiskService | null = null;
+  private riskGateway: RiskGateway | null = null;
 
   private isRunning: boolean = false;
   private shutdownPromise: Promise<void> | null = null;
@@ -99,19 +98,23 @@ export class OrderEngineService {
       this.healthService = new HealthService();
       this.healthService.start();
 
-      // 2. Initialize core trading domains
+      // 2. Get database connection for ledger
+      const db = await getDbClient();
+
+      // 3. Initialize core trading domains
       this.positionManager = new PositionManager();
-      this.ledgerService = new LedgerService();
+      this.ledgerService = createLedgerService({ db, logger: log });
       this.tradeProcessor = new TradeProcessor();
-      this.riskService = new RiskService();
+
+      // 4. Initialize risk gateway (lightweight pre-trade checks)
+      this.riskGateway = new RiskGateway({ logger: log });
+      this.riskGateway.startAutoRefresh();
 
       // Wire up dependencies
       this.tradeProcessor.setPositionManager(this.positionManager);
       this.tradeProcessor.setLedgerService(this.ledgerService);
-      this.riskService.setPositionManager(this.positionManager);
-      this.riskService.setLedgerService(this.ledgerService);
 
-      // 3. Initialize order manager
+      // 5. Initialize order manager
       this.orderManager = new OrderManager({
         enablePersistence: env.NODE_ENV !== 'test',
         enableEventPublishing: true,
@@ -301,10 +304,10 @@ export class OrderEngineService {
   }
 
   /**
-   * Get risk service instance.
+   * Get risk gateway instance.
    */
-  getRiskService(): RiskService | null {
-    return this.riskService;
+  getRiskGateway(): RiskGateway | null {
+    return this.riskGateway;
   }
 }
 
@@ -396,17 +399,10 @@ export type {
   TradeStats,
 } from './domains/trades/trade.types.js';
 
-// Ledger (backward-compatible adapter wrapping @repo/ledger)
-export { LedgerService, LedgerAdapter, createLedgerAdapter } from './domains/ledger/ledger-adapter.js';
+// Re-export @repo/ledger for direct usage
+export { createLedgerService } from '@repo/ledger';
 export type {
-  LegacyBalance,
-  LegacyHoldRequest,
-  LegacyTradeSettlement,
-  LegacyBalanceChange,
-} from './domains/ledger/ledger-adapter.js';
-
-// Re-export @repo/ledger types for direct usage
-export type {
+  LedgerService,
   Balance,
   LedgerEntry,
   BalanceChange,
@@ -415,18 +411,6 @@ export type {
   AccountSummary,
   LedgerEvent,
 } from '@repo/ledger';
-
-export { RiskService } from './domains/risk/risk-service.js';
-export type {
-  RiskCheck,
-  PreTradeRiskAssessment,
-  AccountRiskLimits,
-  SymbolRiskLimits,
-  AccountExposure,
-  SymbolExposure,
-  RiskAlert,
-  RiskEvent,
-} from './domains/risk/risk.types.js';
 
 // Risk Gateway (fast pre-trade checks)
 export {

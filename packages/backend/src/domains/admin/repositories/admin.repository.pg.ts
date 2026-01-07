@@ -11,16 +11,7 @@
 
 import { eq, and, desc, gte, lte, sql, like, or, count } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import {
-  pgTable,
-  uuid,
-  varchar,
-  timestamp,
-  jsonb,
-  decimal,
-  integer,
-  boolean,
-} from "drizzle-orm/pg-core";
+import { adminAuditLog, symbols } from "@repo/database";
 import type {
   AdminRepository,
   AdminAuditEntry,
@@ -34,56 +25,6 @@ import type {
   UserRole,
   UserActivitySummary,
 } from "../core/admin.types.js";
-
-// =============================================================================
-// SCHEMA DEFINITIONS
-// =============================================================================
-
-/**
- * Admin audit log table.
- * This table is append-only - records are never updated or deleted.
- */
-export const adminAuditLog = pgTable("admin_audit_log", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  adminUserId: uuid("admin_user_id").notNull(),
-  adminEmail: varchar("admin_email", { length: 255 }),
-  action: varchar("action", { length: 100 }).notNull(),
-  targetType: varchar("target_type", { length: 50 }).notNull(),
-  targetId: uuid("target_id"),
-  targetIdentifier: varchar("target_identifier", { length: 255 }),
-  oldValue: jsonb("old_value"),
-  newValue: jsonb("new_value"),
-  reason: varchar("reason", { length: 1000 }).notNull(),
-  ipAddress: varchar("ip_address", { length: 45 }),
-  userAgent: varchar("user_agent", { length: 500 }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-/**
- * Symbols/trading pairs configuration table.
- */
-export const symbols = pgTable("symbols", {
-  symbol: varchar("symbol", { length: 20 }).primaryKey(),
-  baseCurrency: varchar("base_currency", { length: 10 }).notNull(),
-  quoteCurrency: varchar("quote_currency", { length: 10 }).notNull(),
-  tradingEnabled: boolean("trading_enabled").default(true).notNull(),
-  minOrderSize: decimal("min_order_size", { precision: 24, scale: 8 })
-    .default("0.0001")
-    .notNull(),
-  maxOrderSize: decimal("max_order_size", { precision: 24, scale: 8 })
-    .default("1000")
-    .notNull(),
-  makerFee: decimal("maker_fee", { precision: 8, scale: 6 })
-    .default("0.001")
-    .notNull(),
-  takerFee: decimal("taker_fee", { precision: 8, scale: 6 })
-    .default("0.002")
-    .notNull(),
-  priceDecimals: integer("price_decimals").default(2).notNull(),
-  quantityDecimals: integer("quantity_decimals").default(8).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
 
 // =============================================================================
 // REPOSITORY FACTORY
