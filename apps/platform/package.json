@@ -7,8 +7,8 @@
     "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "check-types": "tsc -b"
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@repo/trading-ui": "*",
@@ -33,6 +33,7 @@
     "eslint-plugin-react-refresh": "catalog:",
     "globals": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vite-tsconfig-paths": "catalog:"
   }
 }

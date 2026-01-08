@@ -9,5 +9,13 @@
     "./trading": "./trading.ts",
     "./user": "./user.ts"
   },
-  "types": "./index.ts"
+  "types": "./index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
 }

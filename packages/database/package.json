@@ -13,6 +13,7 @@
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "build": "tsc",
+        "lint": "eslint .",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
@@ -26,6 +27,7 @@
         "@types/node": "catalog:",
         "@types/pg": "catalog:",
         "drizzle-kit": "catalog:",
+        "eslint": "catalog:",
         "typescript": "catalog:"
     }
 }
