@@ -1,0 +1,26 @@
+# Development environment variables
+# Copy this file to .dev.vars for local development
+# DO NOT commit .dev.vars to version control
+
+# Authentication
+API_KEY=dev-api-key-change-in-production
+
+# Sender Configuration
+SENDER_EMAIL=noreply@email.yourdomain.com
+SENDER_NAME=Trading Platform (Dev)
+REPLY_TO_EMAIL=support@yourdomain.com
+
+# Platform Branding
+PLATFORM_NAME=Trading Platform (Development)
+PLATFORM_URL=http://localhost:3000
+SUPPORT_EMAIL=support@yourdomain.com
+
+# Email Provider (resend, sendgrid, mailgun, postmark)
+EMAIL_PROVIDER=resend
+
+# Provider API Keys (uncomment the one you're using)
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+# SENDGRID_API_KEY=SG.xxxxxxxxxxxxx
+# MAILGUN_API_KEY=xxxxxxxxxxxxxxxx
+# MAILGUN_DOMAIN=mg.yourdomain.com
+# POSTMARK_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx

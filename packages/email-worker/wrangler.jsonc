@@ -1,0 +1,93 @@
+/**
+ * Email Worker Configuration
+ * Cloudflare Workers configuration for the email sending service
+ *
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "email-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-09-27",
+	"observability": {
+		"enabled": true
+	},
+
+	/**
+	 * Environment Variables
+	 * Non-sensitive configuration values
+	 * Note: Sensitive values (API keys) should be added via `wrangler secret put`
+	 */
+	"vars": {
+		"PLATFORM_NAME": "Trading Platform",
+		"PLATFORM_URL": "https://platform.example.com",
+		"SUPPORT_EMAIL": "support@example.com",
+		"SENDER_NAME": "Trading Platform",
+		"EMAIL_PROVIDER": "resend"
+	},
+
+	/**
+	 * KV Namespace Bindings
+	 * Used for rate limiting (optional)
+	 * Create with: wrangler kv:namespace create RATE_LIMIT_KV
+	 */
+	// "kv_namespaces": [
+	// 	{
+	// 		"binding": "RATE_LIMIT_KV",
+	// 		"id": "your-kv-namespace-id"
+	// 	}
+	// ],
+
+	/**
+	 * Secrets (add via CLI, never commit):
+	 *
+	 * Required:
+	 *   wrangler secret put API_KEY
+	 *   wrangler secret put SENDER_EMAIL
+	 *
+	 * Provider-specific (based on EMAIL_PROVIDER):
+	 *   wrangler secret put RESEND_API_KEY
+	 *   wrangler secret put SENDGRID_API_KEY
+	 *   wrangler secret put MAILGUN_API_KEY
+	 *   wrangler secret put MAILGUN_DOMAIN
+	 *   wrangler secret put POSTMARK_API_KEY
+	 *
+	 * Optional:
+	 *   wrangler secret put REPLY_TO_EMAIL
+	 */
+
+	/**
+	 * Production environment overrides
+	 */
+	"env": {
+		"production": {
+			"vars": {
+				"PLATFORM_NAME": "Trading Platform",
+				"PLATFORM_URL": "https://platform.example.com",
+				"SUPPORT_EMAIL": "support@platform.example.com",
+				"SENDER_NAME": "Trading Platform",
+				"EMAIL_PROVIDER": "resend"
+			}
+		},
+		"staging": {
+			"vars": {
+				"PLATFORM_NAME": "Trading Platform (Staging)",
+				"PLATFORM_URL": "https://staging.platform.example.com",
+				"SUPPORT_EMAIL": "support@platform.example.com",
+				"SENDER_NAME": "Trading Platform Staging",
+				"EMAIL_PROVIDER": "resend"
+			}
+		}
+	}
+
+	/**
+	 * Smart Placement
+	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
+	 */
+	// "placement": { "mode": "smart" }
+}
+	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
+	 */
+	// "services": [  {   "binding": "MY_SERVICE",   "service": "my-service"  } ]
+}

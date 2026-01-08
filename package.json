@@ -1,54 +1,123 @@
 {
   "name": "bhcmarkets",
   "private": true,
-  "scripts": {
-    "dev": "turbo dev",
-    "dev:backend": "turbo dev --filter=@repo/backend",
-    "dev:market-data": "turbo dev --filter=@repo/market-data",
-    "dev:order-engine": "turbo dev --filter=@repo/order-engine",
-    "dev:apps": "turbo dev --filter=./apps/*",
-    "build": "turbo build",
-    "build:packages": "turbo build --filter=./packages/*",
-    "start": "turbo start",
-    "test": "turbo test",
-    "test:watch": "turbo test:watch",
-    "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
-    "db:generate": "turbo db:generate --filter=@repo/database",
-    "db:migrate": "turbo db:migrate --filter=@repo/database",
-    "db:seed": "turbo db:seed --filter=@repo/backend",
-    "clean": "turbo clean && rm -rf node_modules"
-  },
 
-    "dependencies": {
-    "bun": "^1.3.5",
-    "node": "^24.12.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "packageManager": "bun@1.3.5",
+    "workspaces": {
+      "packages": ["!./apps/mobile", "./apps/admin","./apps/auth","./apps/platform","./apps/web", "./packages/*", "./eslint-config", "./typescript-config"],
+      "catalog": {
+         "@babel/core": "^7.20.0",
+         "@eslint/js": "^9.39.1",
+         "@next/eslint-plugin-next": "^15.5.0",
+         "@swc/core": "^1.15.3",
+         "@types/bcryptjs": "^2.4.6",
+         "@types/node": "^24.10.1",
+         "@types/node-cron": "^3.0.0",
+         "@types/pg": "^8.11.10",
+         "@types/react": "^19.2.5",
+         "@types/react-dom": "^19.2.3",
+         "@types/react-grid-layout": "^1.3.6",
+         "@types/supertest": "^6.0.3",
+         "@types/ws": "^8.5.10",
+         "@vitejs/plugin-react": "^4.4.1",
+         "@vitejs/plugin-react-swc": "^4.2.2",
+         "axios": "^1.6.0",
+         "bcryptjs": "^2.4.3",
+         "bun": "^1.3.5",
+         "dayjs": "^1.11.10",
+         "dotenv": "^16.6.1",
+         "drizzle-kit": "^0.31.8",
+         "drizzle-orm": "^0.45.0",
+         "eslint": "^9.39.1",
+         "eslint-config-prettier": "^10.1.1",
+         "eslint-plugin-only-warn": "^1.1.0",
+         "eslint-plugin-react": "^7.37.5",
+         "eslint-plugin-react-hooks": "^7.0.1",
+         "eslint-plugin-react-refresh": "^0.4.24",
+         "globals": "^16.5.0",
+         "ioredis": "^5.3.2",
+         "jose": "^5.9.6",
+         "lightweight-charts": "^5.0.9",
+         "node-cron": "^3.0.0",
+         "p-limit": "^4.0.0",
+         "p-retry": "^5.1.2",
+         "p-timeout": "^6.1.2",
+         "pg": "^8.12.0",
+         "pino": "^8.17.0",
+         "pino-pretty": "^10.3.0",
+         "postgres": "^3.4.3",
+         "prettier": "^3.6.2",
+         "react": "^19.2.0",
+         "react-dom": "^19.2.0",
+         "react-grid-layout": "^1.5.2",
+         "react-router-dom": "^7.9.4",
+         "socket.io": "^4.8.1",
+         "socket.io-client": "^4.8.1",
+         "styled-components": "^6.1.19",
+         "supertest": "^7.1.4",
+         "tsx": "^4.19.1",
+         "typescript": "~5.9.3",
+         "typescript-eslint": "^8.46.4",
+         "vite": "^7.2.4",
+         "vite-tsconfig-paths": "^6.0.3",
+         "vitest": "^4.0.16",
+         "ws": "^8.16.0",
+         "yahoo-finance2": "^2.11.0",
+         "zod": "^3.22.4"
   },
-
-  "devDependencies": {
-    "@swc/core": "^1.15.3",
-    "drizzle-kit": "^0.31.8",
-    "prettier": "^3.6.2",
-    "@eslint/js": "^9.39.1",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react-swc": "^4.2.2",
-    "eslint": "^9.39.1",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
-    "globals": "^16.5.0",
+  "catalogs": {
+    "install": {
+    "bun": "1.3.5"
+  },
+    "dev": {
+    "bun": "1.3.5"
+  },
+    "build": {
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "tsx": "^4.19.1"
   },
-  "packageManager": "bun@1.3.5",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "eslint-config",
-    "typescript-config"
-  ]
+      "lint": {
+    "eslint": "^9.39.1",
+    "prettier": "^3.6.2"
+  },
+      "test": {
+    "vitest": "^4.0.16"
+  },
+    "db": {
+    "drizzle-kit": "^0.31.8"
+  }
+  },
+  "mobile": {
+    "react18": {
+    "expo": "~50.0.14",
+    "expo-status-bar": "~1.11.1",
+    "react": "18.2.0",
+    "react-dom": "^18.3.1",
+    "react-native": "0.73.6",
+    "react-router-dom": "^6.20.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0"
+  }
+  },
+   "devDependencies": {
+      "drizzle-kit": ":",
+      "prettier": ":",
+      "eslint": ":",
+      "typescript": ":",
+      "vite": ":",
+      "@types/node": ":",
+      "@types/react": ":",
+      "@types/react-dom": ":"
+  }
+},
+  "scripts": {
+      "install": "bun i",
+      "build": "bun i && bun --filter './*'  build",
+      "dev": "bun i && bun --filter './*' dev",
+      "lint": "bun --filter './*' lint",
+      "typecheck": "bun --filter './*' typecheck",
+      "test": "bun --filter '*' test",
+      "preview": "vite preview",
+      "clean": "rm -rf **/dist **/node_modules **/.next"
+    }
 }

@@ -25,6 +25,8 @@ import { users } from './core.js';
  * CRITICAL TABLE - This is the compliance and security audit trail.
  * This table is APPEND-ONLY. Records are NEVER updated or deleted.
  */
+
+
 export const adminAuditLog = pgTable('admin_audit_log', {
   id: uuid('id').defaultRandom().primaryKey(),
   adminUserId: uuid('admin_user_id').notNull().references(() => users.id),

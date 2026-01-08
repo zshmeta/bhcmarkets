@@ -1,0 +1,24 @@
+{
+	"name": "@repo/email-worker",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Cloudflare Worker email service for transactional emails",
+	"scripts": {
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"deploy:production": "wrangler deploy --env production",
+		"deploy:staging": "wrangler deploy --env staging",
+		"cf-typegen": "wrangler types",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"lint": "eslint src/",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.0",
+		"typescript": "^5.5.2",
+		"vitest": "^3.0.0",
+		"wrangler": "^4.57.0"
+	}
+}

@@ -18,6 +18,7 @@ import {
   createCredentialRepository,
   createSessionRepository,
   createAuthCodeRepository,
+  createPasswordResetTokenRepository,
   createBcryptHasher,
   createJwtTokenManager,
 } from "./domains/auth/index.js";
@@ -65,6 +66,7 @@ const services = await (async () => {
   const credentialRepository = createCredentialRepository(pool);
   const sessionRepository = createSessionRepository(pool);
   const authCodeRepository = createAuthCodeRepository(pool);
+  const passwordResetTokenRepository = createPasswordResetTokenRepository(pool);
 
   const passwordHasher = createBcryptHasher(config.bcryptRounds);
   const tokenManager = createJwtTokenManager(config.jwtSecret);
@@ -132,6 +134,7 @@ const services = await (async () => {
     credentialRepository,
     sessionRepository,
     authCodeRepository,
+    passwordResetTokenRepository,
     passwordHasher,
     tokenManager,
     config: {

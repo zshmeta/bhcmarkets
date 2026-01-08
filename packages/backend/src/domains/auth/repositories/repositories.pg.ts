@@ -8,6 +8,8 @@ import type { Pool } from "pg";
 import type {
   AuthCode,
   AuthCodeRepository,
+  PasswordResetToken,
+  PasswordResetTokenRepository,
 	CreateCredentialParams,
 	CreateSessionParams,
 	CreateUserParams,
@@ -278,5 +280,47 @@ export class PgAuthCodeRepository implements AuthCodeRepository {
       [code]
     );
   }
+}
+
+const mapPasswordResetToken = (r: Row): PasswordResetToken => ({
+  id: Number(r.id),
+  userId: String(r.user_id),
+  tokenHash: String(r.token_hash),
+  expiresAt: toIsoString(r.expires_at),
+  used: Boolean(r.used),
+  createdAt: toIsoString(r.created_at),
+});
+
+export function createPasswordResetTokenRepository(pool: Pool): PasswordResetTokenRepository {
+  return {
+    async create(input: { userId: UUID; tokenHash: string; expiresAt: string }) {
+      const { rows } = await pool.query(
+        `INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
+         VALUES ($1, $2, $3)
+         RETURNING *`,
+        [input.userId, input.tokenHash, input.expiresAt]
+      );
+      return mapPasswordResetToken(rows[0]);
+    },
+    async findByTokenHash(tokenHash: string) {
+      const { rows } = await pool.query(
+        `SELECT * FROM password_reset_tokens WHERE token_hash = $1`,
+        [tokenHash]
+      );
+      return rows[0] ? mapPasswordResetToken(rows[0]) : null;
+    },
+    async markUsed(id: number) {
+      await pool.query(
+        `UPDATE password_reset_tokens SET used = true WHERE id = $1`,
+        [id]
+      );
+    },
+    async revokeAllForUser(userId: UUID) {
+      await pool.query(
+        `UPDATE password_reset_tokens SET used = true WHERE user_id = $1`,
+        [userId]
+      );
+    },
+  };
 }
 

@@ -92,6 +92,21 @@ export const authSessions = pgTable('auth_sessions', {
   refreshTokenHashIdx: uniqueIndex('uq_auth_sessions_refresh_token_hash').on(table.refreshTokenHash),
 }));
 
+
+
+export const passwordResetTokens = pgTable('password_reset_tokens', {
+  id: bigserial('id').primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  tokenHash: text('token_hash').notNull().unique(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  used: boolean('used').default(false).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index('idx_password_reset_tokens_user').on(table.userId),
+}));
+
+
+
 // =============================================================================
 // ACCOUNTS
 // =============================================================================

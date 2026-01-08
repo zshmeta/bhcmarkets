@@ -56,6 +56,7 @@ export {
   createCredentialRepository,
   createSessionRepository,
   createAuthCodeRepository,
+  createPasswordResetTokenRepository,
 } from "./repositories/repositories.pg.js";
 
 // Routes

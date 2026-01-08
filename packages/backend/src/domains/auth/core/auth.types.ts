@@ -163,3 +163,19 @@ export interface AuthCodeRepository {
   findByCode(code: string): Promise<AuthCode | null>;
   markUsed(code: string): Promise<void>;
 }
+
+export interface PasswordResetToken {
+  id: number;
+  userId: UUID;
+  tokenHash: string;
+  expiresAt: string;
+  used: boolean;
+  createdAt: string;
+}
+
+export interface PasswordResetTokenRepository {
+  create(input: { userId: UUID; tokenHash: string; expiresAt: string }): Promise<PasswordResetToken>;
+  findByTokenHash(tokenHash: string): Promise<PasswordResetToken | null>;
+  markUsed(id: number): Promise<void>;
+  revokeAllForUser(userId: UUID): Promise<void>;
+}

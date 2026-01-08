@@ -1,0 +1,884 @@
+.
+├── apps
+│   ├── admin
+│   │   ├── eslint.config.js
+│   │   ├── index.html
+│   │   ├── node_modules
+│   │   │   ├── @eslint
+│   │   │   │   └── js ⇒ ../../../../node_modules/.bun/@eslint+js@9.39.2/node_modules/@eslint/js
+│   │   │   ├── @repo
+│   │   │   │   ├── eslint-config ⇒ ../../../../eslint-config
+│   │   │   │   └── ui ⇒ ../../../../packages/ui
+│   │   │   ├── @swc
+│   │   │   │   └── core ⇒ ../../../../node_modules/.bun/@swc+core@1.15.8/node_modules/@swc/core
+│   │   │   ├── @types
+│   │   │   │   ├── react ⇒ ../../../../node_modules/.bun/@types+react@19.2.7/node_modules/@types/react
+│   │   │   │   └── react-dom ⇒ ../../../../node_modules/.bun/@types+react-dom@19.2.3+b3aeb48c1f537661/node_modules/@types/react-dom
+│   │   │   ├── @vitejs
+│   │   │   │   ├── plugin-react ⇒ ../../../../node_modules/.bun/@vitejs+plugin-react@4.7.0+8de9cf4e5a3d41e7/node_modules/@vitejs/plugin-react
+│   │   │   │   └── plugin-react-swc ⇒ ../../../../node_modules/.bun/@vitejs+plugin-react-swc@3.11.0+8de9cf4e5a3d41e7/node_modules/@vitejs/plugin-react-swc
+│   │   │   ├── eslint ⇒ ../../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│   │   │   ├── eslint-plugin-react-hooks ⇒ ../../../node_modules/.bun/eslint-plugin-react-hooks@5.2.0+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-hooks
+│   │   │   ├── eslint-plugin-react-refresh ⇒ ../../../node_modules/.bun/eslint-plugin-react-refresh@0.4.26+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-refresh
+│   │   │   ├── globals ⇒ ../../../node_modules/.bun/globals@16.5.0/node_modules/globals
+│   │   │   ├── react ⇒ ../../../node_modules/.bun/react@18.3.1/node_modules/react
+│   │   │   ├── react-dom ⇒ ../../../node_modules/.bun/react-dom@18.3.1+f4eacebf2041cd4f/node_modules/react-dom
+│   │   │   ├── react-router-dom ⇒ ../../../node_modules/.bun/react-router-dom@6.30.2+6dbf9a050bc9aadb/node_modules/react-router-dom
+│   │   │   ├── styled-components ⇒ ../../../node_modules/.bun/styled-components@6.2.0+6dbf9a050bc9aadb/node_modules/styled-components
+│   │   │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   │   ├── vite ⇒ ../../../node_modules/.bun/vite@6.4.1/node_modules/vite
+│   │   │   └── vite-tsconfig-paths ⇒ ../../../node_modules/.bun/vite-tsconfig-paths@5.1.4+465bdac67db8194d/node_modules/vite-tsconfig-paths
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── app
+│   │   │   │   └── App.tsx
+│   │   │   ├── features
+│   │   │   │   ├── auth
+│   │   │   │   │   └── Login.tsx
+│   │   │   │   └── dashboard
+│   │   │   │       └── Dashboard.tsx
+│   │   │   ├── main.tsx
+│   │   │   └── vite-env.d.ts
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+│   │   └── vite.config.ts
+│   ├── auth
+│   │   ├── eslint.config.js
+│   │   ├── index.html
+│   │   ├── node_modules
+│   │   │   ├── @eslint
+│   │   │   │   └── js ⇒ ../../../../node_modules/.bun/@eslint+js@9.39.2/node_modules/@eslint/js
+│   │   │   ├── @repo
+│   │   │   │   └── ui ⇒ ../../../../packages/ui
+│   │   │   ├── @types
+│   │   │   │   ├── react ⇒ ../../../../node_modules/.bun/@types+react@19.2.7/node_modules/@types/react
+│   │   │   │   └── react-dom ⇒ ../../../../node_modules/.bun/@types+react-dom@19.2.3+b3aeb48c1f537661/node_modules/@types/react-dom
+│   │   │   ├── @vitejs
+│   │   │   │   └── plugin-react-swc ⇒ ../../../../node_modules/.bun/@vitejs+plugin-react-swc@3.11.0+8de9cf4e5a3d41e7/node_modules/@vitejs/plugin-react-swc
+│   │   │   ├── eslint ⇒ ../../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│   │   │   ├── eslint-plugin-react-hooks ⇒ ../../../node_modules/.bun/eslint-plugin-react-hooks@5.2.0+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-hooks
+│   │   │   ├── eslint-plugin-react-refresh ⇒ ../../../node_modules/.bun/eslint-plugin-react-refresh@0.4.26+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-refresh
+│   │   │   ├── globals ⇒ ../../../node_modules/.bun/globals@16.5.0/node_modules/globals
+│   │   │   ├── react ⇒ ../../../node_modules/.bun/react@19.2.3/node_modules/react
+│   │   │   ├── react-dom ⇒ ../../../node_modules/.bun/react-dom@19.2.3+83d5fd7b249dbeef/node_modules/react-dom
+│   │   │   ├── react-router-dom ⇒ ../../../node_modules/.bun/react-router-dom@6.30.2+67f6792bdf102c28/node_modules/react-router-dom
+│   │   │   ├── styled-components ⇒ ../../../node_modules/.bun/styled-components@6.2.0+67f6792bdf102c28/node_modules/styled-components
+│   │   │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.8.3/node_modules/typescript
+│   │   │   ├── typescript-eslint ⇒ ../../../node_modules/.bun/typescript-eslint@8.52.0+cb3f86cd98a9a06d/node_modules/typescript-eslint
+│   │   │   └── vite ⇒ ../../../node_modules/.bun/vite@6.4.1/node_modules/vite
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── public
+│   │   │   ├── favicon.ico
+│   │   │   ├── logo.svg
+│   │   │   ├── robots.txt
+│   │   │   └── vite.svg
+│   │   ├── src
+│   │   │   ├── App.css
+│   │   │   ├── App.tsx
+│   │   │   ├── assets
+│   │   │   │   └── react.svg
+│   │   │   ├── auth
+│   │   │   │   ├── auth.api.ts
+│   │   │   │   ├── auth.hooks.ts
+│   │   │   │   ├── auth.store.ts
+│   │   │   │   └── auth.types.ts
+│   │   │   ├── components
+│   │   │   │   ├── AuthShell.tsx
+│   │   │   │   ├── Forms
+│   │   │   │   │   ├── ForgotPasswordForm.tsx
+│   │   │   │   │   ├── LoginForm.tsx
+│   │   │   │   │   ├── RegisterForm.tsx
+│   │   │   │   │   ├── ResetPasswordForm.tsx
+│   │   │   │   │   └── SessionsForm.tsx
+│   │   │   │   ├── guards
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── RequireAuth.tsx
+│   │   │   │   │   └── WithAuth.tsx
+│   │   │   │   └── layouts
+│   │   │   │       ├── AppShell.tsx
+│   │   │   │       └── index.ts
+│   │   │   ├── index.css
+│   │   │   ├── lib
+│   │   │   │   ├── http.ts
+│   │   │   │   ├── redirectUtils.ts
+│   │   │   │   ├── storage.ts
+│   │   │   │   └── validation.ts
+│   │   │   ├── main.tsx
+│   │   │   ├── pages
+│   │   │   │   ├── CheckEmailPage.tsx
+│   │   │   │   ├── RegisterPage.tsx
+│   │   │   │   ├── SecurityPage.tsx
+│   │   │   │   └── VerifyEmailPage.tsx
+│   │   │   ├── types
+│   │   │   │   └── styled.d.ts
+│   │   │   ├── utils
+│   │   │   │   ├── ErrorBoundary.tsx
+│   │   │   │   ├── providers.tsx
+│   │   │   │   └── router.tsx
+│   │   │   └── vite-env.d.ts
+│   │   ├── tsconfig.app.json
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.node.json
+│   │   └── vite.config.ts
+│   ├── mobile
+│   │   ├── app.json
+│   │   ├── App.tsx
+│   │   ├── babel.config.js
+│   │   ├── expo-env.d.ts
+│   │   ├── index.js
+│   │   ├── metro.config.js
+│   │   ├── node_modules
+│   │   │   ├── @babel
+│   │   │   │   └── core ⇒ ../../../../node_modules/.bun/@babel+core@7.28.5+a1c3dd1b9adf390b/node_modules/@babel/core
+│   │   │   ├── @repo
+│   │   │   │   └── ui ⇒ ../../../../packages/ui
+│   │   │   ├── @types
+│   │   │   │   └── react ⇒ ../../../../node_modules/.bun/@types+react@18.2.79/node_modules/@types/react
+│   │   │   ├── expo ⇒ ../../../node_modules/.bun/expo@50.0.21+89e8416d5bdd2837/node_modules/expo
+│   │   │   ├── expo-status-bar ⇒ ../../../node_modules/.bun/expo-status-bar@1.11.1/node_modules/expo-status-bar
+│   │   │   ├── react ⇒ ../../../node_modules/.bun/react@18.2.0/node_modules/react
+│   │   │   ├── react-native ⇒ ../../../node_modules/.bun/react-native@0.73.6+50c0d2e202b0f3f6/node_modules/react-native
+│   │   │   ├── socket.io-client ⇒ ../../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client
+│   │   │   └── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── components
+│   │   │   │   └── Button.tsx
+│   │   │   └── context
+│   │   │       └── MarketDataContext.tsx
+│   │   └── tsconfig.json
+│   ├── platform
+│   │   ├── eslint.config.js
+│   │   ├── index.html
+│   │   ├── node_modules
+│   │   │   ├── @eslint
+│   │   │   │   └── js ⇒ ../../../../node_modules/.bun/@eslint+js@9.39.2/node_modules/@eslint/js
+│   │   │   ├── @repo
+│   │   │   │   ├── eslint-config ⇒ ../../../../eslint-config
+│   │   │   │   ├── trading-ui ⇒ ../../../../packages/trading-ui
+│   │   │   │   └── ui ⇒ ../../../../packages/ui
+│   │   │   ├── @types
+│   │   │   │   ├── react ⇒ ../../../../node_modules/.bun/@types+react@19.2.7/node_modules/@types/react
+│   │   │   │   ├── react-dom ⇒ ../../../../node_modules/.bun/@types+react-dom@19.2.3+b3aeb48c1f537661/node_modules/@types/react-dom
+│   │   │   │   └── react-grid-layout ⇒ ../../../../node_modules/.bun/@types+react-grid-layout@1.3.6/node_modules/@types/react-grid-layout
+│   │   │   ├── @vitejs
+│   │   │   │   └── plugin-react-swc ⇒ ../../../../node_modules/.bun/@vitejs+plugin-react-swc@3.11.0+8de9cf4e5a3d41e7/node_modules/@vitejs/plugin-react-swc
+│   │   │   ├── eslint ⇒ ../../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│   │   │   ├── eslint-plugin-react-hooks ⇒ ../../../node_modules/.bun/eslint-plugin-react-hooks@5.2.0+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-hooks
+│   │   │   ├── eslint-plugin-react-refresh ⇒ ../../../node_modules/.bun/eslint-plugin-react-refresh@0.4.26+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-refresh
+│   │   │   ├── globals ⇒ ../../../node_modules/.bun/globals@16.5.0/node_modules/globals
+│   │   │   ├── lightweight-charts ⇒ ../../../node_modules/.bun/lightweight-charts@5.1.0/node_modules/lightweight-charts
+│   │   │   ├── react ⇒ ../../../node_modules/.bun/react@18.3.1/node_modules/react
+│   │   │   ├── react-dom ⇒ ../../../node_modules/.bun/react-dom@18.3.1+f4eacebf2041cd4f/node_modules/react-dom
+│   │   │   ├── react-grid-layout ⇒ ../../../node_modules/.bun/react-grid-layout@1.5.3+6dbf9a050bc9aadb/node_modules/react-grid-layout
+│   │   │   ├── react-router-dom ⇒ ../../../node_modules/.bun/react-router-dom@7.11.0+6dbf9a050bc9aadb/node_modules/react-router-dom
+│   │   │   ├── socket.io-client ⇒ ../../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client
+│   │   │   ├── styled-components ⇒ ../../../node_modules/.bun/styled-components@6.2.0+6dbf9a050bc9aadb/node_modules/styled-components
+│   │   │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   │   └── vite ⇒ ../../../node_modules/.bun/vite@6.4.1/node_modules/vite
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── app
+│   │   │   │   └── layout
+│   │   │   │       └── DashboardShell.tsx
+│   │   │   ├── App.tsx
+│   │   │   ├── components
+│   │   │   │   └── ChartWidget.tsx
+│   │   │   ├── context
+│   │   │   │   └── MarketDataContext.tsx
+│   │   │   ├── features
+│   │   │   │   ├── admin
+│   │   │   │   │   └── AdminPage.tsx
+│   │   │   │   ├── markets
+│   │   │   │   │   └── MarketsPage.tsx
+│   │   │   │   ├── orders
+│   │   │   │   │   └── OrdersPage.tsx
+│   │   │   │   ├── overview
+│   │   │   │   │   └── DashboardOverviewPage.tsx
+│   │   │   │   ├── portfolio
+│   │   │   │   │   └── PortfolioPage.tsx
+│   │   │   │   ├── settings
+│   │   │   │   │   └── SettingsPage.tsx
+│   │   │   │   └── workspace
+│   │   │   │       ├── components
+│   │   │   │       │   ├── OrderEntryPanel.tsx
+│   │   │   │       │   ├── TerminalPanel.tsx
+│   │   │   │       │   └── WatchlistPanel.tsx
+│   │   │   │       ├── hooks
+│   │   │   │       │   └── useTradingData.ts
+│   │   │   │       └── TradingWorkspace.tsx
+│   │   │   ├── hooks
+│   │   │   │   └── useMarketData.ts
+│   │   │   ├── index.tsx
+│   │   │   ├── main.tsx
+│   │   │   ├── services
+│   │   │   │   └── ws
+│   │   │   │       ├── events.ts
+│   │   │   │       └── manager.ts
+│   │   │   ├── styles
+│   │   │   │   ├── global.ts
+│   │   │   │   └── theme.ts
+│   │   │   ├── types
+│   │   │   │   └── styled.d.ts
+│   │   │   └── vite-env.d.ts
+│   │   ├── tsconfig.app.json
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.node.json
+│   │   └── vite.config.ts
+│   └── web
+│       ├── eslint.config.js
+│       ├── index.html
+│       ├── node_modules
+│       │   ├── @eslint
+│       │   │   └── js ⇒ ../../../../node_modules/.bun/@eslint+js@9.39.2/node_modules/@eslint/js
+│       │   ├── @types
+│       │   │   ├── react ⇒ ../../../../node_modules/.bun/@types+react@18.3.27/node_modules/@types/react
+│       │   │   └── react-dom ⇒ ../../../../node_modules/.bun/@types+react-dom@18.3.7+e9c64bd7cbf321c8/node_modules/@types/react-dom
+│       │   ├── @vitejs
+│       │   │   └── plugin-react ⇒ ../../../../node_modules/.bun/@vitejs+plugin-react@4.7.0+8de9cf4e5a3d41e7/node_modules/@vitejs/plugin-react
+│       │   ├── eslint ⇒ ../../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│       │   ├── eslint-plugin-react-hooks ⇒ ../../../node_modules/.bun/eslint-plugin-react-hooks@5.2.0+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-hooks
+│       │   ├── eslint-plugin-react-refresh ⇒ ../../../node_modules/.bun/eslint-plugin-react-refresh@0.4.26+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-refresh
+│       │   ├── globals ⇒ ../../../node_modules/.bun/globals@16.5.0/node_modules/globals
+│       │   ├── react ⇒ ../../../node_modules/.bun/react@18.3.1/node_modules/react
+│       │   ├── react-dom ⇒ ../../../node_modules/.bun/react-dom@18.3.1+f4eacebf2041cd4f/node_modules/react-dom
+│       │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.8.3/node_modules/typescript
+│       │   ├── typescript-eslint ⇒ ../../../node_modules/.bun/typescript-eslint@8.52.0+cb3f86cd98a9a06d/node_modules/typescript-eslint
+│       │   └── vite ⇒ ../../../node_modules/.bun/vite@6.4.1/node_modules/vite
+│       ├── package.json
+│       ├── public
+│       │   └── vite.svg
+│       ├── src
+│       │   ├── App.tsx
+│       │   ├── assets
+│       │   │   └── react.svg
+│       │   ├── index.css
+│       │   ├── main.tsx
+│       │   └── vite-env.d.ts
+│       ├── tsconfig.app.json
+│       ├── tsconfig.json
+│       ├── tsconfig.node.json
+│       └── vite.config.ts
+├── bun.lock
+├── docs
+│   └── packages
+│       └── backend-domains
+│           └── admin-domain.md
+├── eslint-config
+│   ├── base.js
+│   ├── next.js
+│   ├── node_modules
+│   │   ├── @eslint
+│   │   │   └── js ⇒ ../../../node_modules/.bun/@eslint+js@9.39.2/node_modules/@eslint/js
+│   │   ├── @next
+│   │   │   └── eslint-plugin-next ⇒ ../../../node_modules/.bun/@next+eslint-plugin-next@15.5.9/node_modules/@next/eslint-plugin-next
+│   │   ├── eslint ⇒ ../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│   │   ├── eslint-config-prettier ⇒ ../../node_modules/.bun/eslint-config-prettier@10.1.8+6d5dcfc5e09e405e/node_modules/eslint-config-prettier
+│   │   ├── eslint-plugin-only-warn ⇒ ../../node_modules/.bun/eslint-plugin-only-warn@1.1.0/node_modules/eslint-plugin-only-warn
+│   │   ├── eslint-plugin-react ⇒ ../../node_modules/.bun/eslint-plugin-react@7.37.5+6d5dcfc5e09e405e/node_modules/eslint-plugin-react
+│   │   ├── eslint-plugin-react-hooks ⇒ ../../node_modules/.bun/eslint-plugin-react-hooks@5.2.0+6d5dcfc5e09e405e/node_modules/eslint-plugin-react-hooks
+│   │   ├── eslint-plugin-turbo ⇒ ../../node_modules/.bun/eslint-plugin-turbo@2.7.3+7871f74e3472fbcf/node_modules/eslint-plugin-turbo
+│   │   ├── globals ⇒ ../../node_modules/.bun/globals@16.5.0/node_modules/globals
+│   │   ├── typescript ⇒ ../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   └── typescript-eslint ⇒ ../../node_modules/.bun/typescript-eslint@8.52.0+3c019b7908dd29c9/node_modules/typescript-eslint
+│   ├── package.json
+│   ├── react-internal.js
+│   └── README.md
+├── eslint.config.js
+├── node_modules
+│   ├── @swc
+│   │   └── core ⇒ ../.bun/@swc+core@1.15.8/node_modules/@swc/core
+│   ├── bun ⇒ .bun/bun@1.3.5/node_modules/bun
+│   ├── drizzle-kit ⇒ .bun/drizzle-kit@0.31.8/node_modules/drizzle-kit
+│   ├── node ⇒ .bun/node@24.12.0/node_modules/node
+│   ├── prettier ⇒ .bun/prettier@3.7.4/node_modules/prettier
+│   ├── typescript ⇒ .bun/typescript@5.9.2/node_modules/typescript
+│   └── vite ⇒ .bun/vite@6.4.1/node_modules/vite
+├── package.json
+├── packages
+│   ├── backend
+│   │   ├── node_modules
+│   │   │   ├── @repo
+│   │   │   │   ├── database ⇒ ../../../database
+│   │   │   │   ├── eslint-config ⇒ ../../../../eslint-config
+│   │   │   │   ├── types ⇒ ../../../types
+│   │   │   │   └── typescript-config ⇒ ../../../../typescript-config
+│   │   │   ├── @types
+│   │   │   │   ├── bcryptjs ⇒ ../../../../node_modules/.bun/@types+bcryptjs@2.4.6/node_modules/@types/bcryptjs
+│   │   │   │   ├── node ⇒ ../../../../node_modules/.bun/@types+node@22.19.3/node_modules/@types/node
+│   │   │   │   ├── node-cron ⇒ ../../../../node_modules/.bun/@types+node-cron@3.0.11/node_modules/@types/node-cron
+│   │   │   │   ├── pg ⇒ ../../../../node_modules/.bun/@types+pg@8.16.0/node_modules/@types/pg
+│   │   │   │   └── supertest ⇒ ../../../../node_modules/.bun/@types+supertest@6.0.3/node_modules/@types/supertest
+│   │   │   ├── axios ⇒ ../../../node_modules/.bun/axios@1.13.2/node_modules/axios
+│   │   │   ├── bcryptjs ⇒ ../../../node_modules/.bun/bcryptjs@2.4.3/node_modules/bcryptjs
+│   │   │   ├── dayjs ⇒ ../../../node_modules/.bun/dayjs@1.11.19/node_modules/dayjs
+│   │   │   ├── dotenv ⇒ ../../../node_modules/.bun/dotenv@16.6.1/node_modules/dotenv
+│   │   │   ├── drizzle-orm ⇒ ../../../node_modules/.bun/drizzle-orm@0.45.1+3a79e2b47a921658/node_modules/drizzle-orm
+│   │   │   ├── eslint ⇒ ../../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│   │   │   ├── ioredis ⇒ ../../../node_modules/.bun/ioredis@5.9.0/node_modules/ioredis
+│   │   │   ├── jose ⇒ ../../../node_modules/.bun/jose@5.10.0/node_modules/jose
+│   │   │   ├── node-cron ⇒ ../../../node_modules/.bun/node-cron@3.0.3/node_modules/node-cron
+│   │   │   ├── p-limit ⇒ ../../../node_modules/.bun/p-limit@4.0.0/node_modules/p-limit
+│   │   │   ├── p-retry ⇒ ../../../node_modules/.bun/p-retry@5.1.2/node_modules/p-retry
+│   │   │   ├── p-timeout ⇒ ../../../node_modules/.bun/p-timeout@6.1.4/node_modules/p-timeout
+│   │   │   ├── pg ⇒ ../../../node_modules/.bun/pg@8.16.3+635858982ab829dd/node_modules/pg
+│   │   │   ├── pino ⇒ ../../../node_modules/.bun/pino@8.21.0/node_modules/pino
+│   │   │   ├── pino-pretty ⇒ ../../../node_modules/.bun/pino-pretty@10.3.1/node_modules/pino-pretty
+│   │   │   ├── socket.io ⇒ ../../../node_modules/.bun/socket.io@4.8.3/node_modules/socket.io
+│   │   │   ├── supertest ⇒ ../../../node_modules/.bun/supertest@7.2.2/node_modules/supertest
+│   │   │   ├── tsx ⇒ ../../../node_modules/.bun/tsx@4.19.1/node_modules/tsx
+│   │   │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   │   ├── vitest ⇒ ../../../node_modules/.bun/vitest@4.0.16+21fc883d6fba3ef0/node_modules/vitest
+│   │   │   ├── yahoo-finance2 ⇒ ../../../node_modules/.bun/yahoo-finance2@2.14.2/node_modules/yahoo-finance2
+│   │   │   └── zod ⇒ ../../../node_modules/.bun/zod@3.25.76/node_modules/zod
+│   │   ├── package.json
+│   │   ├── scripts
+│   │   │   ├── migrate.ts
+│   │   │   ├── migrate_market_data.ts
+│   │   │   ├── seed_admin.ts
+│   │   │   └── seed_market_maker.ts
+│   │   ├── src
+│   │   │   ├── api
+│   │   │   │   ├── errors.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── middleware.ts
+│   │   │   │   ├── nodeRouter.ts
+│   │   │   │   └── types.ts
+│   │   │   ├── config
+│   │   │   │   ├── env.ts
+│   │   │   │   └── logger.ts
+│   │   │   ├── domains
+│   │   │   │   ├── account
+│   │   │   │   │   ├── core
+│   │   │   │   │   │   ├── account.errors.ts
+│   │   │   │   │   │   ├── account.service.ts
+│   │   │   │   │   │   └── account.types.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── repositories
+│   │   │   │   │   │   └── account.repository.pg.ts
+│   │   │   │   │   ├── routes
+│   │   │   │   │   │   └── account.routes.ts
+│   │   │   │   │   └── validators
+│   │   │   │   │       └── account.validators.ts
+│   │   │   │   ├── admin
+│   │   │   │   │   ├── api
+│   │   │   │   │   │   └── admin.api.ts
+│   │   │   │   │   ├── core
+│   │   │   │   │   │   ├── admin.errors.ts
+│   │   │   │   │   │   ├── admin.service.ts
+│   │   │   │   │   │   └── admin.types.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── repositories
+│   │   │   │   │   │   └── admin.repository.pg.ts
+│   │   │   │   │   ├── routes
+│   │   │   │   │   │   └── admin.routes.ts
+│   │   │   │   │   └── validators
+│   │   │   │   │       └── admin.validators.ts
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── controllers
+│   │   │   │   │   │   ├── code.controller.ts
+│   │   │   │   │   │   ├── login.controller.ts
+│   │   │   │   │   │   ├── logout.controller.ts
+│   │   │   │   │   │   ├── refresh.controller.ts
+│   │   │   │   │   │   ├── register.controller.ts
+│   │   │   │   │   │   └── sessions.controller.ts
+│   │   │   │   │   ├── core
+│   │   │   │   │   │   ├── auth.config.ts
+│   │   │   │   │   │   ├── auth.errors.ts
+│   │   │   │   │   │   ├── auth.policies.ts
+│   │   │   │   │   │   ├── auth.service.ts
+│   │   │   │   │   │   └── auth.types.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── repositories
+│   │   │   │   │   │   └── repositories.pg.ts
+│   │   │   │   │   ├── routes
+│   │   │   │   │   │   └── auth.routes.ts
+│   │   │   │   │   ├── security
+│   │   │   │   │   │   ├── anomaly.detector.ts
+│   │   │   │   │   │   ├── device.fingerprint.ts
+│   │   │   │   │   │   ├── hasher.ts
+│   │   │   │   │   │   ├── password.policy.ts
+│   │   │   │   │   │   └── rate.limit.ts
+│   │   │   │   │   ├── tokens
+│   │   │   │   │   │   ├── jwt.access.ts
+│   │   │   │   │   │   ├── jwt.refresh.ts
+│   │   │   │   │   │   ├── jwt.token.manager.ts
+│   │   │   │   │   │   ├── token.manager.ts
+│   │   │   │   │   │   └── tokens.ts
+│   │   │   │   │   └── validators
+│   │   │   │   │       └── auth.validator.ts
+│   │   │   │   └── risk
+│   │   │   │       ├── core
+│   │   │   │       │   ├── risk.config.ts
+│   │   │   │       │   ├── risk.errors.ts
+│   │   │   │       │   ├── risk.service.ts
+│   │   │   │       │   └── risk.types.ts
+│   │   │   │       ├── index.ts
+│   │   │   │       └── repositories
+│   │   │   │           └── risk.repository.pg.ts
+│   │   │   ├── index.ts
+│   │   │   └── server.ts
+│   │   ├── tests
+│   │   │   ├── controllers
+│   │   │   │   ├── account.controller.test.ts
+│   │   │   │   ├── admin.controller.test.ts
+│   │   │   │   ├── auth.controller.test.ts
+│   │   │   │   ├── ledger.controller.test.ts
+│   │   │   │   ├── order.controller.test.ts
+│   │   │   │   ├── position.controller.test.ts
+│   │   │   │   ├── risk.controller.test.ts
+│   │   │   │   └── trade.controller.test.ts
+│   │   │   ├── core
+│   │   │   │   ├── account.core.test.ts
+│   │   │   │   ├── admin.core.test.ts
+│   │   │   │   ├── auth.service.test.ts
+│   │   │   │   ├── ledger.core.test.ts
+│   │   │   │   ├── order.core.test.ts
+│   │   │   │   ├── position.core.test.ts
+│   │   │   │   ├── risk.core.test.ts
+│   │   │   │   └── trade.core.test.ts
+│   │   │   ├── index.ts
+│   │   │   ├── routes
+│   │   │   │   ├── account.routes.test.ts
+│   │   │   │   ├── admin.routes.test.ts
+│   │   │   │   ├── ledger.routes.test.ts
+│   │   │   │   ├── order.routes.test.ts
+│   │   │   │   ├── position.routes.test.ts
+│   │   │   │   ├── risk.routes.test.ts
+│   │   │   │   └── trade.routes.test.ts
+│   │   │   └── validators
+│   │   │       ├── account.validators.test.ts
+│   │   │       ├── admin.validators.test.ts
+│   │   │       ├── ledger.validators.test.ts
+│   │   │       ├── order.validators.test.ts
+│   │   │       ├── position.validators.test.ts
+│   │   │       ├── risk.validators.test.ts
+│   │   │       └── trade.validators.test.ts
+│   │   └── tsconfig.json
+│   ├── database
+│   │   ├── drizzle.config.ts
+│   │   ├── migrations
+│   │   │   ├── 0000_classy_brother_voodoo.sql
+│   │   │   ├── 0001_add_auth_tables.sql
+│   │   │   ├── 0002_blushing_havok.sql
+│   │   │   └── meta
+│   │   │       ├── 0000_snapshot.json
+│   │   │       ├── 0001_snapshot.json
+│   │   │       └── _journal.json
+│   │   ├── node_modules
+│   │   │   ├── @repo
+│   │   │   │   └── typescript-config ⇒ ../../../../typescript-config
+│   │   │   ├── @types
+│   │   │   │   ├── node ⇒ ../../../../node_modules/.bun/@types+node@20.19.27/node_modules/@types/node
+│   │   │   │   └── pg ⇒ ../../../../node_modules/.bun/@types+pg@8.16.0/node_modules/@types/pg
+│   │   │   ├── drizzle-kit ⇒ ../../../node_modules/.bun/drizzle-kit@0.31.8/node_modules/drizzle-kit
+│   │   │   ├── drizzle-orm ⇒ ../../../node_modules/.bun/drizzle-orm@0.45.1+b91f825700be04a3/node_modules/drizzle-orm
+│   │   │   ├── ioredis ⇒ ../../../node_modules/.bun/ioredis@5.9.0/node_modules/ioredis
+│   │   │   ├── pg ⇒ ../../../node_modules/.bun/pg@8.16.3+635858982ab829dd/node_modules/pg
+│   │   │   ├── postgres ⇒ ../../../node_modules/.bun/postgres@3.4.8/node_modules/postgres
+│   │   │   └── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   ├── package.json
+│   │   ├── seed
+│   │   │   └── schema.sql
+│   │   ├── src
+│   │   │   ├── connection.ts
+│   │   │   ├── index.ts
+│   │   │   ├── redis.ts
+│   │   │   └── schema
+│   │   │       ├── admin.ts
+│   │   │       ├── core.ts
+│   │   │       ├── index.ts
+│   │   │       ├── ledger.ts
+│   │   │       ├── market.ts
+│   │   │       └── risk.ts
+│   │   └── tsconfig.json
+│   ├── ledger
+│   │   ├── node_modules
+│   │   │   ├── @repo
+│   │   │   │   ├── database ⇒ ../../../database
+│   │   │   │   ├── types ⇒ ../../../types
+│   │   │   │   └── typescript-config ⇒ ../../../../typescript-config
+│   │   │   ├── @types
+│   │   │   │   └── node ⇒ ../../../../node_modules/.bun/@types+node@20.19.27/node_modules/@types/node
+│   │   │   ├── drizzle-orm ⇒ ../../../node_modules/.bun/drizzle-orm@0.45.1+48d9bb878a34227a/node_modules/drizzle-orm
+│   │   │   ├── pino ⇒ ../../../node_modules/.bun/pino@8.21.0/node_modules/pino
+│   │   │   ├── pino-pretty ⇒ ../../../node_modules/.bun/pino-pretty@10.3.1/node_modules/pino-pretty
+│   │   │   ├── postgres ⇒ ../../../node_modules/.bun/postgres@3.4.8/node_modules/postgres
+│   │   │   ├── tsx ⇒ ../../../node_modules/.bun/tsx@4.19.1/node_modules/tsx
+│   │   │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   │   ├── vitest ⇒ ../../../node_modules/.bun/vitest@1.6.1+dbdc735346b46d86/node_modules/vitest
+│   │   │   └── zod ⇒ ../../../node_modules/.bun/zod@3.25.76/node_modules/zod
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   ├── ledger.config.ts
+│   │   │   ├── ledger.repository.ts
+│   │   │   ├── ledger.service.ts
+│   │   │   └── ledger.types.ts
+│   │   ├── tests
+│   │   │   └── ledger.service.test.ts
+│   │   ├── tsconfig.json
+│   │   └── vitest.config.ts
+│   ├── market-data
+│   │   ├── node_modules
+│   │   │   ├── @repo
+│   │   │   │   ├── database ⇒ ../../../database
+│   │   │   │   └── typescript-config ⇒ ../../../../typescript-config
+│   │   │   ├── @types
+│   │   │   │   ├── node ⇒ ../../../../node_modules/.bun/@types+node@20.19.27/node_modules/@types/node
+│   │   │   │   └── ws ⇒ ../../../../node_modules/.bun/@types+ws@8.18.1/node_modules/@types/ws
+│   │   │   ├── axios ⇒ ../../../node_modules/.bun/axios@1.13.2/node_modules/axios
+│   │   │   ├── dotenv ⇒ ../../../node_modules/.bun/dotenv@16.6.1/node_modules/dotenv
+│   │   │   ├── drizzle-orm ⇒ ../../../node_modules/.bun/drizzle-orm@0.29.5+48d9bb878a34227a/node_modules/drizzle-orm
+│   │   │   ├── ioredis ⇒ ../../../node_modules/.bun/ioredis@5.9.0/node_modules/ioredis
+│   │   │   ├── pino ⇒ ../../../node_modules/.bun/pino@8.21.0/node_modules/pino
+│   │   │   ├── pino-pretty ⇒ ../../../node_modules/.bun/pino-pretty@10.3.1/node_modules/pino-pretty
+│   │   │   ├── postgres ⇒ ../../../node_modules/.bun/postgres@3.4.8/node_modules/postgres
+│   │   │   ├── tsx ⇒ ../../../node_modules/.bun/tsx@4.19.1/node_modules/tsx
+│   │   │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   │   ├── vitest ⇒ ../../../node_modules/.bun/vitest@1.6.1+dbdc735346b46d86/node_modules/vitest
+│   │   │   ├── ws ⇒ ../../../node_modules/.bun/ws@8.19.0/node_modules/ws
+│   │   │   ├── yahoo-finance2 ⇒ ../../../node_modules/.bun/yahoo-finance2@2.14.2/node_modules/yahoo-finance2
+│   │   │   └── zod ⇒ ../../../node_modules/.bun/zod@3.25.76/node_modules/zod
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── api
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── ondemand.routes.ts
+│   │   │   │   ├── routes.ts
+│   │   │   │   └── validators.ts
+│   │   │   ├── config
+│   │   │   │   ├── constants.ts
+│   │   │   │   ├── env.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   └── symbols.ts
+│   │   │   ├── domains
+│   │   │   │   ├── cache
+│   │   │   │   │   ├── cache.types.ts
+│   │   │   │   │   ├── heartbeat.cache.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── price.cache.ts
+│   │   │   │   │   └── redis.client.ts
+│   │   │   │   ├── collectors
+│   │   │   │   │   ├── base.collector.ts
+│   │   │   │   │   ├── binance.collector.ts
+│   │   │   │   │   ├── collector.registry.ts
+│   │   │   │   │   ├── collector.types.ts
+│   │   │   │   │   ├── fmp.service.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── tick.validator.ts
+│   │   │   │   │   └── yahoo.collector.ts
+│   │   │   │   ├── health
+│   │   │   │   │   ├── health.service.ts
+│   │   │   │   │   ├── health.types.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── metrics.collector.ts
+│   │   │   │   ├── historical
+│   │   │   │   │   ├── candle.aggregator.ts
+│   │   │   │   │   ├── historical.service.ts
+│   │   │   │   │   ├── historical.types.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── tick.repository.ts
+│   │   │   │   ├── normalizer
+│   │   │   │   │   ├── data.validators.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── normalizer.service.ts
+│   │   │   │   │   ├── normalizer.types.ts
+│   │   │   │   │   └── symbol.mapper.ts
+│   │   │   │   └── stream
+│   │   │   │       ├── connection.manager.ts
+│   │   │   │       ├── index.ts
+│   │   │   │       ├── stream.types.ts
+│   │   │   │       ├── subscription.manager.ts
+│   │   │   │       ├── tick.publisher.ts
+│   │   │   │       └── websocket.server.ts
+│   │   │   ├── index.ts
+│   │   │   ├── types
+│   │   │   │   └── index.ts
+│   │   │   └── utils
+│   │   │       ├── circuit-breaker.ts
+│   │   │       ├── index.ts
+│   │   │       ├── logger.ts
+│   │   │       └── retry.ts
+│   │   ├── tests
+│   │   │   ├── binance.collector.test.ts
+│   │   │   ├── candle.aggregator.test.ts
+│   │   │   ├── connectivity.integration.test.ts
+│   │   │   ├── normalizer.service.test.ts
+│   │   │   ├── price.cache.test.ts
+│   │   │   └── routes.test.ts
+│   │   ├── tsconfig.json
+│   │   ├── vitest.config.ts
+│   │   └── vitest.integration.config.ts
+│   ├── order-engine
+│   │   ├── node_modules
+│   │   │   ├── @repo
+│   │   │   │   ├── database ⇒ ../../../database
+│   │   │   │   ├── ledger ⇒ ../../../ledger
+│   │   │   │   ├── types ⇒ ../../../types
+│   │   │   │   └── typescript-config ⇒ ../../../../typescript-config
+│   │   │   ├── @types
+│   │   │   │   ├── node ⇒ ../../../../node_modules/.bun/@types+node@20.19.27/node_modules/@types/node
+│   │   │   │   └── ws ⇒ ../../../../node_modules/.bun/@types+ws@8.18.1/node_modules/@types/ws
+│   │   │   ├── dotenv ⇒ ../../../node_modules/.bun/dotenv@16.6.1/node_modules/dotenv
+│   │   │   ├── drizzle-orm ⇒ ../../../node_modules/.bun/drizzle-orm@0.29.5+48d9bb878a34227a/node_modules/drizzle-orm
+│   │   │   ├── ioredis ⇒ ../../../node_modules/.bun/ioredis@5.9.0/node_modules/ioredis
+│   │   │   ├── pino ⇒ ../../../node_modules/.bun/pino@8.21.0/node_modules/pino
+│   │   │   ├── pino-pretty ⇒ ../../../node_modules/.bun/pino-pretty@10.3.1/node_modules/pino-pretty
+│   │   │   ├── postgres ⇒ ../../../node_modules/.bun/postgres@3.4.8/node_modules/postgres
+│   │   │   ├── tsx ⇒ ../../../node_modules/.bun/tsx@4.19.1/node_modules/tsx
+│   │   │   ├── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   │   ├── vitest ⇒ ../../../node_modules/.bun/vitest@1.6.1+dbdc735346b46d86/node_modules/vitest
+│   │   │   ├── ws ⇒ ../../../node_modules/.bun/ws@8.19.0/node_modules/ws
+│   │   │   └── zod ⇒ ../../../node_modules/.bun/zod@3.25.76/node_modules/zod
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── api
+│   │   │   │   ├── index.ts
+│   │   │   │   └── rest-api.ts
+│   │   │   ├── config
+│   │   │   │   └── env.ts
+│   │   │   ├── domains
+│   │   │   │   ├── health
+│   │   │   │   │   ├── health-service.ts
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── matching
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── matching-engine.ts
+│   │   │   │   │   ├── order-book-manager.ts
+│   │   │   │   │   └── order-book.ts
+│   │   │   │   ├── orders
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── order-manager.ts
+│   │   │   │   │   ├── order-repository.ts
+│   │   │   │   │   └── order-validator.ts
+│   │   │   │   ├── positions
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── position-manager.ts
+│   │   │   │   │   ├── position-repository.ts
+│   │   │   │   │   └── position.types.ts
+│   │   │   │   ├── stream
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── websocket-server.ts
+│   │   │   │   └── trades
+│   │   │   │       ├── fee-calculator.ts
+│   │   │   │       ├── index.ts
+│   │   │   │       ├── trade-processor.ts
+│   │   │   │       ├── trade-repository.ts
+│   │   │   │       └── trade.types.ts
+│   │   │   ├── index.ts
+│   │   │   ├── risk-gateway.ts
+│   │   │   ├── types
+│   │   │   │   ├── index.ts
+│   │   │   │   └── order.types.ts
+│   │   │   └── utils
+│   │   │       ├── index.ts
+│   │   │       └── logger.ts
+│   │   ├── tests
+│   │   │   ├── index.ts
+│   │   │   ├── matching-engine.test.ts
+│   │   │   ├── order-book.test.ts
+│   │   │   ├── order-validator.test.ts
+│   │   │   └── risk-gateway.test.ts
+│   │   ├── tsconfig.json
+│   │   ├── vite.config.ts
+│   │   └── vitest.config.ts
+│   ├── trading-ui
+│   │   ├── node_modules
+│   │   │   ├── @repo
+│   │   │   │   ├── eslint-config ⇒ ../../../../eslint-config
+│   │   │   │   ├── typescript-config ⇒ ../../../../typescript-config
+│   │   │   │   └── ui ⇒ ../../../ui
+│   │   │   ├── @types
+│   │   │   │   ├── node ⇒ ../../../../node_modules/.bun/@types+node@22.19.3/node_modules/@types/node
+│   │   │   │   ├── react ⇒ ../../../../node_modules/.bun/@types+react@18.3.27/node_modules/@types/react
+│   │   │   │   └── react-dom ⇒ ../../../../node_modules/.bun/@types+react-dom@18.3.7+e9c64bd7cbf321c8/node_modules/@types/react-dom
+│   │   │   ├── eslint ⇒ ../../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│   │   │   ├── lightweight-charts ⇒ ../../../node_modules/.bun/lightweight-charts@4.2.3/node_modules/lightweight-charts
+│   │   │   ├── react ⇒ ../../../node_modules/.bun/react@18.3.1/node_modules/react
+│   │   │   ├── react-dom ⇒ ../../../node_modules/.bun/react-dom@18.3.1+f4eacebf2041cd4f/node_modules/react-dom
+│   │   │   ├── styled-components ⇒ ../../../node_modules/.bun/styled-components@6.2.0+6dbf9a050bc9aadb/node_modules/styled-components
+│   │   │   └── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── components
+│   │   │   │   ├── Account
+│   │   │   │   │   ├── AccountBar.tsx
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── Chart
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── TradingChart.tsx
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── OrderBook
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── OrderBook.tsx
+│   │   │   │   ├── OrderEntry
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── OrderForm.tsx
+│   │   │   │   ├── Positions
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── PositionsTable.tsx
+│   │   │   │   ├── Terminal
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── TerminalPanel.tsx
+│   │   │   │   └── Watchlist
+│   │   │   │       ├── index.ts
+│   │   │   │       └── Watchlist.tsx
+│   │   │   ├── hooks
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── useChartData.ts
+│   │   │   │   ├── useInstruments.ts
+│   │   │   │   ├── useOrderBook.ts
+│   │   │   │   ├── usePositions.ts
+│   │   │   │   └── useTicker.ts
+│   │   │   ├── index.ts
+│   │   │   ├── mocks
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── ohlc.ts
+│   │   │   │   ├── orderbook.ts
+│   │   │   │   ├── positions.ts
+│   │   │   │   ├── symbols.ts
+│   │   │   │   └── ticks.ts
+│   │   │   ├── theme
+│   │   │   │   └── index.ts
+│   │   │   ├── types
+│   │   │   │   ├── account.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── instrument.ts
+│   │   │   │   ├── market.ts
+│   │   │   │   ├── order.ts
+│   │   │   │   └── position.ts
+│   │   │   └── utils
+│   │   │       ├── calculations.ts
+│   │   │       ├── colors.ts
+│   │   │       ├── formatters.ts
+│   │   │       └── index.ts
+│   │   └── tsconfig.json
+│   ├── types
+│   │   ├── index.ts
+│   │   ├── market.ts
+│   │   ├── package.json
+│   │   ├── trading.ts
+│   │   └── user.ts
+│   └── ui
+│       ├── node_modules
+│       │   ├── @repo
+│       │   │   ├── eslint-config ⇒ ../../../../eslint-config
+│       │   │   └── typescript-config ⇒ ../../../../typescript-config
+│       │   ├── @types
+│       │   │   ├── node ⇒ ../../../../node_modules/.bun/@types+node@22.19.3/node_modules/@types/node
+│       │   │   ├── react ⇒ ../../../../node_modules/.bun/@types+react@18.3.27/node_modules/@types/react
+│       │   │   └── react-dom ⇒ ../../../../node_modules/.bun/@types+react-dom@18.3.7+e9c64bd7cbf321c8/node_modules/@types/react-dom
+│       │   ├── eslint ⇒ ../../../node_modules/.bun/eslint@9.39.2+6d5dcfc5e09e405e/node_modules/eslint
+│       │   ├── react ⇒ ../../../node_modules/.bun/react@18.3.1/node_modules/react
+│       │   ├── react-dom ⇒ ../../../node_modules/.bun/react-dom@18.3.1+f4eacebf2041cd4f/node_modules/react-dom
+│       │   ├── styled-components ⇒ ../../../node_modules/.bun/styled-components@6.2.0+6dbf9a050bc9aadb/node_modules/styled-components
+│       │   └── typescript ⇒ ../../../node_modules/.bun/typescript@5.9.2/node_modules/typescript
+│       ├── package.json
+│       ├── src
+│       │   ├── assets
+│       │   │   └── Page404.mp4
+│       │   ├── components
+│       │   │   ├── Accessibility
+│       │   │   │   └── index.tsx
+│       │   │   ├── Buttons
+│       │   │   │   └── Button.tsx
+│       │   │   ├── Displays
+│       │   │   │   ├── Accordion.tsx
+│       │   │   │   ├── Avatar.tsx
+│       │   │   │   ├── Badge.tsx
+│       │   │   │   ├── Card.tsx
+│       │   │   │   ├── Divider.tsx
+│       │   │   │   ├── EmptyState.tsx
+│       │   │   │   ├── Popover.tsx
+│       │   │   │   ├── Skeleton.tsx
+│       │   │   │   ├── StatCard.tsx
+│       │   │   │   ├── Table.tsx
+│       │   │   │   └── Text.tsx
+│       │   │   ├── Footer
+│       │   │   │   └── Footer.tsx
+│       │   │   ├── Header
+│       │   │   │   └── Header.tsx
+│       │   │   ├── Hello.tsx
+│       │   │   ├── Icons
+│       │   │   │   ├── Badge.tsx
+│       │   │   │   └── IconButton.tsx
+│       │   │   ├── index.ts
+│       │   │   ├── Informations
+│       │   │   │   ├── Alert.tsx
+│       │   │   │   ├── Loader.tsx
+│       │   │   │   ├── Modal.tsx
+│       │   │   │   ├── Notification.tsx
+│       │   │   │   ├── Progress.tsx
+│       │   │   │   ├── Sheet.tsx
+│       │   │   │   ├── Toast.tsx
+│       │   │   │   └── Tooltip.tsx
+│       │   │   ├── Inputs
+│       │   │   │   ├── AddressInput.tsx
+│       │   │   │   ├── DatePicker.tsx
+│       │   │   │   ├── EmailInput.tsx
+│       │   │   │   ├── NumInput.tsx
+│       │   │   │   ├── OTPInput.tsx
+│       │   │   │   ├── PasswordInput.tsx
+│       │   │   │   ├── PhoneInput.tsx
+│       │   │   │   ├── SearchInput.tsx
+│       │   │   │   ├── TextArea.tsx
+│       │   │   │   └── TextField.tsx
+│       │   │   ├── Layout
+│       │   │   │   └── Stack.tsx
+│       │   │   ├── Menus
+│       │   │   │   ├── Checkbox.tsx
+│       │   │   │   ├── Dropdown.tsx
+│       │   │   │   ├── MenuLink.tsx
+│       │   │   │   ├── Picker.tsx
+│       │   │   │   ├── Radio.tsx
+│       │   │   │   ├── Select.tsx
+│       │   │   │   └── Toggle.tsx
+│       │   │   ├── Navigations
+│       │   │   │   ├── Breadcrumb.tsx
+│       │   │   │   ├── Link.tsx
+│       │   │   │   ├── Stepper.tsx
+│       │   │   │   └── Tabs.tsx
+│       │   │   └── Page404
+│       │   │       └── Page404.tsx
+│       │   ├── index.ts
+│       │   ├── theme
+│       │   │   ├── animations.ts
+│       │   │   ├── GlobalStyle.tsx
+│       │   │   ├── index.ts
+│       │   │   ├── palettes.ts
+│       │   │   ├── styled.d.ts
+│       │   │   ├── ThemeContext.tsx
+│       │   │   ├── ThemeManager.tsx
+│       │   │   └── tokens.ts
+│       │   └── types.d.ts
+│       └── tsconfig.json
+├── template
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── public
+│   │   └── vite.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.tsx
+│   │   ├── assets
+│   │   │   └── react.svg
+│   │   ├── index.css
+│   │   └── main.tsx
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── tree
+├── typescript-config
+│   ├── base.json
+│   ├── nextjs.json
+│   ├── package.json
+│   ├── react-library.json
+│   └── vite.json
+└── vitest.config.ts

@@ -389,6 +389,18 @@ export type {
   PositionChangeEvent,
 } from './domains/positions/position.types.js';
 
+// Position email handler for trade notifications
+export {
+  createPositionEmailHandler,
+  type UserResolver,
+  type PositionResolver,
+  type TradeHistoryResolver,
+  type PositionEmailClient,
+  type PositionEmailHandlerConfig,
+  type TradeOpenedPayload,
+  type TradeClosedPayload,
+} from './domains/positions/position.emails.js';
+
 export { TradeProcessor } from './domains/trades/trade-processor.js';
 export { FeeCalculator, type FeeTier } from './domains/trades/fee-calculator.js';
 export type {

@@ -41,6 +41,13 @@ export { LedgerService, createLedgerService } from './ledger.service.js';
 export type { LedgerServiceConfig, LedgerEventHandler } from './ledger.service.js';
 
 // =============================================================================
+// EMAIL INTEGRATION EXPORTS
+// =============================================================================
+
+export { createLedgerEmailHandler } from './ledger.emails.js';
+export type { LedgerEmailHandlerConfig, UserResolver, IEmailClient as LedgerEmailClient } from './ledger.emails.js';
+
+// =============================================================================
 // REPOSITORY EXPORTS
 // =============================================================================
 

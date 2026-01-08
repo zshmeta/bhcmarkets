@@ -1,4 +1,6 @@
-import { randomUUID } from "node:crypto";
+/* Auth servicea, Core feature */
+
+import { randomUUID, createHash } from "node:crypto";
 import type { Logger } from "../../../config/logger.js";
 import type {
   AuthCodeRepository,
@@ -16,6 +18,7 @@ import type {
   UserSession,
   UserSessionRepository,
   UserStatus,
+  PasswordResetTokenRepository,
   UUID,
 } from "./auth.types.js";
 import type { AccountService } from "../../account/account.service.js";
@@ -71,6 +74,7 @@ export interface AuthServiceDependencies {
   authCodeRepository: AuthCodeRepository;
   credentialRepository: UserCredentialRepository;
   sessionRepository: UserSessionRepository;
+  passwordResetTokenRepository: PasswordResetTokenRepository;
   passwordHasher: SecretHasher;
   tokenHasher?: SecretHasher;
   tokenManager: TokenManager;
@@ -79,6 +83,8 @@ export interface AuthServiceDependencies {
   logger?: Logger;
   config?: Partial<AuthServiceConfig>;
   accountService?: AccountService;
+  /** Optional email service for sending auth-related emails */
+  authEmailService?: import('./auth.emails.js').AuthEmailService;
 }
 
 export interface AuthTokens {
@@ -145,6 +151,8 @@ export interface AuthService {
   listActiveSessions(userId: UUID): Promise<SessionView[]>;
   generateAuthCode(userId: UUID, targetUrl: string): Promise<string>;
   exchangeAuthCode(code: string): Promise<AuthenticationResult>;
+  requestPasswordReset(email: string): Promise<void>;
+  confirmPasswordReset(token: string, newPassword: string): Promise<void>;
 }
 
 const defaultClock: Clock = { now: () => new Date() };
@@ -208,6 +216,7 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     credentialRepository,
     sessionRepository,
     authCodeRepository,
+    passwordResetTokenRepository,
     passwordHasher,
     tokenHasher = passwordHasher,
     tokenManager,
@@ -215,6 +224,7 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     idFactory = defaultIdFactory,
     logger,
     accountService,
+    authEmailService,
   } = deps;
 
   const config: AuthServiceConfig = {
@@ -387,6 +397,13 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
 
     if (accountService) {
       await accountService.createAccount(user.id);
+    }
+
+    // Send welcome email (fire and forget - don't block registration)
+    if (authEmailService) {
+      authEmailService.sendWelcomeEmail(user).catch((err) => {
+        logger?.error("Failed to send welcome email", { userId: user.id, error: err });
+      });
     }
 
     if (input.issueSession === false) {
@@ -571,6 +588,71 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     return issueInitialSession(user, credential);
   };
 
+  const requestPasswordReset: AuthService["requestPasswordReset"] = async (email) => {
+    const normalized = normalizeEmail(email);
+    const user = await userRepository.findByEmail(normalized);
+
+    // Silent fail to prevent enumeration
+    if (!user) return;
+
+    // Generate token
+    const token = idFactory().replace(/-/g, "") + idFactory().replace(/-/g, "");
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const expiresAt = new Date(clock.now().getTime() + 60 * 60 * 1000).toISOString(); // 1 hour
+
+    await passwordResetTokenRepository.revokeAllForUser(user.id);
+    await passwordResetTokenRepository.create({
+      userId: user.id,
+      tokenHash,
+      expiresAt,
+    });
+
+    // Send password reset email
+    if (authEmailService) {
+      authEmailService.sendPasswordResetEmail(user, token).catch((err) => {
+        logger?.error("Failed to send password reset email", { userId: user.id, error: err });
+      });
+    } else if (process.env.NODE_ENV !== "test") {
+      console.log(`[DEV] Password Reset Token for ${email}: ${token}`);
+    }
+  };
+
+  const confirmPasswordReset: AuthService["confirmPasswordReset"] = async (token, newPassword) => {
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const resetToken = await passwordResetTokenRepository.findByTokenHash(tokenHash);
+
+    if (!resetToken) {
+      throw new AuthError("RESET_TOKEN_INVALID");
+    }
+
+    if (resetToken.used) {
+      throw new AuthError("RESET_TOKEN_USED");
+    }
+
+    if (new Date(resetToken.expiresAt) < clock.now()) {
+      throw new AuthError("RESET_TOKEN_EXPIRED");
+    }
+
+    const credential = await credentialRepository.getByUserId(resetToken.userId);
+    if (!credential) {
+      throw new AuthError("UNKNOWN_USER");
+    }
+
+    const nextHash = await passwordHasher.hash(newPassword);
+    const timestamp = clock.now().toISOString();
+    const nextVersion = credential.version + 1;
+
+    await credentialRepository.updatePassword(resetToken.userId, {
+      passwordHash: nextHash,
+      version: nextVersion,
+      passwordUpdatedAt: timestamp,
+      updatedAt: timestamp,
+    });
+
+    await sessionRepository.markInactiveByUser(resetToken.userId, "password_rotated", timestamp);
+    await passwordResetTokenRepository.markUsed(resetToken.id);
+  };
+
   return {
     register,
     authenticate,
@@ -582,6 +664,8 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     listActiveSessions,
     generateAuthCode,
     exchangeAuthCode,
+    requestPasswordReset,
+    confirmPasswordReset,
   };
 };
 

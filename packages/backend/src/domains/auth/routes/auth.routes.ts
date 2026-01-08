@@ -1,6 +1,6 @@
-/**
+  /**
  * Auth Routes.
- * 
+ *
  * Defines HTTP routes for authentication endpoints.
  * Routes are thin adapters that delegate to controllers.
  */
@@ -19,6 +19,10 @@ import {
   createGenerateCodeController,
   createExchangeCodeController,
 } from "../controllers/code.controller.js";
+import {
+  createRequestPasswordResetController,
+  createConfirmPasswordResetController,
+} from "../controllers/password.controller.js";
 
 /**
  * Logger interface (minimal).
@@ -29,7 +33,7 @@ type LoggerLike = {
 
 /**
  * Register all auth routes on the given router.
- * 
+ *
  * @param router - HTTP router instance
  * @param services - Service dependencies
  * @param logger - Logger instance
@@ -54,9 +58,13 @@ export function registerAuthRoutes(
   router.route("POST", "/auth/refresh", refreshController);
   router.route("POST", "/auth/code", createGenerateCodeController(services.auth));
   router.route("POST", "/auth/exchange", createExchangeCodeController(services.auth));
-  
+  router.route("POST", "/auth/forgot-password", createRequestPasswordResetController(services.auth));
+  router.route("POST", "/auth/reset-password", createConfirmPasswordResetController(services.auth));
+
+
   // Session management endpoints
   router.route("POST", "/auth/logout", logoutController);
   router.route("POST", "/auth/logout-all", revokeAllSessionsController);
   router.route("GET", "/auth/sessions", listSessionsController);
+
 }

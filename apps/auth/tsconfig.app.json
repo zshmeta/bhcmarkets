@@ -1,5 +1,5 @@
-{
-  "compilerOptions": {
+(
+ "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
@@ -30,5 +30,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
+
   "include": ["src", "src/utils/.requireAuth.tsx", "src/utils/.router.tsx", "src/utils/.routerConfig.tsx", "src/utils/.env.ts", "src/.pages"]
 }
