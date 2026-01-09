@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useAuth } from '../../../context/AuthContext';
 
 const Container = styled.div`
   padding: 16px;
@@ -84,10 +85,11 @@ export const OrderEntryPanel: React.FC<OrderEntryPanelProps> = ({ symbol }) => {
   const [price, setPrice] = useState(''); // Empty for market
   const { user } = useAuth();
 
-  const apiBase = (window as unknown as { __API_BASE?: string }).__API_BASE || 'http://localhost:8080';
+  // Order Engine runs on port 4003
+  const orderEngineUrl = import.meta.env.VITE_ORDER_ENGINE_URL || 'http://localhost:4003';
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('bhc_access_token');
     if (!token) {
       alert('Please login to place orders');
       return;
@@ -99,19 +101,20 @@ export const OrderEntryPanel: React.FC<OrderEntryPanelProps> = ({ symbol }) => {
     }
 
     try {
-      const res = await fetch(`${apiBase}/orders`, {
+      const res = await fetch(`${orderEngineUrl}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          userId: user.id,
+          accountId: user.id, // Order engine expects accountId
           symbol,
           side,
           quantity: parseFloat(qty),
           price: price ? parseFloat(price) : undefined,
-          type: price ? 'limit' : 'market'
+          type: price ? 'limit' : 'market',
+          timeInForce: 'GTC'
         })
       });
 

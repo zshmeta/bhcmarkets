@@ -12,6 +12,7 @@ import type { RiskService } from "../domains/risk/index.js";
 import { registerAuthRoutes } from "../domains/auth/index.js";
 import { registerAccountRoutes } from "../domains/account/index.js";
 import { registerAdminApiRoutes } from "../domains/admin/index.js";
+import { registerTradingRoutes } from "../domains/trading/index.js";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 export type ApiServices = {
@@ -56,6 +57,12 @@ export function registerApiRoutes(router: Router, services: ApiServices, logger:
 			error: logger.error,
 		},
 	});
+
+	// Trading routes - user-facing orders and positions
+	registerTradingRoutes(router, {
+		db: services.db,
+		tokenManager: services.tokenManager,
+	}, logger);
 }
 
 

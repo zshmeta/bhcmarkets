@@ -1,6 +1,6 @@
 /**
  * TradingChart Component (Premium)
- * 
+ *
  * Professional candlestick chart with lightweight-charts.
  * Features:
  * - Timeframe selector with modern styling
@@ -12,7 +12,7 @@
 
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { createChart, type IChartApi, type ISeriesApi, ColorType, CrosshairMode } from 'lightweight-charts';
+import { createChart, type IChartApi, type ISeriesApi, ColorType, CrosshairMode, HistogramSeries, CandlestickSeries, LineSeries } from 'lightweight-charts';
 import type { OHLC, Timeframe } from '../../types';
 import { COLORS, TYPOGRAPHY, SPACING, EFFECTS, SIZING } from '../../theme';
 import { formatPrice } from '../../utils';
@@ -91,7 +91,7 @@ const TimeframeButton = styled.button<{ $active?: boolean }>`
   transition: ${EFFECTS.transition.fast};
   background: ${({ $active }) => $active ? COLORS.semantic.info.main : 'transparent'};
   color: ${({ $active }) => $active ? '#fff' : COLORS.text.tertiary};
-  
+
   &:hover {
     background: ${({ $active }) => $active ? COLORS.semantic.info.main : COLORS.bg.hover};
     color: ${({ $active }) => $active ? '#fff' : COLORS.text.secondary};
@@ -117,12 +117,12 @@ const ChartTypeButton = styled.button<{ $active?: boolean }>`
   transition: ${EFFECTS.transition.fast};
   background: ${({ $active }) => $active ? COLORS.bg.elevated : 'transparent'};
   color: ${({ $active }) => $active ? COLORS.text.primary : COLORS.text.tertiary};
-  
+
   &:hover {
     background: ${({ $active }) => $active ? COLORS.bg.elevated : COLORS.bg.hover};
     color: ${COLORS.text.primary};
   }
-  
+
   svg {
     width: 14px;
     height: 14px;
@@ -141,12 +141,12 @@ const IconButton = styled.button`
   color: ${COLORS.text.tertiary};
   cursor: pointer;
   transition: ${EFFECTS.transition.fast};
-  
+
   &:hover {
     background: ${COLORS.bg.hover};
     color: ${COLORS.text.primary};
   }
-  
+
   svg {
     width: 16px;
     height: 16px;
@@ -157,7 +157,7 @@ const ChartWrapper = styled.div<{ $fullscreen?: boolean }>`
   flex: 1;
   position: relative;
   min-height: 250px;
-  
+
   ${({ $fullscreen }) => $fullscreen && css`
     position: fixed;
     top: 0;
@@ -193,12 +193,12 @@ const OHLCInfo = styled.div`
 const OHLCItem = styled.span<{ $type: 'open' | 'high' | 'low' | 'close' }>`
   display: flex;
   gap: 4px;
-  
+
   &::before {
     content: '${({ $type }) => $type.charAt(0).toUpperCase()}';
     color: ${COLORS.text.tertiary};
   }
-  
+
   color: ${({ $type }) => {
         switch ($type) {
             case 'high': return COLORS.semantic.positive.main;
@@ -228,7 +228,7 @@ const LoadingSpinner = styled.div`
   border-top-color: ${COLORS.semantic.info.main};
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  
+
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
@@ -391,7 +391,7 @@ export function TradingChart({
         }
 
         // Add volume histogram
-        volumeSeriesRef.current = chartRef.current.addHistogramSeries({
+        volumeSeriesRef.current = chartRef.current.addSeries(HistogramSeries, {
             color: COLORS.chart.volume,
             priceFormat: { type: 'volume' },
             priceScaleId: '',
@@ -402,7 +402,7 @@ export function TradingChart({
 
         // Add main series
         if (chartType === 'candlestick') {
-            seriesRef.current = chartRef.current.addCandlestickSeries({
+            seriesRef.current = chartRef.current.addSeries(CandlestickSeries, {
                 upColor: COLORS.chart.upBody,
                 downColor: COLORS.chart.downBody,
                 borderUpColor: COLORS.chart.upBorder,
@@ -411,7 +411,7 @@ export function TradingChart({
                 wickDownColor: COLORS.chart.downWick,
             });
         } else {
-            seriesRef.current = chartRef.current.addLineSeries({
+            seriesRef.current = chartRef.current.addSeries(LineSeries, {
                 color: COLORS.semantic.info.main,
                 lineWidth: 2,
                 crosshairMarkerVisible: true,

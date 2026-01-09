@@ -17,6 +17,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-grid-layout": "catalog:",
+    "react-resizable": "catalog:",
     "react-router-dom": "catalog:",
     "socket.io-client": "catalog:",
     "styled-components": "catalog:"
@@ -27,6 +28,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/react-grid-layout": "catalog:",
+    "@types/node": "catalog:",
     "@vitejs/plugin-react-swc": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",

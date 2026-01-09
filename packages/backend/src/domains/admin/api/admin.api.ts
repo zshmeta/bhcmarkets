@@ -18,6 +18,28 @@ import { createAdminRepositoryPg } from "../repositories/admin.repository.pg.js"
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { sql } from "drizzle-orm";
 import type { IncomingMessage, ServerResponse } from "http";
+import {
+  listUsersSchema,
+  suspendUserSchema,
+  unsuspendUserSchema,
+  updateUserRoleSchema,
+  listAccountsSchema,
+  adminDepositSchema,
+  adminWithdrawSchema,
+  freezeAccountSchema,
+  unfreezeAccountSchema,
+  circuitBreakerSchema,
+  upsertSymbolSchema,
+  symbolActionSchema,
+  auditLogFilterSchema,
+  listOrdersSchema,
+  cancelOrderSchema,
+  cancelAllOrdersSchema,
+  listPositionsSchema,
+  forceClosePositionSchema,
+  reportPeriodSchema,
+} from "../validators/admin.validators.js";
+import { getAuthUser } from "../../../api/middleware.js";
 
 type LoggerLike = {
   info: (msg: string, meta?: Record<string, unknown>) => void;
@@ -241,32 +263,6 @@ export function registerAdminApiRoutes(
     logger,
   });
 
-  // Import the validators
-  const {
-    listUsersSchema,
-    suspendUserSchema,
-    unsuspendUserSchema,
-    updateUserRoleSchema,
-    listAccountsSchema,
-    adminDepositSchema,
-    adminWithdrawSchema,
-    freezeAccountSchema,
-    unfreezeAccountSchema,
-    circuitBreakerSchema,
-    upsertSymbolSchema,
-    symbolActionSchema,
-    auditLogFilterSchema,
-    // Phase 2 validators
-    listOrdersSchema,
-    cancelOrderSchema,
-    cancelAllOrdersSchema,
-    listPositionsSchema,
-    forceClosePositionSchema,
-    reportPeriodSchema,
-  } = require("../validators/admin.validators.js");
-
-  // Helper to get auth context from request
-  const { getAuthUser } = require("../../../api/middleware.js");
   type AuthContext = { userId: string; email: string; role: "user" | "admin" | "support" };
 
   // Helper to check admin permission

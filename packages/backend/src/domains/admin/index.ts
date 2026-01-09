@@ -54,11 +54,10 @@ export {
 } from "./core/admin.service.js";
 
 // --- Repository ---
-export {
-  createAdminRepositoryPg,
-  adminAuditLog,
-  symbols,
-} from "./repositories/admin.repository.pg.js";
+export { createAdminRepositoryPg } from "./repositories/admin.repository.pg.js";
+
+// --- Schema (re-exported from database) ---
+export { adminAuditLog, symbols } from "@repo/database";
 
 // --- Routes ---
 export { createAdminRoutes } from "./routes/admin.routes.js";

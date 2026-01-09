@@ -7,6 +7,7 @@
 
 import styled, { css, keyframes } from "styled-components";
 import type { HTMLAttributes, ReactNode } from "react";
+import React from "react";
 
 type BadgeVariant = "solid" | "soft" | "outline" | "dot";
 type BadgeColor = "primary" | "secondary" | "success" | "warning" | "danger" | "info";

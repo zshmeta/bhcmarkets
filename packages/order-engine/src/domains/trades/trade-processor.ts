@@ -26,6 +26,7 @@ import { FeeCalculator, type FeeTier } from './fee-calculator.js';
 import type { PositionManager } from '../positions/position-manager.js';
 import type { LedgerService } from '../ledger/ledger-adapter.js';
 import { logger } from '../../utils/logger.js';
+import { getDbClient, trades as tradesTable } from '@repo/database';
 
 const log = logger.child({ component: 'trade-processor' });
 
@@ -339,8 +340,28 @@ export class TradeProcessor {
     const trades = this.pendingTrades;
     this.pendingTrades = [];
 
-    // TODO: Implement actual persistence
-    log.debug({ count: trades.length }, 'Trades flushed');
+    try {
+      const db = getDbClient();
+
+      // Insert trades in batch
+      for (const trade of trades) {
+        await db.insert(tradesTable).values({
+          id: trade.id,
+          orderId: trade.takerOrderId, // Primary order reference
+          price: trade.price.toString(),
+          quantity: trade.quantity.toString(),
+          fee: (trade.makerFee + trade.takerFee).toString(),
+          createdAt: trade.createdAt,
+        });
+      }
+
+      log.info({ count: trades.length }, 'Trades persisted to database');
+    } catch (error) {
+      log.error({ error, count: trades.length }, 'Failed to persist trades');
+      // Re-add trades to pending for retry
+      this.pendingTrades.unshift(...trades);
+      throw error;
+    }
   }
 
   /**
