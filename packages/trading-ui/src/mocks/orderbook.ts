@@ -4,7 +4,7 @@
  * Generates realistic order book data with depth visualization.
  */
 
-import type { OrderBook, OrderBookLevel } from '../types';
+import type { OrderBookData, OrderBookLevel } from '../types';
 import { getInstrumentBySymbol, INITIAL_PRICES } from './symbols';
 
 /** Order book configuration */
@@ -97,7 +97,7 @@ function generateAskLevels(
 export function generateOrderBook(
     symbol: string,
     config: Partial<OrderBookConfig> = {}
-): OrderBook {
+): OrderBookData {
     const fullConfig = { ...DEFAULT_CONFIG, ...config };
     const instrument = getInstrumentBySymbol(symbol);
 
@@ -135,8 +135,10 @@ export function generateOrderBook(
         cumulative: 0,
         total: 0,
     });
-    bids[0].cumulative = bids[0].quantity;
-    bids[0].total = bids[0].price * bids[0].quantity;
+    if (bids[0]) {
+        bids[0].cumulative = bids[0].quantity;
+        bids[0].total = bids[0].price * bids[0].quantity;
+    }
 
     // Recalculate cumulative for bids
     let cumBid = 0;
@@ -151,8 +153,10 @@ export function generateOrderBook(
         cumulative: 0,
         total: 0,
     });
-    asks[0].cumulative = asks[0].quantity;
-    asks[0].total = asks[0].price * asks[0].quantity;
+    if (asks[0]) {
+        asks[0].cumulative = asks[0].quantity;
+        asks[0].total = asks[0].price * asks[0].quantity;
+    }
 
     // Recalculate cumulative for asks
     let cumAsk = 0;
@@ -176,7 +180,7 @@ export function generateOrderBook(
 /**
  * Update order book with small random changes (simulates real-time updates).
  */
-export function updateOrderBook(orderBook: OrderBook): OrderBook {
+export function updateOrderBook(orderBook: OrderBookData): OrderBookData {
     const instrument = getInstrumentBySymbol(orderBook.symbol);
     const decimals = instrument?.decimals || 2;
 
@@ -227,7 +231,7 @@ export function updateOrderBook(orderBook: OrderBook): OrderBook {
  */
 export function createOrderBookStream(
     symbol: string,
-    callback: (orderBook: OrderBook) => void,
+    callback: (orderBook: OrderBookData) => void,
     intervalMs: number = 250
 ): () => void {
     let orderBook = generateOrderBook(symbol);

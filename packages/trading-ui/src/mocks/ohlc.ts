@@ -157,10 +157,13 @@ export function createChartDataStream(
     const instrument = getInstrumentBySymbol(symbol);
     const decimals = instrument?.decimals || 2;
     const intervalSeconds = TIMEFRAME_SECONDS[timeframe];
-    const volatility = VOLATILITY[symbol] || data[data.length - 1].close * 0.0001;
+    const lastCandle = data[data.length - 1];
+    const volatility = VOLATILITY[symbol] || (lastCandle ? lastCandle.close * 0.0001 : 0.01);
 
     const intervalId = setInterval(() => {
         const lastCandle = data[data.length - 1];
+        if (!lastCandle) return;
+
         const now = Math.floor(Date.now() / 1000);
 
         // Check if we need a new candle
@@ -168,7 +171,6 @@ export function createChartDataStream(
             // Add new candle
             const newCandle = generateNextCandle(symbol, lastCandle, timeframe);
             data = [...data.slice(-199), newCandle]; // Keep last 200 candles
-        } else {
             // Update last candle with price movement
             const priceChange = (Math.random() - 0.5) * volatility;
             const newPrice = lastCandle.close + priceChange;

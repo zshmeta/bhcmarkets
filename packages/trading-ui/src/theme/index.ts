@@ -261,46 +261,7 @@ export const COMPONENT = {
     },
 } as const;
 
-// =============================================================================
-// TRADING-SPECIFIC UTILITIES
-// =============================================================================
 
-/**
- * Get color for price direction
- */
-export function getDirectionColor(value: number): string {
-    if (value > 0) return COLORS.semantic.positive.main;
-    if (value < 0) return COLORS.semantic.negative.main;
-    return COLORS.text.secondary;
-}
-
-/**
- * Get color for trade side
- */
-export function getSideColor(side: 'buy' | 'sell', variant: 'main' | 'bg' | 'muted' = 'main'): string {
-    const colorSet = side === 'buy' ? COLORS.semantic.positive : COLORS.semantic.negative;
-    return colorSet[variant];
-}
-
-/**
- * Get margin level status color
- */
-export function getMarginColor(level: number): string {
-    if (level >= 200) return COLORS.semantic.positive.main;
-    if (level >= 100) return COLORS.semantic.warning.main;
-    return COLORS.semantic.negative.main;
-}
-
-/**
- * Get tick direction color with flash animation support
- */
-export function getTickColor(direction: 'up' | 'down' | 'unchanged'): string {
-    switch (direction) {
-        case 'up': return COLORS.semantic.positive.main;
-        case 'down': return COLORS.semantic.negative.main;
-        default: return COLORS.text.primary;
-    }
-}
 
 // =============================================================================
 // CSS HELPERS

@@ -1,16 +1,15 @@
 {
-    "name": "@repo/trading-ui",
-    "version": "0.0.0",
-    "private": true,
-    "exports": {
-        ".": "./src/index.ts",
-        "./components/*": "./src/components/*/index.ts",
-        "./hooks/*": "./src/hooks/*.ts",
-        "./types": "./src/types/index.ts",
-        "./mocks": "./src/mocks/index.ts",
-        "./utils": "./src/utils/index.ts"
-    },
-
+  "name": "@repo/trading-ui",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*/index.ts",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./types": "./src/types/index.ts",
+    "./mocks": "./src/mocks/index.ts",
+    "./utils": "./src/utils/index.ts"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -21,7 +20,8 @@
   "dependencies": {
     "lightweight-charts": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "styled-components": "^6.3.1"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",

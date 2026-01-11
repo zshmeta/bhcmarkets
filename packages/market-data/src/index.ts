@@ -187,7 +187,7 @@ class MarketDataService {
 
     // 1. Database connection
     log.info('Connecting to database...');
-    await getDbClient();
+    
 
     // 2. Initialize components
     this.collectorRegistry = new CollectorRegistry();

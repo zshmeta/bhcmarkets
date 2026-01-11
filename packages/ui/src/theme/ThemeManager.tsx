@@ -48,7 +48,6 @@ export const ThemeManager = ({ initialPalette = defaultPalette, children }: Them
   return (
     <ThemePickerContext.Provider value={contextValue}>
       <ThemeProvider theme={themeTokens}>
-        {/* @ts-expect-error React 18/19 type mismatch in monorepo */}
         <GlobalStyle />
         {children}
       </ThemeProvider>

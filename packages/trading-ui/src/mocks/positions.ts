@@ -68,7 +68,7 @@ export function generateMockPositions(count: number = 5): Position[] {
 
     for (let i = 0; i < count; i++) {
         const symbol = symbols[i % symbols.length];
-        positions.push(generateMockPosition(symbol));
+        if (symbol) positions.push(generateMockPosition(symbol));
     }
 
     return positions;
@@ -81,7 +81,8 @@ export function generateMockOrder(symbol: string, overrides: Partial<Order> = {}
     const instrument = getInstrumentBySymbol(symbol);
     const price = INITIAL_PRICES[symbol] || 100;
     const side: OrderSide = Math.random() > 0.5 ? 'buy' : 'sell';
-    const type: OrderType = Math.random() > 0.7 ? 'limit' : 'market';
+    const types: OrderType[] = ['limit', 'market', 'stop_limit'];
+    const type: OrderType = types[Math.floor(Math.random() * 3)] || 'market';
     const status: OrderStatus = Math.random() > 0.5 ? 'open' : 'filled';
     const quantity = Math.random() * 5 + 0.1;
 
@@ -125,7 +126,7 @@ export function generateMockOrders(count: number = 5): Order[] {
 
     for (let i = 0; i < count; i++) {
         const symbol = symbols[i % symbols.length];
-        orders.push(generateMockOrder(symbol));
+        if (symbol) orders.push(generateMockOrder(symbol));
     }
 
     return orders;
@@ -140,6 +141,7 @@ export function generateMockTradeHistory(count: number = 10): TradeHistory[] {
 
     for (let i = 0; i < count; i++) {
         const symbol = symbols[i % symbols.length];
+        if (!symbol) continue;
         const instrument = getInstrumentBySymbol(symbol);
         const entryPrice = INITIAL_PRICES[symbol] || 100;
         const side: OrderSide = Math.random() > 0.5 ? 'buy' : 'sell';

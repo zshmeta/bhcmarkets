@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { OrderBook } from '../types';
+import type { OrderBookData } from '../types';
 import { createOrderBookStream, generateOrderBook } from '../mocks';
 
 interface UseOrderBookOptions {
@@ -19,7 +19,7 @@ interface UseOrderBookOptions {
 
 interface UseOrderBookReturn {
     /** Current order book data */
-    orderBook: OrderBook | null;
+    orderBook: OrderBookData | null;
     /** Whether the stream is running */
     isRunning: boolean;
     /** Start the order book stream */
@@ -49,7 +49,7 @@ export function useOrderBook(
 ): UseOrderBookReturn {
     const { levels = 15, intervalMs = 250, autoStart = true } = options;
 
-    const [orderBook, setOrderBook] = useState<OrderBook | null>(null);
+    const [orderBook, setOrderBook] = useState<OrderBookData | null>(null);
     const [isRunning, setIsRunning] = useState(false);
 
     const cleanupRef = useRef<(() => void) | null>(null);

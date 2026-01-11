@@ -73,8 +73,8 @@ export interface OrderBookLevel {
     total: number;
 }
 
-/** Order book snapshot */
-export interface OrderBook {
+/** OrderBook snapshot */
+export interface OrderBookData {
     /** Symbol */
     symbol: string;
 
