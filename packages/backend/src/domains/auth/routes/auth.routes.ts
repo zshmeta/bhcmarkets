@@ -11,6 +11,7 @@ import { createLoginController } from "../controllers/login.controller.js";
 import { createRegisterController } from "../controllers/register.controller.js";
 import { createRefreshController } from "../controllers/refresh.controller.js";
 import { createLogoutController } from "../controllers/logout.controller.js";
+import type { DbHealth } from "../../../infra/db-health.js";
 import {
   createListSessionsController,
   createRevokeAllSessionsController,
@@ -40,7 +41,7 @@ type LoggerLike = {
  */
 export function registerAuthRoutes(
   router: Router,
-  services: { auth: AuthService },
+  services: { auth: AuthService; dbHealth: DbHealth },
   logger: LoggerLike
 ): void {
   // Create controllers
@@ -51,20 +52,37 @@ export function registerAuthRoutes(
   const listSessionsController = createListSessionsController(services.auth);
   const revokeAllSessionsController = createRevokeAllSessionsController(services.auth);
 
+  const requireDb = (handler: (req: any) => Promise<any>) => {
+    return async (req: any) => {
+      const connected = await services.dbHealth.isConnected();
+      if (!connected) {
+        logger.error("db_not_connected", { path: (req as any)?.path ?? "unknown" });
+        return {
+          status: 503,
+          body: {
+            error: "SERVICE_UNAVAILABLE",
+            message: "Database not connected",
+          },
+        };
+      }
+      return handler(req);
+    };
+  };
+
   // Register routes
   // Authentication endpoints
-  router.route("POST", "/auth/login", loginController);
-  router.route("POST", "/auth/register", registerController);
-  router.route("POST", "/auth/refresh", refreshController);
-  router.route("POST", "/auth/code", createGenerateCodeController(services.auth));
-  router.route("POST", "/auth/exchange", createExchangeCodeController(services.auth));
-  router.route("POST", "/auth/forgot-password", createRequestPasswordResetController(services.auth));
-  router.route("POST", "/auth/reset-password", createConfirmPasswordResetController(services.auth));
+  router.route("POST", "/auth/login", requireDb(loginController));
+  router.route("POST", "/auth/register", requireDb(registerController));
+  router.route("POST", "/auth/refresh", requireDb(refreshController));
+  router.route("POST", "/auth/code", requireDb(createGenerateCodeController(services.auth)));
+  router.route("POST", "/auth/exchange", requireDb(createExchangeCodeController(services.auth)));
+  router.route("POST", "/auth/forgot-password", requireDb(createRequestPasswordResetController(services.auth)));
+  router.route("POST", "/auth/reset-password", requireDb(createConfirmPasswordResetController(services.auth)));
 
 
   // Session management endpoints
-  router.route("POST", "/auth/logout", logoutController);
-  router.route("POST", "/auth/logout-all", revokeAllSessionsController);
-  router.route("GET", "/auth/sessions", listSessionsController);
+  router.route("POST", "/auth/logout", requireDb(logoutController));
+  router.route("POST", "/auth/logout-all", requireDb(revokeAllSessionsController));
+  router.route("GET", "/auth/sessions", requireDb(listSessionsController));
 
 }

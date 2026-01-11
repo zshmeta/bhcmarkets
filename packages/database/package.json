@@ -10,8 +10,9 @@
         "./schema": "./src/schema/index.ts"
     },
     "scripts": {
-        "db:generate": "drizzle-kit generate",
-        "db:migrate": "drizzle-kit migrate",
+        "db:generate": "bun run build && drizzle-kit generate",
+        "db:migrate": "bun run build && drizzle-kit migrate",
+        "db:push": "bun run build && drizzle-kit push",
         "build": "tsc",
         "lint": "eslint .",
         "typecheck": "tsc --noEmit"
@@ -24,7 +25,7 @@
     },
     "devDependencies": {
         "@repo/typescript-config": "*",
-        "@types/node": "catalog:",
+        "@types/node": "^25.0.6",
         "@types/pg": "catalog:",
         "drizzle-kit": "catalog:",
         "eslint": "catalog:",

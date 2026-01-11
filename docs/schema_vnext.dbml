@@ -1,0 +1,921 @@
+// BHC Markets — vNext Blueprint Schema (DBML)
+// =========================================
+//
+// Purpose:
+// - Import this file into dbdiagram.io (or similar) to get a relationship diagram.
+// - This is derived from docs/schema_vnext.sql.
+//
+// Notes:
+// - DBML focuses on tables + FKs; it doesn't model every Postgres detail.
+// - Some relationships are "optional" (nullable) by design.
+
+Table users {
+  id uuid [pk]
+  email varchar [unique, not null]
+  status user_status
+  role user_role
+  last_login_at timestamptz
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table user_credentials {
+  user_id uuid [pk]
+  password_hash text
+  version int
+  failed_attempt_count int
+  locked_until timestamptz
+  password_updated_at timestamptz
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table auth_sessions {
+  id uuid [pk]
+  user_id uuid
+  refresh_token_hash text [unique]
+  refresh_token_version int
+  password_version int
+  status session_status
+  user_agent text
+  ip_address varchar
+  device_fingerprint text
+  created_at timestamptz
+  last_seen_at timestamptz
+  expires_at timestamptz
+  revoked_at timestamptz
+  revoked_reason session_invalidation_reason
+  updated_at timestamptz
+}
+
+Table password_reset_tokens {
+  id bigserial [pk]
+  user_id uuid
+  token_hash text [unique]
+  expires_at timestamptz
+  used boolean
+  created_at timestamptz
+}
+
+Table auth_codes {
+  code varchar [pk]
+  user_id uuid
+  expires_at timestamptz
+  used_at timestamptz
+}
+
+Table user_profiles {
+  user_id uuid [pk]
+  legal_name text
+  date_of_birth date
+  residency_country varchar
+  tax_residency_country varchar
+  address_json jsonb
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table user_contact_methods {
+  id uuid [pk]
+  user_id uuid
+  type varchar
+  value text
+  verified boolean
+  verified_at timestamptz
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table user_2fa_methods {
+  id uuid [pk]
+  user_id uuid
+  type varchar
+  secret_ref text
+  enabled boolean
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table api_keys {
+  id uuid [pk]
+  user_id uuid
+  name varchar
+  key_hash text [unique]
+  scopes text
+  ip_allowlist jsonb
+  last_used_at timestamptz
+  revoked_at timestamptz
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table user_security_events {
+  id uuid [pk]
+  user_id uuid
+  event_type varchar
+  ip_address varchar
+  user_agent text
+  metadata jsonb
+  created_at timestamptz
+}
+
+Table kyc_cases {
+  id uuid [pk]
+  user_id uuid
+  status kyc_status
+  provider varchar
+  provider_reference varchar
+  review_notes text
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table kyc_documents {
+  id uuid [pk]
+  kyc_case_id uuid
+  document_type varchar
+  storage_ref text
+  expires_on date
+  created_at timestamptz
+}
+
+Table aml_flags {
+  id uuid [pk]
+  user_id uuid
+  severity int
+  reason_code varchar
+  details jsonb
+  resolved_at timestamptz
+  resolved_by uuid
+  created_at timestamptz
+}
+
+Table sanctions_screenings {
+  id uuid [pk]
+  user_id uuid
+  provider varchar
+  match_score numeric
+  matched_entity jsonb
+  created_at timestamptz
+}
+
+Table assets {
+  code varchar [pk]
+  type asset_type
+  name varchar
+  decimals int
+  display_decimals int
+  metadata jsonb
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table venues {
+  id uuid [pk]
+  name varchar
+  type venue_type
+  metadata jsonb
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table instruments {
+  id uuid [pk]
+  symbol varchar [unique]
+  venue_id uuid
+  venue_symbol varchar
+  base_asset_code varchar
+  quote_asset_code varchar
+  instrument_type instrument_type
+  trading_enabled boolean
+  tick_size numeric
+  lot_size numeric
+  min_order_size numeric
+  max_order_size numeric
+  price_decimals int
+  quantity_decimals int
+  maker_fee_bps numeric
+  taker_fee_bps numeric
+  metadata jsonb
+  created_at timestamptz
+  updated_at timestamptz
+
+  Indexes {
+    (venue_id, venue_symbol) [unique]
+  }
+}
+
+Table instrument_trading_sessions {
+  id uuid [pk]
+  instrument_id uuid
+  timezone varchar
+  schedule jsonb
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table symbols {
+  symbol varchar [pk]
+  base_currency varchar
+  quote_currency varchar
+  trading_enabled boolean
+  min_order_size numeric
+  max_order_size numeric
+  maker_fee numeric
+  taker_fee numeric
+  price_decimals int
+  quantity_decimals int
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table accounts {
+  id uuid [pk]
+  user_id uuid
+  currency varchar
+  balance numeric
+  locked numeric
+  account_type account_type
+  status account_status
+  metadata jsonb
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table trading_accounts {
+  id uuid [pk]
+  user_id uuid
+  product account_type
+  status account_status
+  risk_tier varchar
+  metadata jsonb
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table subaccounts {
+  id uuid [pk]
+  trading_account_id uuid
+  name varchar
+  created_at timestamptz
+  updated_at timestamptz
+
+  Indexes {
+    (trading_account_id, name) [unique]
+  }
+}
+
+Table ledger_accounts {
+  id uuid [pk]
+  trading_account_id uuid
+  subaccount_id uuid
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table ledger_balances {
+  id uuid [pk]
+  ledger_account_id uuid
+  account_id uuid
+  asset varchar
+  available numeric
+  held numeric
+  created_at timestamptz
+  updated_at timestamptz
+
+  Indexes {
+    (ledger_account_id, asset) [unique]
+    (account_id, asset) [unique]
+  }
+}
+
+Table ledger_holds {
+  order_id uuid [pk]
+  ledger_account_id uuid
+  account_id uuid
+  asset varchar
+  amount numeric
+  created_at timestamptz
+}
+
+Table ledger_entries {
+  id uuid [pk]
+  ledger_account_id uuid
+  account_id uuid
+  asset varchar
+  type ledger_transaction_type
+  amount numeric
+  balance_after numeric
+  reference_id varchar
+  reference_type varchar
+  description text
+  status ledger_transaction_status
+  created_at timestamptz
+}
+
+Table orders {
+  id uuid [pk]
+  trading_account_id uuid
+  instrument_id uuid
+  account_id uuid
+  symbol varchar
+  side order_side
+  type order_type
+  time_in_force varchar
+  price numeric
+  stop_price numeric
+  quantity numeric
+  filled_quantity numeric
+  average_fill_price numeric
+  status order_status
+  client_order_id varchar
+  expires_at timestamptz
+  created_at timestamptz
+  updated_at timestamptz
+  cancelled_at timestamptz
+  cancel_reason text
+}
+
+Table order_events {
+  id uuid [pk]
+  order_id uuid
+  event_type order_event_type
+  actor_type varchar
+  actor_id uuid
+  reason_code varchar
+  before jsonb
+  after jsonb
+  created_at timestamptz
+}
+
+Table order_rejections {
+  order_id uuid [pk]
+  rejection_code varchar
+  message text
+  created_at timestamptz
+}
+
+Table idempotency_keys {
+  id uuid [pk]
+  user_id uuid
+  key varchar
+  request_hash varchar
+  status varchar
+  response_json jsonb
+  created_at timestamptz
+
+  Indexes {
+    (user_id, key) [unique]
+  }
+}
+
+Table matches {
+  id uuid [pk]
+  instrument_id uuid
+  symbol varchar
+  maker_order_id uuid
+  taker_order_id uuid
+  price numeric
+  quantity numeric
+  executed_at timestamptz
+}
+
+Table fills {
+  id uuid [pk]
+  order_id uuid
+  match_id uuid
+  liquidity liquidity_role
+  price numeric
+  quantity numeric
+  fee_asset varchar
+  fee_amount numeric
+  created_at timestamptz
+}
+
+Table trades {
+  id uuid [pk]
+  order_id uuid
+  price numeric
+  quantity numeric
+  fee numeric
+  created_at timestamptz
+}
+
+Table execution_trades {
+  id uuid [pk]
+  instrument_id uuid
+  symbol varchar
+  maker_order_id uuid
+  taker_order_id uuid
+  maker_account_id uuid
+  taker_account_id uuid
+  price numeric
+  quantity numeric
+  maker_fee numeric
+  taker_fee numeric
+  status varchar
+  created_at timestamptz
+  settled_at timestamptz
+}
+
+Table positions {
+  id uuid [pk]
+  trading_account_id uuid
+  instrument_id uuid
+  account_id uuid
+  symbol varchar
+  side varchar
+  quantity numeric
+  entry_price numeric
+  average_entry_price numeric
+  cost_basis numeric
+  unrealized_pnl numeric
+  realized_pnl numeric
+  opened_at timestamptz
+  updated_at timestamptz
+}
+
+Table position_events {
+  id uuid [pk]
+  position_id uuid
+  event_type varchar
+  reference_type varchar
+  reference_id varchar
+  delta_quantity numeric
+  price numeric
+  metadata jsonb
+  created_at timestamptz
+}
+
+Table position_lots {
+  id uuid [pk]
+  position_id uuid
+  opened_at timestamptz
+  quantity numeric
+  cost_basis numeric
+  metadata jsonb
+}
+
+Table portfolio_snapshots {
+  trading_account_id uuid [pk]
+  snapshot_at timestamptz [pk]
+  nav numeric
+  total_exposure numeric
+  margin_used numeric
+  metadata jsonb
+}
+
+Table position_history {
+  id uuid [pk]
+  account_id uuid
+  symbol varchar
+  side varchar
+  quantity numeric
+  entry_price numeric
+  exit_price numeric
+  realized_pnl numeric
+  opened_at timestamptz
+  closed_at timestamptz
+}
+
+Table market_prices {
+  id bigserial [pk]
+  symbol varchar
+  price numeric
+  currency varchar
+  source varchar
+  timestamp timestamptz
+  metadata jsonb
+}
+
+Table candles {
+  id serial [pk]
+  symbol varchar
+  timeframe varchar
+  open numeric
+  high numeric
+  low numeric
+  close numeric
+  volume numeric
+  tick_count int
+  timestamp timestamptz
+
+  Indexes {
+    (symbol, timeframe, timestamp) [unique]
+  }
+}
+
+Table mark_prices {
+  id bigserial [pk]
+  instrument_id uuid
+  symbol varchar
+  mark_price numeric
+  index_price numeric
+  source varchar
+  timestamp timestamptz
+}
+
+Table symbol_risk_limits {
+  symbol varchar [pk]
+  trading_enabled boolean
+  min_order_size numeric
+  max_order_size numeric
+  lot_size numeric
+  max_price_deviation numeric
+  max_user_position numeric
+  max_house_exposure numeric
+  max_house_notional_exposure numeric
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table user_risk_limits {
+  user_id uuid [pk]
+  trading_restricted boolean
+  restriction_reason text
+  max_orders_per_minute int
+  daily_loss_limit numeric
+  max_symbol_position_value numeric
+  max_total_position_value numeric
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table circuit_breaker_events {
+  id uuid [pk]
+  symbol varchar
+  trigger circuit_breaker_trigger
+  reason text
+  activated_at timestamptz
+  activated_by uuid
+  deactivated_at timestamptz
+  deactivated_by uuid
+  created_at timestamptz
+}
+
+Table order_attempts {
+  id uuid [pk]
+  user_id uuid
+  symbol varchar
+  was_approved boolean
+  rejection_code varchar
+  attempted_at timestamptz
+}
+
+Table daily_user_pnl {
+  id uuid [pk]
+  user_id uuid
+  date date
+  realized_pnl numeric
+  trading_fees numeric
+  trade_count int
+  updated_at timestamptz
+
+  Indexes {
+    (user_id, date) [unique]
+  }
+}
+
+Table admin_audit_log {
+  id uuid [pk]
+  admin_user_id uuid
+  admin_email varchar
+  action varchar
+  target_type varchar
+  target_id uuid
+  target_identifier varchar
+  old_value jsonb
+  new_value jsonb
+  reason varchar
+  ip_address varchar
+  user_agent varchar
+  created_at timestamptz
+}
+
+Table service_audit_log {
+  id uuid [pk]
+  service_name varchar
+  action varchar
+  target_type varchar
+  target_id varchar
+  metadata jsonb
+  created_at timestamptz
+}
+
+Table data_corrections {
+  id uuid [pk]
+  requested_by uuid
+  approved_by uuid
+  reason text
+  correction jsonb
+  created_at timestamptz
+}
+
+Table payment_rails {
+  id uuid [pk]
+  type payment_rail_type
+  name varchar
+  metadata jsonb
+  created_at timestamptz
+}
+
+Table bank_accounts {
+  id uuid [pk]
+  user_id uuid
+  rail_id uuid
+  label varchar
+  tokenized_details jsonb
+  verified boolean
+  created_at timestamptz
+}
+
+Table crypto_addresses {
+  id uuid [pk]
+  user_id uuid
+  asset_code varchar
+  network varchar
+  address text
+  label varchar
+  whitelisted boolean
+  created_at timestamptz
+
+  Indexes {
+    (user_id, network, address) [unique]
+  }
+}
+
+Table deposits {
+  id uuid [pk]
+  user_id uuid
+  asset_code varchar
+  amount numeric
+  status deposit_status
+  rail_id uuid
+  bank_account_id uuid
+  crypto_address_id uuid
+  external_reference varchar
+  txid varchar
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table withdrawals {
+  id uuid [pk]
+  user_id uuid
+  asset_code varchar
+  amount numeric
+  fee_amount numeric
+  status withdrawal_status
+  rail_id uuid
+  bank_account_id uuid
+  crypto_address_id uuid
+  txid varchar
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table internal_transfers {
+  id uuid [pk]
+  from_ledger_account_id uuid
+  to_ledger_account_id uuid
+  asset_code varchar
+  amount numeric
+  created_at timestamptz
+}
+
+Table fee_schedules {
+  id uuid [pk]
+  name varchar
+  instrument_id uuid
+  maker_fee_bps numeric
+  taker_fee_bps numeric
+  created_at timestamptz
+}
+
+Table fee_tiers {
+  id uuid [pk]
+  name varchar
+  volume_30d_threshold numeric
+  maker_fee_bps numeric
+  taker_fee_bps numeric
+  created_at timestamptz
+}
+
+Table user_fee_tier_assignments {
+  user_id uuid [pk]
+  fee_tier_id uuid
+  effective_from timestamptz
+  effective_to timestamptz
+  updated_at timestamptz
+}
+
+Table margin_requirements {
+  instrument_id uuid [pk]
+  initial_margin_ratio numeric
+  maintenance_margin_ratio numeric
+  updated_at timestamptz
+}
+
+Table borrow_lend_positions {
+  id uuid [pk]
+  trading_account_id uuid
+  asset_code varchar
+  borrowed_amount numeric
+  interest_accrued numeric
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table funding_rates {
+  id uuid [pk]
+  instrument_id uuid
+  rate numeric
+  effective_at timestamptz
+  created_at timestamptz
+
+  Indexes {
+    (instrument_id, effective_at) [unique]
+  }
+}
+
+Table funding_payments {
+  id uuid [pk]
+  position_id uuid
+  instrument_id uuid
+  amount numeric
+  created_at timestamptz
+}
+
+Table liquidation_events {
+  id uuid [pk]
+  trading_account_id uuid
+  instrument_id uuid
+  reason_code varchar
+  metadata jsonb
+  created_at timestamptz
+}
+
+Table support_tickets {
+  id uuid [pk]
+  user_id uuid
+  subject varchar
+  status support_ticket_status
+  priority int
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table support_messages {
+  id uuid [pk]
+  ticket_id uuid
+  sender_type varchar
+  sender_id uuid
+  body text
+  created_at timestamptz
+}
+
+Table notifications {
+  id uuid [pk]
+  user_id uuid
+  channel notification_channel
+  template varchar
+  payload jsonb
+  status notification_status
+  provider_message_id varchar
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table webhook_subscriptions {
+  id uuid [pk]
+  user_id uuid
+  url text
+  secret_ref text
+  events text
+  enabled boolean
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+Table webhook_deliveries {
+  id uuid [pk]
+  subscription_id uuid
+  event_type varchar
+  payload jsonb
+  status notification_status
+  attempt_count int
+  last_error text
+  created_at timestamptz
+  updated_at timestamptz
+}
+
+// Relationships
+Ref: user_credentials.user_id > users.id
+Ref: auth_sessions.user_id > users.id
+Ref: password_reset_tokens.user_id > users.id
+Ref: auth_codes.user_id > users.id
+Ref: user_profiles.user_id > users.id
+Ref: user_contact_methods.user_id > users.id
+Ref: user_2fa_methods.user_id > users.id
+Ref: api_keys.user_id > users.id
+Ref: user_security_events.user_id > users.id
+
+Ref: kyc_cases.user_id > users.id
+Ref: kyc_documents.kyc_case_id > kyc_cases.id
+Ref: aml_flags.user_id > users.id
+Ref: aml_flags.resolved_by > users.id
+Ref: sanctions_screenings.user_id > users.id
+
+Ref: instruments.venue_id > venues.id
+Ref: instruments.base_asset_code > assets.code
+Ref: instruments.quote_asset_code > assets.code
+Ref: instrument_trading_sessions.instrument_id > instruments.id
+
+Ref: accounts.user_id > users.id
+Ref: trading_accounts.user_id > users.id
+Ref: subaccounts.trading_account_id > trading_accounts.id
+Ref: ledger_accounts.trading_account_id > trading_accounts.id
+Ref: ledger_accounts.subaccount_id > subaccounts.id
+
+Ref: ledger_balances.ledger_account_id > ledger_accounts.id
+Ref: ledger_balances.account_id > accounts.id
+Ref: ledger_holds.ledger_account_id > ledger_accounts.id
+Ref: ledger_holds.account_id > accounts.id
+Ref: ledger_entries.ledger_account_id > ledger_accounts.id
+Ref: ledger_entries.account_id > accounts.id
+
+Ref: orders.trading_account_id > trading_accounts.id
+Ref: orders.instrument_id > instruments.id
+Ref: orders.account_id > accounts.id
+Ref: order_events.order_id > orders.id
+Ref: order_events.actor_id > users.id
+Ref: order_rejections.order_id > orders.id
+Ref: idempotency_keys.user_id > users.id
+
+Ref: matches.instrument_id > instruments.id
+Ref: matches.maker_order_id > orders.id
+Ref: matches.taker_order_id > orders.id
+Ref: fills.order_id > orders.id
+Ref: fills.match_id > matches.id
+Ref: trades.order_id > orders.id
+Ref: execution_trades.instrument_id > instruments.id
+Ref: execution_trades.maker_order_id > orders.id
+Ref: execution_trades.taker_order_id > orders.id
+Ref: execution_trades.maker_account_id > accounts.id
+Ref: execution_trades.taker_account_id > accounts.id
+Ref: positions.trading_account_id > trading_accounts.id
+Ref: positions.instrument_id > instruments.id
+Ref: positions.account_id > accounts.id
+Ref: position_events.position_id > positions.id
+Ref: position_lots.position_id > positions.id
+Ref: portfolio_snapshots.trading_account_id > trading_accounts.id
+Ref: position_history.account_id > accounts.id
+
+Ref: mark_prices.instrument_id > instruments.id
+
+Ref: user_risk_limits.user_id > users.id
+Ref: circuit_breaker_events.activated_by > users.id
+Ref: circuit_breaker_events.deactivated_by > users.id
+Ref: order_attempts.user_id > users.id
+Ref: daily_user_pnl.user_id > users.id
+
+Ref: admin_audit_log.admin_user_id > users.id
+Ref: data_corrections.requested_by > users.id
+Ref: data_corrections.approved_by > users.id
+
+Ref: bank_accounts.user_id > users.id
+Ref: bank_accounts.rail_id > payment_rails.id
+Ref: crypto_addresses.user_id > users.id
+Ref: crypto_addresses.asset_code > assets.code
+Ref: deposits.user_id > users.id
+Ref: deposits.asset_code > assets.code
+Ref: deposits.rail_id > payment_rails.id
+Ref: deposits.bank_account_id > bank_accounts.id
+Ref: deposits.crypto_address_id > crypto_addresses.id
+Ref: withdrawals.user_id > users.id
+Ref: withdrawals.asset_code > assets.code
+Ref: withdrawals.rail_id > payment_rails.id
+Ref: withdrawals.bank_account_id > bank_accounts.id
+Ref: withdrawals.crypto_address_id > crypto_addresses.id
+Ref: internal_transfers.from_ledger_account_id > ledger_accounts.id
+Ref: internal_transfers.to_ledger_account_id > ledger_accounts.id
+Ref: internal_transfers.asset_code > assets.code
+
+Ref: fee_schedules.instrument_id > instruments.id
+Ref: user_fee_tier_assignments.user_id > users.id
+Ref: user_fee_tier_assignments.fee_tier_id > fee_tiers.id
+
+Ref: margin_requirements.instrument_id > instruments.id
+Ref: borrow_lend_positions.trading_account_id > trading_accounts.id
+Ref: borrow_lend_positions.asset_code > assets.code
+Ref: funding_rates.instrument_id > instruments.id
+Ref: funding_payments.position_id > positions.id
+Ref: funding_payments.instrument_id > instruments.id
+Ref: liquidation_events.trading_account_id > trading_accounts.id
+Ref: liquidation_events.instrument_id > instruments.id
+
+Ref: support_tickets.user_id > users.id
+Ref: support_messages.ticket_id > support_tickets.id
+Ref: notifications.user_id > users.id
+Ref: webhook_subscriptions.user_id > users.id
+Ref: webhook_deliveries.subscription_id > webhook_subscriptions.id

@@ -1,3 +1,4 @@
+
 /**
  * Order Repository
  * =================
@@ -8,9 +9,14 @@
 
 import { getDbClient, withTransaction } from '@repo/database';
 import type { EngineOrder, EngineTrade, Order } from '../../types/order.types.js';
+import { env } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 
 const log = logger.child({ component: 'order-repository' });
+
+async function getSql() {
+  return getDbClient({ connectionString: env.DATABASE_URL });
+}
 
 // ============================================================================
 // ORDER OPERATIONS
@@ -19,8 +25,18 @@ const log = logger.child({ component: 'order-repository' });
 /**
  * Save a new order to the database.
  */
-export async function saveOrder(order: EngineOrder & { timeInForce: string }): Promise<void> {
-  const sql = getDbClient();
+
+
+
+type PersistedOrder = EngineOrder & {
+  timeInForce: string,
+  clientOrderId?: string
+};
+
+export async function saveOrder(order: PersistedOrder): Promise<void> {
+
+  const sql = await getSql();
+
 
   try {
     await sql`
@@ -61,7 +77,7 @@ export async function updateOrderStatus(
   status: string,
   filledQuantity: number
 ): Promise<void> {
-  const sql = getDbClient();
+  const sql = await getSql();
 
   try {
     await sql`
@@ -83,9 +99,8 @@ export async function updateOrderStatus(
  * Cancel an order.
  */
 export async function cancelOrder(orderId: string): Promise<boolean> {
-  const sql = getDbClient();
-
   try {
+    const sql = await getSql();
     const result = await sql`
       UPDATE orders
       SET status = 'cancelled',
@@ -108,7 +123,7 @@ export async function cancelOrder(orderId: string): Promise<boolean> {
  * Get open orders for recovery.
  */
 export async function getOpenOrders(symbol?: string): Promise<EngineOrder[]> {
-  const sql = getDbClient();
+  const sql = await getSql();
 
   try {
     let result;
@@ -140,8 +155,8 @@ export async function getOpenOrders(symbol?: string): Promise<EngineOrder[]> {
       type: row.type,
       quantity: Number(row.quantity),
       filledQuantity: Number(row.filled_quantity),
-      price: row.price ? Number(row.price) : undefined,
-      stopPrice: row.stop_price ? Number(row.stop_price) : undefined,
+      price: row.price ? Number(row.price) : 0,
+      stopPrice: row.stop_price ? Number(row.stop_price) : 0,
       clientOrderId: row.client_order_id,
       timestamp: new Date(row.created_at).getTime(),
     }));
@@ -163,7 +178,7 @@ export async function getOrdersByAccount(
     offset?: number;
   } = {}
 ): Promise<Order[]> {
-  const sql = getDbClient();
+  const sql = await getSql();
   const { symbol, status, limit = 100, offset = 0 } = options;
 
   try {
@@ -171,41 +186,45 @@ export async function getOrdersByAccount(
 
     if (symbol && status) {
       result = await sql`
-        SELECT *
-        FROM orders
-        WHERE account_id = ${accountId}
-          AND symbol = ${symbol}
-          AND status = ANY(${status})
-        ORDER BY created_at DESC
+        SELECT o.*, a.user_id
+        FROM orders o
+        JOIN accounts a ON a.id = o.account_id
+        WHERE o.account_id = ${accountId}
+          AND o.symbol = ${symbol}
+          AND o.status = ANY(${status})
+        ORDER BY o.created_at DESC
         LIMIT ${limit}
         OFFSET ${offset}
       `;
     } else if (symbol) {
       result = await sql`
-        SELECT *
-        FROM orders
-        WHERE account_id = ${accountId}
-          AND symbol = ${symbol}
-        ORDER BY created_at DESC
+        SELECT o.*, a.user_id
+        FROM orders o
+        JOIN accounts a ON a.id = o.account_id
+        WHERE o.account_id = ${accountId}
+          AND o.symbol = ${symbol}
+        ORDER BY o.created_at DESC
         LIMIT ${limit}
         OFFSET ${offset}
       `;
     } else if (status) {
       result = await sql`
-        SELECT *
-        FROM orders
-        WHERE account_id = ${accountId}
-          AND status = ANY(${status})
-        ORDER BY created_at DESC
+        SELECT o.*, a.user_id
+        FROM orders o
+        JOIN accounts a ON a.id = o.account_id
+        WHERE o.account_id = ${accountId}
+          AND o.status = ANY(${status})
+        ORDER BY o.created_at DESC
         LIMIT ${limit}
         OFFSET ${offset}
       `;
     } else {
       result = await sql`
-        SELECT *
-        FROM orders
-        WHERE account_id = ${accountId}
-        ORDER BY created_at DESC
+        SELECT o.*, a.user_id
+        FROM orders o
+        JOIN accounts a ON a.id = o.account_id
+        WHERE o.account_id = ${accountId}
+        ORDER BY o.created_at DESC
         LIMIT ${limit}
         OFFSET ${offset}
       `;
@@ -214,14 +233,17 @@ export async function getOrdersByAccount(
     return result.map((row: any) => ({
       id: row.id,
       accountId: row.account_id,
+      userId: row.user_id,
       symbol: row.symbol,
       side: row.side,
       type: row.type,
       timeInForce: row.time_in_force,
-      quantity: Number(row.quantity),
-      filledQuantity: Number(row.filled_quantity),
-      price: row.price ? Number(row.price) : undefined,
-      stopPrice: row.stop_price ? Number(row.stop_price) : undefined,
+      quantity: String(row.quantity),
+      filledQuantity: String(row.filled_quantity),
+      remainingQuantity: String(Number(row.quantity) - Number(row.filled_quantity)),
+      price: row.price ? String(row.price) : null,
+      stopPrice: row.stop_price ? String(row.stop_price) : null,
+      averageFillPrice: row.average_fill_price ? String(row.average_fill_price) : null,
       status: row.status,
       clientOrderId: row.client_order_id,
       createdAt: new Date(row.created_at),
@@ -237,35 +259,43 @@ export async function getOrdersByAccount(
  * Get single order by ID.
  */
 export async function getOrderById(orderId: string): Promise<Order | null> {
-  const sql = getDbClient();
+  const sql = await getSql();
 
   try {
-    const result = await sql`
-      SELECT *
-      FROM orders
-      WHERE id = ${orderId}
-    `;
+    const result = (await sql`
+      SELECT o.*, a.user_id
+      FROM orders o
+      JOIN accounts a ON a.id = o.account_id
+      WHERE o.id = ${orderId}
+      LIMIT 1
+    `) as any[];
 
-    if (result.length === 0) {
+    const row = result[0] as any;
+    if (!row) {
       return null;
     }
 
-    const row = result[0];
     return {
       id: row.id,
       accountId: row.account_id,
+      userId: row.user_id,
       symbol: row.symbol,
       side: row.side,
       type: row.type,
-      timeInForce: row.time_in_force,
-      quantity: Number(row.quantity),
-      filledQuantity: Number(row.filled_quantity),
-      price: row.price ? Number(row.price) : undefined,
-      stopPrice: row.stop_price ? Number(row.stop_price) : undefined,
       status: row.status,
+      timeInForce: row.time_in_force,
+      price: row.price ? String(row.price) : null,
+      stopPrice: row.stop_price ? String(row.stop_price) : null,
+      quantity: String(row.quantity),
+      filledQuantity: String(row.filled_quantity),
+      remainingQuantity: String(Number(row.quantity) - Number(row.filled_quantity)),
+      averageFillPrice: row.average_fill_price ? String(row.average_fill_price) : null,
       clientOrderId: row.client_order_id,
+      expiresAt: row.expires_at ? new Date(row.expires_at) : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
+      cancelledAt: row.cancelled_at ? new Date(row.cancelled_at) : undefined,
+      cancelReason: row.cancel_reason ?? undefined,
     };
   } catch (error) {
     log.error({ error, orderId }, 'Failed to get order');
@@ -283,13 +313,17 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
 export async function saveTrades(trades: (EngineTrade & { id: string; symbol: string })[]): Promise<void> {
   if (trades.length === 0) return;
 
-  const sql = getDbClient();
-
   try {
+    // Ensure the singleton DB client is initialized with the env connection string.
+    await getSql();
+
     await withTransaction(async (tx) => {
+      // postgres.js transactions are template-tag functions at runtime, but the
+      // TypeScript types in our current version don't expose the call signature.
+      const sqlTx = tx as unknown as (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown[]>;
       for (const trade of trades) {
-        await tx`
-          INSERT INTO trades (
+        await sqlTx`
+          INSERT INTO execution_trades (
             id, symbol, maker_order_id, taker_order_id,
             maker_account_id, taker_account_id,
             price, quantity, created_at
@@ -328,7 +362,7 @@ export async function getTradesByAccount(
     endTime?: Date;
   } = {}
 ): Promise<any[]> {
-  const sql = getDbClient();
+  const sql = await getSql();
   const { symbol, limit = 100, offset = 0, startTime, endTime } = options;
 
   try {
@@ -338,7 +372,7 @@ export async function getTradesByAccount(
     if (symbol && startTime && endTime) {
       result = await sql`
         SELECT *
-        FROM trades
+        FROM execution_trades
         WHERE (maker_account_id = ${accountId} OR taker_account_id = ${accountId})
           AND symbol = ${symbol}
           AND created_at >= ${startTime}
@@ -350,7 +384,7 @@ export async function getTradesByAccount(
     } else if (symbol) {
       result = await sql`
         SELECT *
-        FROM trades
+        FROM execution_trades
         WHERE (maker_account_id = ${accountId} OR taker_account_id = ${accountId})
           AND symbol = ${symbol}
         ORDER BY created_at DESC
@@ -360,7 +394,7 @@ export async function getTradesByAccount(
     } else {
       result = await sql`
         SELECT *
-        FROM trades
+        FROM execution_trades
         WHERE maker_account_id = ${accountId} OR taker_account_id = ${accountId}
         ORDER BY created_at DESC
         LIMIT ${limit}
@@ -392,12 +426,12 @@ export async function getRecentTrades(
   symbol: string,
   limit: number = 100
 ): Promise<any[]> {
-  const sql = getDbClient();
+  const sql = await getSql();
 
   try {
     const result = await sql`
       SELECT id, symbol, price, quantity, created_at
-      FROM trades
+      FROM execution_trades
       WHERE symbol = ${symbol}
       ORDER BY created_at DESC
       LIMIT ${limit}
@@ -406,9 +440,9 @@ export async function getRecentTrades(
     return result.map((row: any) => ({
       id: row.id,
       symbol: row.symbol,
-      price: Number(row.price),
-      quantity: Number(row.quantity),
-      timestamp: new Date(row.created_at).getTime(),
+      price: String(row.price),
+      quantity: String(row.quantity),
+      timestamp: String(new Date(row.created_at).getTime()),
     }));
   } catch (error) {
     log.error({ error, symbol }, 'Failed to get recent trades');

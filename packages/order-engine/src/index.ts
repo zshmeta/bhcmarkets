@@ -49,7 +49,7 @@
 
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
-import { isDatabaseConnected, closeDb, isRedisConnected, closeRedis, subscribe, getDbClient } from '@repo/database';
+import { isDatabaseConnected, closeDb, isRedisConnectedWithConfig, closeRedis, subscribe, getDbClient, getPubSubWithConfig } from '@repo/database';
 import { OrderManager } from './domains/orders/order-manager.js';
 import { OrderEngineWebSocket } from './domains/stream/websocket-server.js';
 import { RestApiServer } from './api/rest-api.js';
@@ -60,6 +60,73 @@ import { createLedgerService, type LedgerService } from '@repo/ledger';
 import { RiskGateway } from './risk-gateway.js';
 
 const log = logger.child({ component: 'order-engine' });
+
+async function assertDatabaseSchema(): Promise<void> {
+  // Use the shared singleton client so this check matches the rest of the service.
+  const sql = await getDbClient({ connectionString: env.DATABASE_URL });
+
+  // We check explicitly in `public` because some dev environments tweak search_path.
+  // to_regclass returns NULL when the relation doesn't exist.
+  const rows = await sql`
+    SELECT
+      to_regclass('public.orders') as orders,
+      to_regclass('public.execution_trades') as execution_trades
+  `;
+
+  const row = (rows?.[0] ?? {}) as { orders?: string | null; execution_trades?: string | null };
+  const missing: string[] = [];
+  if (!row.orders) missing.push('orders');
+  if (!row.execution_trades) missing.push('execution_trades');
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Database schema is missing required tables: ${missing.join(', ')}. ` +
+        `Run \`bun run db:push\` for dev, or \`bun run db:generate && bun run db:migrate\` to create migrations and apply them.`
+    );
+  }
+}
+
+async function waitForDatabaseConnected(options?: { retryMs?: number; timeoutMs?: number }): Promise<void> {
+  const retryMs = options?.retryMs ?? 2000;
+  const timeoutMs = options?.timeoutMs ?? 60_000;
+  const startedAt = Date.now();
+
+  while (true) {
+    try {
+      // Ensure the singleton client is created and validated.
+      await getDbClient({ connectionString: env.DATABASE_URL, connectTimeout: 5 });
+      if (await isDatabaseConnected()) return;
+    } catch {
+      // If the initial connect attempt fails, ensure we don't keep a poisoned singleton.
+      await closeDb().catch(() => undefined);
+    }
+
+    if (Date.now() - startedAt >= timeoutMs) {
+      throw new Error('Database not connected');
+    }
+
+    log.info('Database not connected - retrying...');
+    await new Promise((resolve) => setTimeout(resolve, retryMs));
+  }
+}
+
+async function waitForRedisConnected(options: { url: string; retryMs?: number; timeoutMs?: number }): Promise<void> {
+  const retryMs = options?.retryMs ?? 1000;
+  const timeoutMs = options?.timeoutMs ?? 30_000;
+  const startedAt = Date.now();
+
+  // Ensure pub/sub clients are created; ioredis will reconnect automatically.
+  getPubSubWithConfig({ url: options.url });
+
+  while (Date.now() - startedAt < timeoutMs) {
+    if (isRedisConnectedWithConfig({ url: options.url })) return;
+    await new Promise((resolve) => setTimeout(resolve, retryMs));
+  }
+
+  if (!isRedisConnectedWithConfig({ url: options.url })) {
+    throw new Error('Redis not connected');
+  }
+}
 
 // ============================================================================
 // ORDER ENGINE SERVICE
@@ -99,7 +166,12 @@ export class OrderEngineService {
       this.healthService.start();
 
       // 2. Get database connection for ledger
-      const db = await getDbClient();
+      const db = await getDbClient({
+        connectionString: env.DATABASE_URL,
+      });
+
+      // 2b. Ensure required tables exist before we attempt recovery.
+      await assertDatabaseSchema();
 
       // 3. Initialize core trading domains
       this.positionManager = new PositionManager();
@@ -129,12 +201,12 @@ export class OrderEngineService {
       this.wsServer.setSnapshotProvider((symbol, depth) => {
         return this.orderManager?.getOrderBookSnapshot(symbol, depth) ?? null;
       });
-      await this.wsServer.start(env.WS_PORT);
+      await this.wsServer.start(env.ORDER_ENGINE_WS_PORT);
 
       // 6. Start REST API server
       this.restApi = new RestApiServer();
       this.restApi.setOrderManager(this.orderManager);
-      await this.restApi.start(env.PORT);
+      await this.restApi.start(env.ORDER_ENGINE_PORT);
 
       // 7. Subscribe to market data updates (if available)
       this.subscribeToMarketData();
@@ -144,12 +216,13 @@ export class OrderEngineService {
 
       this.isRunning = true;
       log.info({
-        restPort: env.PORT,
-        wsPort: env.WS_PORT,
+        restPort: env.ORDER_ENGINE_PORT,
+        wsPort: env.ORDER_ENGINE_WS_PORT,
       }, '✅ Order Engine Service started');
 
     } catch (error) {
-      log.error({ error }, 'Failed to start Order Engine Service');
+      // Use the standard `err` key so we get message + stack in logs.
+      log.error({ err: error }, 'Failed to start Order Engine Service');
       await this.stop();
       throw error;
     }
@@ -241,12 +314,13 @@ export class OrderEngineService {
     process.on('SIGINT', () => shutdown('SIGINT'));
 
     process.on('uncaughtException', (error) => {
-      log.fatal({ error }, 'Uncaught exception');
+      // Fatal logs must include the stack trace so we can debug production incidents.
+      log.fatal({ err: error }, 'Uncaught exception');
       this.stop().then(() => process.exit(1));
     });
 
     process.on('unhandledRejection', (reason) => {
-      log.error({ reason }, 'Unhandled rejection');
+      log.error({ err: reason }, 'Unhandled rejection');
     });
   }
 
@@ -318,21 +392,19 @@ export class OrderEngineService {
 async function main() {
   log.info({
     nodeEnv: env.NODE_ENV,
-    port: env.PORT,
-    wsPort: env.WS_PORT,
+    port: env.ORDER_ENGINE_PORT,
+    wsPort: env.ORDER_ENGINE_WS_PORT,
+
   }, 'Order Engine configuration');
 
-  // Check dependencies
-  const dbConnected = await isDatabaseConnected();
-  const redisConnected = await isRedisConnected();
 
-  if (!dbConnected) {
-    log.warn('Database not connected - orders will not be persisted');
-  }
+  // Check connections. Retry until connected.
 
-  if (!redisConnected) {
-    log.warn('Redis not connected - using in-memory fallback');
-  }
+  await waitForDatabaseConnected();
+
+  // Redis is required for pub/sub between services in production-grade deployments.
+  // If REDIS_URL is misconfigured or Redis is down, fail startup rather than silently degrading.
+  await waitForRedisConnected({ url: env.REDIS_URL });
 
   // Start service
   const service = new OrderEngineService();
@@ -343,7 +415,7 @@ async function main() {
 const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 if (isMainModule) {
   main().catch((error) => {
-    log.fatal({ error }, 'Fatal error starting Order Engine');
+    log.fatal({ err: error }, 'Fatal error starting Order Engine');
     process.exit(1);
   });
 }
@@ -395,7 +467,8 @@ export {
   type UserResolver,
   type PositionResolver,
   type TradeHistoryResolver,
-  type PositionEmailClient,
+  // Keep the public API stable: external callers can keep importing PositionEmailClient.
+  type EmailClient as PositionEmailClient,
   type PositionEmailHandlerConfig,
   type TradeOpenedPayload,
   type TradeClosedPayload,

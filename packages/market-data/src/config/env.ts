@@ -11,9 +11,17 @@
  */
 
 import { config } from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
-// Load .env file if present (development mode)
+// Load monorepo root .env regardless of service CWD.
+// Repo convention: all services share the root-level `.env`.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootEnvPath = path.resolve(__dirname, '../../../../.env');
+config({ path: rootEnvPath });
+
+// Also load a local .env if present (package-level overrides in dev).
 config();
 
 /**
@@ -22,20 +30,20 @@ config();
  */
 const envSchema = z.object({
   // Server configuration
-  PORT: z.coerce.number().default(4001),
+  MARKET_DATA_PORT: z.coerce.number().default(4001),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Database - required for storing candles
 
-  DATABASE_URL: z.string().default('postgresql://bhcm:bhcm@100.100.13.10:5432/bhcmarkets'),
+  DATABASE_URL: z.string().min(1),
 
   // Redis - used for price caching and pub/sub between services
   // Optional in dev (will use in-memory fallback), required in production
 
-  REDIS_URL: z.string().default('redis://:bhcm@100.100.13.10:6379'),
+  REDIS_URL: z.string().min(1),
 
   // WebSocket server for clients (TradingView charts)
-  WS_PORT: z.coerce.number().default(4002),
+  MARKET_DATA_WS_PORT: z.coerce.number().default(4002),
 
   // Polling intervals in milliseconds
   // WHY THESE DEFAULTS:
@@ -48,19 +56,19 @@ const envSchema = z.object({
   // Internal yfinance-service (stocks)
   // This is a self-hosted REST proxy used to avoid direct Yahoo scraping from every service.
   // Example: http://100.100.13.10:8000
-  YFINANCE_SERVICE_BASE_URL: z.string().default('http://100.100.13.10:8000'),
+  YFINANCE_SERVICE_BASE_URL: z.string().min(1),
   YFINANCE_STOCKS_POLL_INTERVAL_MS: z.coerce.number().default(15000),
   YFINANCE_BATCH_SIZE: z.coerce.number().default(100),
 
   // FX rates (free/default)
   // Default provider: open.er-api.com (USD base). One request yields many currencies.
-  FX_RATES_URL: z.string().default('https://open.er-api.com/v6/latest/USD'),
+  FX_RATES_URL: z.string().min(1),
   FX_COMMODITIES_POLL_INTERVAL_MS: z.coerce.number().default(15000),
 
   // RabbitForexAPI (forex + metals)
   // Self-hosted FX+metals API.
   // Example: http://100.100.13.10:3000
-  RABBITFOREX_BASE_URL: z.string().default('http://100.100.13.10:3000'),
+  RABBITFOREX_BASE_URL: z.string().min(1),
   // Polling interval for RabbitForexAPI endpoints.
   // If Rabbit refreshes quotes every second, set this to 1000.
   RABBITFOREX_POLL_INTERVAL_MS: z.coerce.number().default(1000),
@@ -106,8 +114,17 @@ const envSchema = z.object({
   ),
 });
 
+// Normalize common env var names into service-scoped ones.
+const normalizedEnv = {
+  ...process.env,
+} as Record<string, unknown>;
+
+// Back-compat: if someone only sets PORT/WS_PORT, use those.
+if (!normalizedEnv.MARKET_DATA_PORT && process.env.PORT) normalizedEnv.MARKET_DATA_PORT = process.env.PORT;
+if (!normalizedEnv.MARKET_DATA_WS_PORT && process.env.WS_PORT) normalizedEnv.MARKET_DATA_WS_PORT = process.env.WS_PORT;
+
 // Parse and validate environment
-const parsed = envSchema.safeParse(process.env);
+const parsed = envSchema.safeParse(normalizedEnv);
 
 if (!parsed.success) {
   console.error('❌ Invalid environment configuration:');

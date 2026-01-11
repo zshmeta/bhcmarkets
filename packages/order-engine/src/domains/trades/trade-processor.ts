@@ -24,9 +24,10 @@ import type {
 } from './trade.types.js';
 import { FeeCalculator, type FeeTier } from './fee-calculator.js';
 import type { PositionManager } from '../positions/position-manager.js';
-import type { LedgerService } from '../ledger/ledger-adapter.js';
+// Import from the package public surface so we don't depend on internal file paths.
+import type { LedgerService } from '@repo/ledger';
 import { logger } from '../../utils/logger.js';
-import { getDbClient, trades as tradesTable } from '@repo/database';
+import { saveTrades } from './trade-repository.js';
 
 const log = logger.child({ component: 'trade-processor' });
 
@@ -65,7 +66,8 @@ export class TradeProcessor {
     // Start flush interval
     this.flushInterval = setInterval(() => {
       this.flush().catch((err) => {
-        log.error({ error: err }, 'Failed to flush trades');
+        // Use the standard `err` key so our logger can reliably serialize stack traces.
+        log.error({ err }, 'Failed to flush trades');
       });
     }, this.config.flushIntervalMs);
   }
@@ -161,7 +163,7 @@ export class TradeProcessor {
         trade.status = 'settled';
         trade.settledAt = new Date();
       } catch (error) {
-        log.error({ error, tradeId }, 'Trade settlement failed');
+        log.error({ err: error, tradeId }, 'Trade settlement failed');
         trade.status = 'failed';
       }
     } else {
@@ -211,27 +213,28 @@ export class TradeProcessor {
       // Maker bought, taker sold
       // Maker: pays quote currency, receives base
       // Taker: pays base currency, receives quote
-      await this.ledgerService.recordTrade({
+      // Ledger expects string amounts so it can do consistent decimal math.
+      await this.ledgerService.settleTrade({
         tradeId: trade.id,
         buyerAccountId: trade.makerAccountId,
         sellerAccountId: trade.takerAccountId,
         symbol: trade.symbol,
-        price: trade.price,
-        quantity: trade.quantity,
-        buyerFee: trade.makerFee,
-        sellerFee: trade.takerFee,
+        price: trade.price.toString(),
+        quantity: trade.quantity.toString(),
+        buyerFee: trade.makerFee.toString(),
+        sellerFee: trade.takerFee.toString(),
       });
     } else {
       // Maker sold, taker bought
-      await this.ledgerService.recordTrade({
+      await this.ledgerService.settleTrade({
         tradeId: trade.id,
         buyerAccountId: trade.takerAccountId,
         sellerAccountId: trade.makerAccountId,
         symbol: trade.symbol,
-        price: trade.price,
-        quantity: trade.quantity,
-        buyerFee: trade.takerFee,
-        sellerFee: trade.makerFee,
+        price: trade.price.toString(),
+        quantity: trade.quantity.toString(),
+        buyerFee: trade.takerFee.toString(),
+        sellerFee: trade.makerFee.toString(),
       });
     }
   }
@@ -341,23 +344,11 @@ export class TradeProcessor {
     this.pendingTrades = [];
 
     try {
-      const db = getDbClient();
-
-      // Insert trades in batch
-      for (const trade of trades) {
-        await db.insert(tradesTable).values({
-          id: trade.id,
-          orderId: trade.takerOrderId, // Primary order reference
-          price: trade.price.toString(),
-          quantity: trade.quantity.toString(),
-          fee: (trade.makerFee + trade.takerFee).toString(),
-          createdAt: trade.createdAt,
-        });
-      }
-
-      log.info({ count: trades.length }, 'Trades persisted to database');
+      // Persisting through the repository keeps DB usage consistent across the domain.
+      await saveTrades(trades);
+      log.info({ count: trades.length }, 'Trades persisted');
     } catch (error) {
-      log.error({ error, count: trades.length }, 'Failed to persist trades');
+      log.error({ err: error, count: trades.length }, 'Failed to persist trades');
       // Re-add trades to pending for retry
       this.pendingTrades.unshift(...trades);
       throw error;
@@ -415,7 +406,7 @@ export class TradeProcessor {
       try {
         handler(event);
       } catch (error) {
-        log.error({ error, event }, 'Error in trade event handler');
+        log.error({ err: error, event }, 'Error in trade event handler');
       }
     }
   }

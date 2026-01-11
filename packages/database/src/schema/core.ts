@@ -137,16 +137,45 @@ export const orders = pgTable('orders', {
   side: orderSideEnum('side').notNull(),
   type: orderTypeEnum('type').notNull(),
   price: numeric('price', { precision: 30, scale: 10 }),
+  stopPrice: numeric('stop_price', { precision: 30, scale: 10 }),
   quantity: numeric('quantity', { precision: 30, scale: 10 }).notNull(),
   filledQuantity: numeric('filled_quantity', { precision: 30, scale: 10 }).default('0').notNull(),
+  averageFillPrice: numeric('average_fill_price', { precision: 30, scale: 10 }),
   status: orderStatusEnum('status').default('new').notNull(),
   timeInForce: varchar('time_in_force', { length: 50 }),
+  clientOrderId: varchar('client_order_id', { length: 64 }),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  cancelledAt: timestamp('cancelled_at', { withTimezone: true }),
+  cancelReason: text('cancel_reason'),
 }, (table) => ({
   accountIdIdx: index('idx_orders_account').on(table.accountId),
   symbolIdx: index('idx_orders_symbol').on(table.symbol),
   statusIdx: index('idx_orders_status').on(table.status),
+  accountClientOrderIdUq: uniqueIndex('uq_orders_account_client_order_id').on(table.accountId, table.clientOrderId),
+}));
+
+// =============================================================================
+// EXECUTION TRADES (Engine-style maker/taker)
+// =============================================================================
+
+export const executionTrades = pgTable('execution_trades', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  symbol: varchar('symbol', { length: 64 }).notNull(),
+  makerOrderId: uuid('maker_order_id').notNull(),
+  takerOrderId: uuid('taker_order_id').notNull(),
+  makerAccountId: uuid('maker_account_id').references(() => accounts.id, { onDelete: 'set null' }),
+  takerAccountId: uuid('taker_account_id').references(() => accounts.id, { onDelete: 'set null' }),
+  price: numeric('price', { precision: 30, scale: 10 }).notNull(),
+  quantity: numeric('quantity', { precision: 30, scale: 10 }).notNull(),
+  makerFee: numeric('maker_fee', { precision: 30, scale: 10 }).default('0').notNull(),
+  takerFee: numeric('taker_fee', { precision: 30, scale: 10 }).default('0').notNull(),
+  status: varchar('status', { length: 32 }).default('executed').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  settledAt: timestamp('settled_at', { withTimezone: true }),
+}, (table) => ({
+  symbolCreatedIdx: index('idx_execution_trades_symbol_time').on(table.symbol, table.createdAt),
 }));
 
 // =============================================================================

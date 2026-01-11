@@ -27,10 +27,11 @@
 
 import { createServer, type Server, type IncomingMessage, type ServerResponse } from 'http';
 import { URL } from 'url';
-import type { OrderManager } from '../orders/order-manager.js';
-import { getOrdersByAccount, getTradesByAccount, getRecentTrades } from '../orders/order-repository.js';
-import { logger } from '../../utils/logger.js';
-import { env } from '../../config/env.js';
+import type { OrderManager } from '../domains/orders/order-manager.js';
+import { getOrdersByAccount, getTradesByAccount, getRecentTrades } from '../domains/orders/order-repository.js';
+import { logger } from '../utils/logger.js';
+import { env } from '../config/env.js';
+import { isDatabaseConnected } from '@repo/database';
 
 const log = logger.child({ component: 'rest-api' });
 
@@ -62,6 +63,15 @@ export class RestApiServer {
   private routes: Route[] = [];
   private orderManager: OrderManager | null = null;
 
+  private async ensureDbConnected(res: ServerResponse): Promise<boolean> {
+    const connected = await isDatabaseConnected();
+    if (!connected) {
+      this.sendError(res, 503, 'Database not connected');
+      return false;
+    }
+    return true;
+  }
+
   constructor() {
     this.setupRoutes();
   }
@@ -73,7 +83,7 @@ export class RestApiServer {
   /**
    * Start the REST API server.
    */
-  async start(port: number = env.PORT): Promise<void> {
+  async start(port: number = env.ORDER_ENGINE_PORT): Promise<void> {
     return new Promise((resolve, reject) => {
       this.server = createServer((req, res) => {
         this.handleRequest(req, res).catch((error) => {
@@ -268,6 +278,10 @@ export class RestApiServer {
     _query: URLSearchParams,
     body: any
   ): Promise<void> {
+    if (!(await this.ensureDbConnected(res))) {
+      return;
+    }
+
     if (!this.orderManager) {
       this.sendError(res, 503, 'Service not initialized');
       return;
@@ -302,6 +316,10 @@ export class RestApiServer {
     res: ServerResponse,
     params: Record<string, string>
   ): Promise<void> {
+    if (!(await this.ensureDbConnected(res))) {
+      return;
+    }
+
     if (!this.orderManager) {
       this.sendError(res, 503, 'Service not initialized');
       return;

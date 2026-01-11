@@ -14,6 +14,7 @@ import { registerAccountRoutes } from "../domains/account/index.js";
 import { registerAdminApiRoutes } from "../domains/admin/index.js";
 import { registerTradingRoutes } from "../domains/trading/index.js";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { DbHealth } from "../infra/db-health.js";
 
 export type ApiServices = {
 	auth: AuthService;
@@ -22,6 +23,7 @@ export type ApiServices = {
 	account: AccountServiceInterface;
 	risk: RiskService;
 	db: NodePgDatabase<Record<string, unknown>>;
+	dbHealth: DbHealth;
 };
 
 type LoggerLike = {
@@ -33,10 +35,16 @@ type LoggerLike = {
 export function registerApiRoutes(router: Router, services: ApiServices, logger: LoggerLike) {
 	// Health & readiness
 	router.route("GET", "/healthz", async () => ({ status: 200, body: { status: "ok" } }));
-	router.route("GET", "/readyz", async () => ({ status: 200, body: { status: "ready" } }));
+	router.route("GET", "/readyz", async () => {
+		const dbOk = await services.dbHealth.isConnected();
+		if (!dbOk) {
+			return { status: 503, body: { status: "not_ready", reason: "database_not_connected" } };
+		}
+		return { status: 200, body: { status: "ready" } };
+	});
 
 	// Auth routes live in the auth domain module.
-	registerAuthRoutes(router, { auth: services.auth }, logger);
+	registerAuthRoutes(router, { auth: services.auth, dbHealth: services.dbHealth }, logger);
 
 	// Account routes - wallet and balance management
 	registerAccountRoutes(router, {

@@ -18,6 +18,7 @@ import type {
   EngineOrder,
   EngineTrade,
   Order,
+  OrderBookSnapshot,
   TimeInForce,
 } from '../../types/order.types.js';
 import { OrderValidator, getOrderValidator } from './order-validator.js';
@@ -29,7 +30,7 @@ import {
   getOrderById,
   saveTrades,
 } from './order-repository.js';
-import { OrderBookManager, type MatchResult, type ManagerEvent } from '../matching/index.js';
+import { OrderBookManager, type MatchResult, type ManagerEvent, type OrderBookManagerStats } from '../matching/index.js';
 import { publish } from '@repo/database';
 import { logger } from '../../utils/logger.js';
 import { env } from '../../config/env.js';
@@ -143,7 +144,8 @@ export class OrderManager {
     if (this.config.enablePersistence) {
       this.flushInterval = setInterval(() => {
         this.flushTrades().catch((err) => {
-          log.error({ error: err }, 'Failed to flush trades');
+          // Use the standard `err` key so we get message + stack in logs.
+          log.error({ err }, 'Failed to flush trades');
         });
       }, this.config.tradeFlushIntervalMs);
     }
@@ -360,14 +362,14 @@ export class OrderManager {
   /**
    * Get order book snapshot.
    */
-  getOrderBookSnapshot(symbol: string, depth?: number) {
+  getOrderBookSnapshot(symbol: string, depth?: number): OrderBookSnapshot | null {
     return this.bookManager.getOrderBookSnapshot(symbol, depth);
   }
 
   /**
    * Get statistics.
    */
-  getStats() {
+  getStats(): OrderBookManagerStats {
     return this.bookManager.getStats();
   }
 
@@ -428,7 +430,7 @@ export class OrderManager {
       // Flush if batch size reached
       if (this.pendingTrades.length >= this.config.tradeBatchSize) {
         this.flushTrades().catch((err) => {
-          log.error({ error: err }, 'Failed to flush trades');
+          log.error({ err }, 'Failed to flush trades');
         });
       }
     }

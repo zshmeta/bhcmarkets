@@ -56,7 +56,7 @@ export class MarketDataWebSocketServer {
     return new Promise((resolve, reject) => {
       try {
         this.wss = new WebSocketServer({
-          port: env.WS_PORT,
+          port: env.MARKET_DATA_WS_PORT,
           // Path for the WebSocket endpoint
           path: '/ws',
         });
@@ -70,7 +70,7 @@ export class MarketDataWebSocketServer {
         });
 
         this.wss.on('listening', () => {
-          log.info({ port: env.WS_PORT }, 'WebSocket server listening');
+          log.info({ port: env.MARKET_DATA_WS_PORT }, 'WebSocket server listening');
 
           // Start heartbeat
           this.startHeartbeat();

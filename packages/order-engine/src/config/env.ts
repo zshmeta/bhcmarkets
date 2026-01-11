@@ -7,27 +7,36 @@
  */
 
 import { config } from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
-// Load .env file if present (development mode)
+// Load monorepo root .env regardless of service CWD.
+// Repo convention: all services share the root-level `.env`.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootEnvPath = path.resolve(__dirname, '../../../../.env');
+config({ path: rootEnvPath });
+
+// Also load a local .env if present (package-level overrides in dev).
+// `override` is false by default, so root values won't be replaced.
 config();
 
 /**
  * Schema for environment variables with sensible defaults for development.
  */
 const envSchema = z.object({
-  // Server configuration
-  PORT: z.coerce.number().default(4003),
+  // Server configuration (service-scoped to avoid cross-service PORT collisions)
+  ORDER_ENGINE_PORT: z.coerce.number().default(4003),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Database - required for order persistence
-  DATABASE_URL: z.string().default('postgresql://bhcm:bhcm@100.100.13.10:5432/bhcmarkets'),
+  DATABASE_URL: z.string().min(1),
 
-  // Redis - used for pub/sub between services and order book snapshots
-  REDIS_URL: z.string().optional(),
+  // Redis - required for pub/sub between services and order book snapshots
+  REDIS_URL: z.string().min(1),
 
   // WebSocket server for real-time order updates
-  WS_PORT: z.coerce.number().default(4004),
+  ORDER_ENGINE_WS_PORT: z.coerce.number().default(4004),
 
   // Order engine configuration
   // Maximum orders per account (prevents abuse)
@@ -60,13 +69,20 @@ const envSchema = z.object({
   // Logging
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
 
-  // Market data service URL (for price validation)
-  MARKET_DATA_URL: z.string().default('http://localhost:4001'),
-  MARKET_DATA_WS_URL: z.string().default('ws://localhost:4002/ws'),
 });
 
+// Normalize common platform env var names into service-scoped ones.
+// This keeps local tooling flexible while preventing accidental cross-service PORT reuse.
+const normalizedEnv = {
+  ...process.env,
+} as Record<string, unknown>;
+
+// Back-compat: if someone only sets PORT/WS_PORT, use those.
+if (!normalizedEnv.ORDER_ENGINE_PORT && process.env.PORT) normalizedEnv.ORDER_ENGINE_PORT = process.env.PORT;
+if (!normalizedEnv.ORDER_ENGINE_WS_PORT && process.env.WS_PORT) normalizedEnv.ORDER_ENGINE_WS_PORT = process.env.WS_PORT;
+
 // Parse and validate environment
-const parsed = envSchema.safeParse(process.env);
+const parsed = envSchema.safeParse(normalizedEnv);
 
 if (!parsed.success) {
   console.error('❌ Invalid environment configuration:');

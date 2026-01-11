@@ -12,6 +12,7 @@ import { loadEnv } from "./config/env.js";
 import { createPgPool, createDrizzleClient } from "@repo/database";
 import { and, eq, sql } from "drizzle-orm";
 import { accounts, positions } from "@repo/database";
+import { createDbHealth } from "./infra/db-health.js";
 import {
   createAuthService,
   createUserRepository,
@@ -58,6 +59,8 @@ const { router, handle } = createNodeRouter({ corsOrigins: config.corsOrigins, l
 const services = await (async () => {
   const pool = createPgPool({ connectionString: config.databaseUrl });
   const drizzleClient = createDrizzleClient(pool);
+
+  const dbHealth = createDbHealth(pool);
   // Migrations are now manual
   // await services.db.query("SELECT 1");
 
@@ -152,6 +155,7 @@ const services = await (async () => {
     tokenManager,
     sessionRepository,
     db: drizzleClient, // Needed for Admin domain
+    dbHealth,
   } as const;
 })();
 

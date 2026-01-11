@@ -31,18 +31,16 @@ export type AppConfig = {
 export function loadEnv(): AppConfig {
   const nodeEnv = process.env.NODE_ENV || "development";
   const port = toInt(process.env.PORT, 8080);
-  const databaseUrl = process.env.DATABASE_URL || "postgresql://bhcm:bhcm@100.100.13.10:5432/bhcmarkets";
+  const databaseUrl = process.env.DATABASE_URL;
   const redisUrl = process.env.REDIS_URL;
 
-  // IMPORTANT: use a strong secret in non-dev environments. For MVP we fallback in dev.
-  const jwtSecret = process.env.JWT_SECRET || "dev-only-change-me";
-
-  if (!process.env.JWT_SECRET && !["development", "test"].includes(nodeEnv)) {
-    throw new Error("JWT_SECRET is required in non-development environments");
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL is required");
   }
 
-  if (jwtSecret === "dev-only-change-me" && !["development", "test"].includes(nodeEnv)) {
-    throw new Error("Use a strong JWT_SECRET outside development/test");
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error("JWT_SECRET is required");
   }
 
   const corsOrigins = (process.env.CORS_ORIGINS || "")

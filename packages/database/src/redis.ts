@@ -43,8 +43,12 @@ export interface RedisConfig {
   requireInProduction?: boolean;
 }
 
-function getRedisUrl(): string | undefined {
-  return process.env.REDIS_URL;
+let configuredRedisUrl: string | undefined;
+
+function getRedisUrl(config?: RedisConfig): string | undefined {
+  const url = config?.url ?? configuredRedisUrl ?? process.env.REDIS_URL;
+  if (config?.url) configuredRedisUrl = config.url;
+  return url;
 }
 
 function isDev(): boolean {
@@ -63,6 +67,37 @@ function isDev(): boolean {
 export function getRedis(): Redis | null {
   const url = getRedisUrl();
 
+  if (!url) {
+    if (isDev()) {
+      usingFallback = true;
+      return null;
+    }
+    throw new Error('REDIS_URL is required in production');
+  }
+
+  if (!redis) {
+    redis = new Redis(url, {
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times) => {
+        if (times > 3) return null;
+        return Math.min(times * 100, 3000);
+      },
+    });
+
+    redis.on('error', (err) => {
+      console.error('[redis] Connection error:', err.message);
+    });
+
+    redis.on('connect', () => {
+      console.log('[redis] Connected');
+    });
+  }
+
+  return redis;
+}
+
+export function getRedisWithConfig(config?: RedisConfig): Redis | null {
+  const url = getRedisUrl(config);
   if (!url) {
     if (isDev()) {
       usingFallback = true;
@@ -119,6 +154,30 @@ export function getPubSub(): { pub: Redis | null; sub: Redis | null } {
   return { pub: pubClient, sub: subClient };
 }
 
+export function getPubSubWithConfig(config?: RedisConfig): { pub: Redis | null; sub: Redis | null } {
+  const url = getRedisUrl(config);
+
+  if (!url) {
+    return { pub: null, sub: null };
+  }
+
+  if (!pubClient) {
+    pubClient = new Redis(url);
+    pubClient.on('error', (err) => {
+      console.error('[redis:pub] Error:', err.message);
+    });
+  }
+
+  if (!subClient) {
+    subClient = new Redis(url);
+    subClient.on('error', (err) => {
+      console.error('[redis:sub] Error:', err.message);
+    });
+  }
+
+  return { pub: pubClient, sub: subClient };
+}
+
 /**
  * Check if using fallback memory store.
  */
@@ -130,7 +189,42 @@ export function isUsingFallback(): boolean {
  * Check if Redis is connected.
  */
 export function isRedisConnected(): boolean {
-  return redis?.status === 'ready';
+  const url = getRedisUrl();
+  if (!url) return false;
+
+  // Ensure clients are created so status reflects real connectivity.
+  // This is intentionally side-effectful: callers typically use this as a readiness probe.
+  try {
+    getRedis();
+  } catch {
+    // If REDIS_URL is missing in production, getRedis() throws; treat as not connected.
+    return false;
+  }
+  getPubSub();
+
+  return (
+    redis?.status === 'ready' ||
+    pubClient?.status === 'ready' ||
+    subClient?.status === 'ready'
+  );
+}
+
+export function isRedisConnectedWithConfig(config?: RedisConfig): boolean {
+  const url = getRedisUrl(config);
+  if (!url) return false;
+
+  try {
+    getRedisWithConfig({ url });
+  } catch {
+    return false;
+  }
+  getPubSubWithConfig({ url });
+
+  return (
+    redis?.status === 'ready' ||
+    pubClient?.status === 'ready' ||
+    subClient?.status === 'ready'
+  );
 }
 
 /**

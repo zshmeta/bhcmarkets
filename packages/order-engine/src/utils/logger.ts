@@ -5,8 +5,16 @@
  * Centralized logging using Pino.
  */
 
-import pino from 'pino';
+import pinoModule, { stdSerializers } from 'pino';
 import { env, isDev } from '../config/env.js';
+
+// NodeNext + ESM/CJS interop can make the Pino import look like a module object
+// instead of a callable function. This keeps the runtime behavior correct while
+// also keeping TypeScript happy.
+const pino = (
+  (pinoModule as unknown as { default?: unknown }).default ??
+  (pinoModule as unknown)
+) as unknown as (options: Record<string, unknown>) => any;
 
 /**
  * Base logger configuration.
@@ -30,6 +38,13 @@ export const logger = pino({
   transport,
   base: {
     service: 'order-engine',
+  },
+  // Use Pino's standard Error serializer and support a few common keys.
+  // The most important convention is: log errors as `{ err }`.
+  serializers: {
+    err: stdSerializers.err,
+    error: stdSerializers.err,
+    reason: stdSerializers.err,
   },
 });
 

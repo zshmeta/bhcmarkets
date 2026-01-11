@@ -59,9 +59,12 @@ export {
 
 export {
   getRedis,
+  getRedisWithConfig,
   getPubSub,
+  getPubSubWithConfig,
   isUsingFallback,
   isRedisConnected,
+  isRedisConnectedWithConfig,
   closeRedis,
   redisGet,
   redisSet,

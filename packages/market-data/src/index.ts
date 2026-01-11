@@ -120,8 +120,8 @@ class MarketDataService {
       this.isRunning = true;
 
       log.info({
-        httpPort: env.PORT,
-        wsPort: env.WS_PORT,
+        httpPort: env.MARKET_DATA_PORT,
+        wsPort: env.MARKET_DATA_WS_PORT,
       }, '✅ Market Data Service started successfully');
 
       // Print summary
@@ -262,8 +262,8 @@ class MarketDataService {
     });
 
     await new Promise<void>((resolve) => {
-      this.httpServer.listen(env.PORT, () => {
-        log.info({ port: env.PORT }, 'HTTP API server listening');
+      this.httpServer.listen(env.MARKET_DATA_PORT, () => {
+        log.info({ port: env.MARKET_DATA_PORT }, 'HTTP API server listening');
         resolve();
       });
     });
@@ -325,8 +325,8 @@ class MarketDataService {
 ╔${divider}╗
 ║  📈 BHC Markets - Market Data Service           ║
 ╠${divider}╣
-║  HTTP API:     http://localhost:${env.PORT.toString().padEnd(5)}            ║
-║  WebSocket:    ws://localhost:${env.WS_PORT.toString().padEnd(5)}/ws          ║
+║  HTTP API:     http://localhost:${env.MARKET_DATA_PORT.toString().padEnd(5)}            ║
+║  WebSocket:    ws://localhost:${env.MARKET_DATA_WS_PORT.toString().padEnd(5)}/ws          ║
 ╠${divider}╣
 ║  Endpoints:                                       ║
 ║    GET  /health           Health status           ║

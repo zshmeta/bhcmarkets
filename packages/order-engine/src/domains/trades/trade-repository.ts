@@ -21,9 +21,13 @@ export async function saveTrades(trades: Trade[]): Promise<void> {
 
   try {
     await withTransaction(async (tx) => {
+      // postgres.js transactions are template-tag functions at runtime, but the
+      // TypeScript types in our current version don't expose the call signature.
+      // Casting here keeps the code simple and still uses parameterized queries.
+      const sqlTx = tx as unknown as (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown[]>;
       for (const trade of trades) {
-        await tx`
-          INSERT INTO trades (
+        await sqlTx`
+          INSERT INTO execution_trades (
             id, symbol, maker_order_id, taker_order_id,
             maker_account_id, taker_account_id,
             price, quantity, maker_fee, taker_fee,
@@ -49,7 +53,7 @@ export async function saveTrades(trades: Trade[]): Promise<void> {
 
     log.debug({ count: trades.length }, 'Trades saved');
   } catch (error) {
-    log.error({ error, count: trades.length }, 'Failed to save trades');
+    log.error({ err: error, count: trades.length }, 'Failed to save trades');
     throw error;
   }
 }
@@ -63,7 +67,7 @@ export async function getTradeById(tradeId: string): Promise<Trade | null> {
   try {
     const result = await sql`
       SELECT *
-      FROM trades
+      FROM execution_trades
       WHERE id = ${tradeId}
     `;
 
@@ -98,7 +102,7 @@ export async function getAccountTrades(
     if (symbol && startTime && endTime) {
       result = await sql`
         SELECT *
-        FROM trades
+        FROM execution_trades
         WHERE (maker_account_id = ${accountId} OR taker_account_id = ${accountId})
           AND symbol = ${symbol}
           AND created_at >= ${startTime}
@@ -110,7 +114,7 @@ export async function getAccountTrades(
     } else if (symbol) {
       result = await sql`
         SELECT *
-        FROM trades
+        FROM execution_trades
         WHERE (maker_account_id = ${accountId} OR taker_account_id = ${accountId})
           AND symbol = ${symbol}
         ORDER BY created_at DESC
@@ -120,7 +124,7 @@ export async function getAccountTrades(
     } else if (startTime && endTime) {
       result = await sql`
         SELECT *
-        FROM trades
+        FROM execution_trades
         WHERE (maker_account_id = ${accountId} OR taker_account_id = ${accountId})
           AND created_at >= ${startTime}
           AND created_at <= ${endTime}
@@ -131,7 +135,7 @@ export async function getAccountTrades(
     } else {
       result = await sql`
         SELECT *
-        FROM trades
+        FROM execution_trades
         WHERE maker_account_id = ${accountId} OR taker_account_id = ${accountId}
         ORDER BY created_at DESC
         LIMIT ${limit}

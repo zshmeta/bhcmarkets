@@ -316,11 +316,15 @@ export class MatchingEngine {
           // Add remaining to order book
           order.filledQuantity = result.filledQuantity;
           const update = this.orderBook.addOrder(order);
-          result.bookUpdates.push(update);
+          // addOrder() should normally return an update, but it is typed as nullable.
+          // Guarding keeps us safe and avoids pushing null into results.
+          if (update) {
+            result.bookUpdates.push(update);
+            this.emit({ type: 'book_update', update });
+          }
           result.status = result.filledQuantity > 0 ? 'partially_filled' : 'open';
 
           this.emit({ type: 'order_accepted', order });
-          this.emit({ type: 'book_update', update });
           break;
       }
     }

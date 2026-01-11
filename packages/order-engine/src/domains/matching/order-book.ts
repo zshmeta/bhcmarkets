@@ -22,10 +22,21 @@ const log = logger.child({ component: 'order-book' });
 /**
  * Price level containing orders at the same price.
  */
-interface PriceLevel {
+// Exported because the matching domain barrel exports it.
+export interface PriceLevel {
   price: number;
   orders: EngineOrder[];
   totalQuantity: number;
+}
+
+// Exported because the matching domain barrel exports it.
+export interface OrderBookStats {
+  bidLevels: number;
+  askLevels: number;
+  bidOrders: number;
+  askOrders: number;
+  totalBidVolume: number;
+  totalAskVolume: number;
 }
 
 /**
@@ -42,6 +53,14 @@ export interface OrderBookUpdate {
  * Order Book for a single symbol.
  */
 export class OrderBook {
+  // Mid price is used for dashboards and monitoring.
+  // If we don't have a full book yet, return null rather than throwing.
+  getMidPrice(): number | null {
+    const bid = this.getBestBid();
+    const ask = this.getBestAsk();
+    if (bid === null || ask === null) return null;
+    return (bid + ask) / 2;
+  }
   public readonly symbol: string;
 
   // Price levels sorted by price (bids: descending, asks: ascending)
@@ -245,21 +264,19 @@ export class OrderBook {
   /**
    * Get statistics.
    */
-  getStats(): {
-    bidLevels: number;
-    askLevels: number;
-    totalBidOrders: number;
-    totalAskOrders: number;
-    bidVolume: number;
-    askVolume: number;
-  } {
+  getStats(): OrderBookStats {
+    const bidOrders = this.bids.reduce((sum, level) => sum + level.orders.length, 0);
+    const askOrders = this.asks.reduce((sum, level) => sum + level.orders.length, 0);
+    const totalBidVolume = this.bids.reduce((sum, level) => sum + level.totalQuantity, 0);
+    const totalAskVolume = this.asks.reduce((sum, level) => sum + level.totalQuantity, 0);
+
     return {
       bidLevels: this.bids.length,
       askLevels: this.asks.length,
-      totalBidOrders: this.bids.reduce((sum, l) => sum + l.orders.length, 0),
-      totalAskOrders: this.asks.reduce((sum, l) => sum + l.orders.length, 0),
-      bidVolume: this.bids.reduce((sum, l) => sum + l.totalQuantity, 0),
-      askVolume: this.asks.reduce((sum, l) => sum + l.totalQuantity, 0),
+      bidOrders,
+      askOrders,
+      totalBidVolume,
+      totalAskVolume,
     };
   }
 

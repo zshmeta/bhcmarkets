@@ -13,8 +13,8 @@
  */
 
 import { MatchingEngine, type MatchResult, type MatchingEvent, type MatchingEventHandler } from './matching-engine.js';
-import { OrderBook, type OrderBookSnapshot, type OrderBookUpdate } from './order-book.js';
-import type { EngineOrder, TimeInForce } from '../../types/order.types.js';
+import { OrderBook, type OrderBookUpdate } from './order-book.js';
+import type { EngineOrder, TimeInForce, OrderBookSnapshot } from '../../types/order.types.js';
 import { logger } from '../../utils/logger.js';
 
 const log = logger.child({ component: 'order-book-manager' });
@@ -41,9 +41,10 @@ export interface OrderBookManagerStats {
 /**
  * Event emitted by the manager with symbol context.
  */
-export interface ManagerEvent extends MatchingEvent {
-  symbol: string;
-}
+// MatchingEvent is a union of event shapes, so using an interface `extends` here
+// breaks TypeScript (an interface can only extend object types with known keys).
+// A simple intersection keeps the intent: every event is tagged with a symbol.
+export type ManagerEvent = MatchingEvent & { symbol: string };
 
 export type ManagerEventHandler = (event: ManagerEvent) => void;
 
@@ -178,7 +179,7 @@ export class OrderBookManager {
     let totalAskOrders = 0;
     let totalBidVolume = 0;
     let totalAskVolume = 0;
-    const symbolStats = new Map<string, any>();
+    const symbolStats: OrderBookManagerStats['symbolStats'] = new Map();
 
     for (const [symbol, engine] of this.engines) {
       const stats = engine.orderBook.getStats();
@@ -283,7 +284,7 @@ export class OrderBookManager {
       try {
         handler(managerEvent);
       } catch (error) {
-        log.error({ error, symbol, event: event.type }, 'Error in event handler');
+        log.error({ err: error, symbol, event: event.type }, 'Error in event handler');
       }
     }
   }

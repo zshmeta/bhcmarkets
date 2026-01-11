@@ -1,6 +1,6 @@
 # @repo/order-engine
 
-Production-ready order matching engine service for the BHC Markets trading platform.
+Order matching engine service for the BHC Markets trading platform.
 
 ## Overview
 

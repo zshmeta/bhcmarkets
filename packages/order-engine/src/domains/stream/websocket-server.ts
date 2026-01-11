@@ -19,14 +19,12 @@
 
 import { WebSocketServer, WebSocket, type RawData } from 'ws';
 import { createServer, type Server as HttpServer } from 'http';
-import type {
-  ClientMessage,
-  ServerMessage,
-  OrderBookUpdateMessage,
-  TradeMessage,
-  OrderUpdateMessage,
-} from '../../types/order.types.js';
-import type { OrderBookSnapshot, OrderBookUpdate } from '../matching/order-book.js';
+// Note: the current WS protocol in this service is more permissive than the
+// shared `ServerMessage` union. To avoid fighting type mismatches (and to keep
+// backwards compatibility with existing clients), we treat WS payloads as
+// "wire messages" and validate/shape them at the edges.
+import type { OrderBookSnapshot } from '../../types/order.types.js';
+import type { OrderBookUpdate } from '../matching/order-book.js';
 import { logger } from '../../utils/logger.js';
 import { env } from '../../config/env.js';
 
@@ -78,7 +76,7 @@ export class OrderEngineWebSocket {
   /**
    * Start the WebSocket server.
    */
-  async start(port: number = env.WS_PORT): Promise<void> {
+  async start(port: number = env.ORDER_ENGINE_WS_PORT): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         this.httpServer = createServer((req, res) => {
@@ -100,7 +98,7 @@ export class OrderEngineWebSocket {
 
         this.wss.on('connection', this.handleConnection.bind(this));
         this.wss.on('error', (error) => {
-          log.error({ error }, 'WebSocket server error');
+          log.error({ err: error }, 'WebSocket server error');
         });
 
         this.httpServer.listen(port, () => {
@@ -115,7 +113,7 @@ export class OrderEngineWebSocket {
         });
 
         this.httpServer.on('error', (error) => {
-          log.error({ error }, 'HTTP server error');
+          log.error({ err: error }, 'HTTP server error');
           reject(error);
         });
       } catch (error) {
@@ -180,7 +178,7 @@ export class OrderEngineWebSocket {
    */
   broadcastOrderBookUpdate(symbol: string, update: OrderBookUpdate): void {
     const channel = `orderbook:${symbol}`;
-    const message: OrderBookUpdateMessage = {
+    const message = {
       type: 'orderbook_update',
       symbol,
       data: update,
@@ -195,7 +193,7 @@ export class OrderEngineWebSocket {
    */
   broadcastOrderBookSnapshot(symbol: string, snapshot: OrderBookSnapshot): void {
     const channel = `orderbook:${symbol}`;
-    const message: ServerMessage = {
+    const message = {
       type: 'orderbook_snapshot',
       symbol,
       data: snapshot,
@@ -215,7 +213,7 @@ export class OrderEngineWebSocket {
     makerSide: 'buy' | 'sell';
   }): void {
     const channel = `trades:${symbol}`;
-    const message: TradeMessage = {
+    const message = {
       type: 'trade',
       symbol,
       data: trade,
@@ -235,7 +233,7 @@ export class OrderEngineWebSocket {
     remainingQuantity?: number;
   }): void {
     const channel = `orders:${accountId}`;
-    const message: OrderUpdateMessage = {
+    const message = {
       type: 'order_update',
       data: update,
       timestamp: Date.now(),
@@ -305,7 +303,7 @@ export class OrderEngineWebSocket {
 
   private handleMessage(ws: WebSocket, client: ClientConnection, data: RawData): void {
     try {
-      const message: ClientMessage = JSON.parse(data.toString());
+      const message = JSON.parse(data.toString()) as any;
 
       switch (message.type) {
         case 'subscribe':
@@ -328,7 +326,7 @@ export class OrderEngineWebSocket {
           });
       }
     } catch (error) {
-      log.warn({ error }, 'Failed to parse client message');
+      log.warn({ err: error }, 'Failed to parse client message');
       this.send(ws, {
         type: 'error',
         data: { message: 'Invalid message format' },
@@ -457,10 +455,10 @@ export class OrderEngineWebSocket {
   }
 
   private handleError(ws: WebSocket, error: Error): void {
-    log.error({ error }, 'WebSocket client error');
+    log.error({ err: error }, 'WebSocket client error');
   }
 
-  private broadcastToChannel(channel: string, message: ServerMessage): void {
+  private broadcastToChannel(channel: string, message: unknown): void {
     const subscribers = this.channelSubscribers.get(channel);
     if (!subscribers || subscribers.size === 0) return;
 

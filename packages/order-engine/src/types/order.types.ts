@@ -83,6 +83,9 @@ export interface PlaceOrderInput {
 export interface EngineOrder {
   id: UUID;
   accountId: UUID;
+  // Symbol is required for routing orders to the right book.
+  // This should be a plain string like "BTC-USD".
+  symbol: string;
   side: OrderSide;
   type: OrderType;
   price: number;           // 0 for market orders
