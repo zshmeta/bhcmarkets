@@ -16,9 +16,9 @@
  * - We use metadata to store full OHLCV data
  */
 
-import postgres from 'postgres';
 import { env } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
+import { closeDb, getDbClient, type PostgresClient } from '@repo/database';
 import type { Candle, CandleQuery } from './historical.types.js';
 import type { Timeframe } from '../normalizer/data.validators.js';
 
@@ -51,20 +51,34 @@ interface CandleRow {
  * Tick/Candle repository for database operations.
  */
 export class TickRepository {
-  private client: postgres.Sql | null = null;
+  private client: PostgresClient | null = null;
+
+  /** If true, candle persistence is disabled due to missing DB schema. */
+  private persistenceDisabled = false;
 
   /**
    * Initialize database connection.
    */
   async initialize(): Promise<void> {
     try {
-      this.client = postgres(env.DATABASE_URL, {
-        max: 10, // Connection pool size
-        idle_timeout: 30,
+      // Reuse the shared singleton client so the service maintains only one pool.
+      this.client = await getDbClient({
+        connectionString: env.DATABASE_URL,
+        max: 10,
+        idleTimeout: 30,
       });
 
-      // Test connection
-      await this.client`SELECT 1`;
+      // Preflight: ensure required tables exist to avoid noisy repeated failures.
+      const tableCheck = await this.client<{ name: string | null }[]>`
+        SELECT to_regclass('public.market_prices')::text AS name
+      `;
+
+      if (!tableCheck?.[0]?.name) {
+        this.persistenceDisabled = true;
+        log.error({
+          table: 'market_prices',
+        }, 'Database schema missing required table. Run `bun run db:migrate` to create it. Candle persistence disabled.');
+      }
 
       log.info('Database connection established');
     } catch (error) {
@@ -77,7 +91,7 @@ export class TickRepository {
    * Save a completed candle to the database.
    */
   async saveCandle(candle: Candle): Promise<void> {
-    if (!this.client) {
+    if (!this.client || this.persistenceDisabled) {
       log.warn('Database not initialized, skipping candle save');
       return;
     }
@@ -117,7 +131,7 @@ export class TickRepository {
    * Save multiple candles in a batch.
    */
   async saveCandleBatch(candles: Candle[]): Promise<void> {
-    if (!this.client || candles.length === 0) return;
+    if (!this.client || this.persistenceDisabled || candles.length === 0) return;
 
     try {
       const values = candles.map(candle => ({
@@ -139,7 +153,8 @@ export class TickRepository {
       }));
 
       // Use a transaction for batch insert
-      await this.client.begin(async (sql: postgres.TransactionSql) => {
+      await this.client.begin(async (tx) => {
+        const sql = tx as unknown as PostgresClient;
         for (const v of values) {
           await sql`
             INSERT INTO market_prices (symbol, price, currency, source, timestamp, metadata)
@@ -161,7 +176,7 @@ export class TickRepository {
    * @returns Array of candles matching the query
    */
   async queryCandles(query: CandleQuery): Promise<Candle[]> {
-    if (!this.client) {
+    if (!this.client || this.persistenceDisabled) {
       log.warn('Database not initialized');
       return [];
     }
@@ -210,7 +225,7 @@ export class TickRepository {
    * @param count - Number of candles to return
    */
   async getRecentCandles(symbol: string, timeframe: string, count: number): Promise<Candle[]> {
-    if (!this.client) return [];
+    if (!this.client || this.persistenceDisabled) return [];
 
     try {
       const rows = await this.client`
@@ -249,10 +264,10 @@ export class TickRepository {
    * Close database connection.
    */
   async close(): Promise<void> {
-    if (this.client) {
-      await this.client.end();
-      this.client = null;
-      log.info('Database connection closed');
-    }
+    // Close the shared singleton client. Safe to call multiple times.
+    await closeDb();
+    this.client = null;
+    this.persistenceDisabled = false;
+    log.info('Database connection closed');
   }
 }

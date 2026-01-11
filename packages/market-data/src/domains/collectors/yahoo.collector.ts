@@ -1,56 +1,37 @@
 /**
- * Yahoo Finance Collector
- * =======================
+ * Yahoo Collector (Stocks via internal yfinance-service)
+ * ======================================================
  *
- * Polling-based collector for stocks, forex, indices, and commodities.
+ * This collector used to call yahoo-finance2 directly.
+ * It now fetches **stocks only** via an internal REST service ("yfinance-service")
+ * to centralize caching + rate limiting and reduce reliability issues.
  *
- * WHY YAHOO FINANCE:
- * - FREE with no API key required
- * - Covers virtually every tradeable asset globally
- * - Reasonable update frequency (real-time for US markets during hours)
- * - Reliable and well-maintained npm package (yahoo-finance2)
- *
- * LIMITATIONS:
- * - Polling-based (not real-time WebSocket)
- * - Some data has 15-minute delay for free tier
- * - Unofficial rate limits (~2000 requests/hour estimated)
- * - Can be unreliable during high traffic periods
- *
- * STRATEGY:
- * - Batch requests (fetch multiple symbols in one call)
- * - Poll every 15 seconds for stocks/forex
- * - Poll every 30 seconds for indices/commodities
- * - Exponential backoff on rate limit errors
- *
- * DATA SOURCE: yahoo-finance2 npm package
- * - Uses Yahoo's internal API (same as finance.yahoo.com)
- * - quoteSummary() for detailed quotes
- * - Handles cookie/crumb authentication automatically
+ * Endpoint expectations (typical):
+ * - GET /quote?symbols=AAPL,MSFT
+ * - (optional) GET /quote/AAPL
  */
-
-import yahooFinance from 'yahoo-finance2';
 import { BaseCollector } from './base.collector.js';
 import {
-  FOREX_SYMBOLS,
   STOCK_SYMBOLS,
-  INDEX_SYMBOLS,
-  COMMODITY_SYMBOLS,
   type AssetKind,
   type SymbolDefinition,
 } from '../../config/index.js';
 import { env } from '../../config/env.js';
 import type { NormalizedTick, CollectorConfig } from './collector.types.js';
 
+type YFinanceQuote = {
+  symbol?: string;
+  current_price?: number;
+  volume?: number;
+  timestamp?: number | string;
+  regular_market_time?: number | string;
+};
+
 /**
  * All Yahoo-sourced symbols combined.
  * We handle all non-crypto assets through Yahoo.
  */
-const YAHOO_SYMBOLS: SymbolDefinition[] = [
-  ...FOREX_SYMBOLS,
-  ...STOCK_SYMBOLS,
-  ...INDEX_SYMBOLS,
-  ...COMMODITY_SYMBOLS,
-];
+const YAHOO_SYMBOLS: SymbolDefinition[] = [...STOCK_SYMBOLS];
 
 /**
  * Map from Yahoo symbol to internal symbol.
@@ -84,7 +65,7 @@ const INTERNAL_TO_YAHOO = new Map<string, string>(
  */
 export class YahooCollector extends BaseCollector {
   readonly name = 'yahoo';
-  readonly supportedKinds: AssetKind[] = ['forex', 'stock', 'index', 'commodity'];
+  readonly supportedKinds: AssetKind[] = ['stock'];
 
   /** Poll timer reference */
   private pollTimer: NodeJS.Timeout | null = null;
@@ -97,6 +78,14 @@ export class YahooCollector extends BaseCollector {
 
   /** Last successful poll time per symbol (for staleness detection) */
   private lastPollSuccess = new Map<string, number>();
+
+  /** Skip polling temporarily after rate limiting */
+  private cooldownUntilMs = 0;
+
+  /** Serialize polls to avoid overlapping requests */
+  private pollQueue: Promise<void> = Promise.resolve();
+  private pollInFlight = false;
+  private pendingPollSymbols: string[] | null = null;
 
   constructor(config?: CollectorConfig) {
     super(config);
@@ -113,25 +102,15 @@ export class YahooCollector extends BaseCollector {
    * We validate that Yahoo is reachable by fetching a test symbol.
    */
   protected async doConnect(): Promise<void> {
-    this.log.info('Verifying Yahoo Finance accessibility...');
+    this.log.info('Verifying yfinance-service accessibility (stocks)...');
 
-    try {
-      // Test with a reliable symbol (Apple is always available)
-      const testResult = await yahooFinance.quote('AAPL');
-
-      if (!testResult || !testResult.regularMarketPrice) {
-        throw new Error('Yahoo Finance returned invalid data');
-      }
-
-      this.log.info({
-        testSymbol: 'AAPL',
-        price: testResult.regularMarketPrice,
-      }, 'Yahoo Finance connection verified');
-
-    } catch (error) {
-      this.log.error({ error }, 'Yahoo Finance connection test failed');
-      throw error;
+    const quotes = await this.fetchBatch(['AAPL']);
+    const aapl = quotes.find(q => q.symbol === 'AAPL');
+    if (!aapl || typeof aapl.current_price !== 'number' || !Number.isFinite(aapl.current_price)) {
+      throw new Error('yfinance-service returned invalid data for AAPL');
     }
+
+    this.log.info({ testSymbol: 'AAPL', price: aapl.current_price }, 'yfinance-service connection verified');
   }
 
   /**
@@ -157,7 +136,7 @@ export class YahooCollector extends BaseCollector {
 
     // Do an immediate poll for the new symbols
     this.log.info({ symbols }, 'Fetching initial quotes');
-    await this.pollSymbols(symbols);
+    await this.queuePoll(symbols);
   }
 
   /**
@@ -186,14 +165,44 @@ export class YahooCollector extends BaseCollector {
   private startPolling(): void {
     if (this.pollTimer) return;
 
-    this.log.info({ intervalMs: env.YAHOO_POLL_INTERVAL_MS }, 'Starting poll loop');
+    this.log.info({ intervalMs: env.YFINANCE_STOCKS_POLL_INTERVAL_MS }, 'Starting poll loop');
 
     this.pollTimer = setInterval(async () => {
       if (this.polledSymbols.size === 0) return;
 
       const symbols = Array.from(this.polledSymbols);
-      await this.pollSymbols(symbols);
-    }, env.YAHOO_POLL_INTERVAL_MS);
+      void this.queuePoll(symbols);
+    }, env.YFINANCE_STOCKS_POLL_INTERVAL_MS);
+  }
+
+  /**
+   * Queue a poll operation to ensure we never have overlapping Yahoo requests.
+   * Overlap can amplify rate limiting and create bursts.
+   */
+  private queuePoll(internalSymbols: string[]): Promise<void> {
+    // Coalesce: if polls are slow, keep only the most recent requested symbols.
+    this.pendingPollSymbols = internalSymbols;
+
+    if (this.pollInFlight) {
+      return this.pollQueue;
+    }
+
+    this.pollInFlight = true;
+    this.pollQueue = (async () => {
+      while (this.pendingPollSymbols) {
+        const symbols = this.pendingPollSymbols;
+        this.pendingPollSymbols = null;
+        try {
+          await this.pollSymbols(symbols);
+        } catch {
+          // pollSymbols is already defensive; keep loop alive regardless.
+        }
+      }
+    })().finally(() => {
+      this.pollInFlight = false;
+    });
+
+    return this.pollQueue;
   }
 
   /**
@@ -217,6 +226,12 @@ export class YahooCollector extends BaseCollector {
    * 3. Convert each successful quote to a normalized tick
    */
   private async pollSymbols(internalSymbols: string[]): Promise<void> {
+    const now = Date.now();
+    if (now < this.cooldownUntilMs) {
+      this.log.warn({ cooldownMs: this.cooldownUntilMs - now }, 'In cooldown; skipping poll');
+      return;
+    }
+
     // Convert internal symbols to Yahoo symbols
     const yahooSymbols = internalSymbols
       .map(s => INTERNAL_TO_YAHOO.get(s))
@@ -229,8 +244,8 @@ export class YahooCollector extends BaseCollector {
 
     // Split into batches
     const batches: string[][] = [];
-    for (let i = 0; i < yahooSymbols.length; i += env.YAHOO_BATCH_SIZE) {
-      batches.push(yahooSymbols.slice(i, i + env.YAHOO_BATCH_SIZE));
+    for (let i = 0; i < yahooSymbols.length; i += env.YFINANCE_BATCH_SIZE) {
+      batches.push(yahooSymbols.slice(i, i + env.YFINANCE_BATCH_SIZE));
     }
 
     this.log.debug({
@@ -241,7 +256,40 @@ export class YahooCollector extends BaseCollector {
     // Process each batch
     for (const batch of batches) {
       try {
-        await this.fetchBatch(batch);
+        const quotes = await this.fetchBatch(batch);
+
+        for (const quote of quotes) {
+          if (!quote || !quote.symbol) continue;
+
+          const internalSymbol = YAHOO_TO_INTERNAL.get(quote.symbol);
+          if (!internalSymbol) {
+            this.log.debug({ yahooSymbol: quote.symbol }, 'Unknown symbol from yfinance-service');
+            continue;
+          }
+
+          const price = quote.current_price;
+          if (price === undefined || price === null || typeof price !== 'number' || !Number.isFinite(price)) {
+            this.log.debug({ symbol: internalSymbol }, 'No price data (market may be closed)');
+            continue;
+          }
+
+          const tick: NormalizedTick = {
+            symbol: internalSymbol,
+            last: price,
+            timestamp: this.parseTimestamp(quote.timestamp)
+              ?? this.parseTimestamp(quote.regular_market_time)
+              ?? Date.now(),
+            source: this.name,
+          };
+
+          if (typeof quote.volume === 'number' && Number.isFinite(quote.volume)) {
+            tick.volume = quote.volume;
+          }
+
+          this.emitTick(tick);
+          this.lastPollSuccess.set(internalSymbol, Date.now());
+          this.symbolFailures.delete(internalSymbol);
+        }
       } catch (error) {
         this.log.error({ error, batch }, 'Batch fetch failed');
 
@@ -250,19 +298,21 @@ export class YahooCollector extends BaseCollector {
         if (errorMsg.includes('rate') || errorMsg.includes('too many')) {
           this.emitError({
             type: 'rate_limited',
-            message: 'Yahoo Finance rate limited',
+            message: 'yfinance-service rate limited',
             source: this.name,
             timestamp: Date.now(),
             retryable: true,
             originalError: error as Error,
           });
 
+          this.cooldownUntilMs = Date.now() + this.config.rateLimitBackoffMs;
+
           // Back off on rate limit - skip remaining batches this cycle
           break;
         }
       }
 
-      // Small delay between batches to be nice to Yahoo
+      // Small delay between batches to be nice to upstream
       if (batches.length > 1) {
         await this.sleep(500);
       }
@@ -279,59 +329,73 @@ export class YahooCollector extends BaseCollector {
    * - regularMarketChangePercent: Percent change
    * - regularMarketVolume: Trading volume
    */
-  private async fetchBatch(yahooSymbols: string[]): Promise<void> {
-    // Yahoo Finance quote() accepts an array and returns array of quotes
-    const quotes = await yahooFinance.quote(yahooSymbols);
+  private async fetchBatch(yahooSymbols: string[]): Promise<YFinanceQuote[]> {
+    const url = new URL('/quote', env.YFINANCE_SERVICE_BASE_URL);
+    url.searchParams.set('symbols', yahooSymbols.join(','));
 
-    // Handle both single quote and array response
-    const quotesArray = Array.isArray(quotes) ? quotes : [quotes];
+    const res = await fetch(url.toString(), {
+      method: 'GET',
+      headers: { accept: 'application/json' },
+      signal: this.createAbortSignal(8000),
+    });
 
-    for (const quote of quotesArray) {
-      if (!quote || !quote.symbol) continue;
-
-      const internalSymbol = YAHOO_TO_INTERNAL.get(quote.symbol);
-      if (!internalSymbol) {
-        this.log.warn({ yahooSymbol: quote.symbol }, 'Unknown Yahoo symbol');
-        continue;
-      }
-
-      // Skip if no price data (market might be closed)
-      if (quote.regularMarketPrice === undefined || quote.regularMarketPrice === null) {
-        this.log.debug({ symbol: internalSymbol }, 'No price data (market may be closed)');
-        continue;
-      }
-
-      // Build normalized tick
-      const tick: NormalizedTick = {
-        symbol: internalSymbol,
-        last: quote.regularMarketPrice,
-        timestamp: quote.regularMarketTime
-          ? new Date(quote.regularMarketTime).getTime()
-          : Date.now(),
-        source: this.name,
-      };
-
-      // Add optional fields if available
-      if (quote.bid !== undefined && quote.bid !== null) {
-        tick.bid = quote.bid;
-      }
-      if (quote.ask !== undefined && quote.ask !== null) {
-        tick.ask = quote.ask;
-      }
-      if (quote.regularMarketVolume !== undefined) {
-        tick.volume = quote.regularMarketVolume;
-      }
-      if (quote.regularMarketChangePercent !== undefined) {
-        tick.changePercent = quote.regularMarketChangePercent;
-      }
-
-      // Emit the tick
-      this.emitTick(tick);
-
-      // Track success
-      this.lastPollSuccess.set(internalSymbol, Date.now());
-      this.symbolFailures.delete(internalSymbol);
+    if (res.status === 429) {
+      throw new Error('yfinance-service rate limited (HTTP 429)');
     }
+    if (!res.ok) {
+      throw new Error(`yfinance-service error (HTTP ${res.status})`);
+    }
+
+    const payload = await res.json();
+    return this.normalizePayload(payload);
+  }
+
+  private createAbortSignal(timeoutMs: number): AbortSignal {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (timeout as any).unref?.();
+    return controller.signal;
+  }
+
+  private parseTimestamp(value: unknown): number | undefined {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value < 10_000_000_000 ? value * 1000 : value;
+    }
+    if (typeof value === 'string') {
+      const parsed = Date.parse(value);
+      if (!Number.isNaN(parsed)) return parsed;
+    }
+    return undefined;
+  }
+
+  private normalizePayload(payload: unknown): YFinanceQuote[] {
+    if (!payload) return [];
+    if (Array.isArray(payload)) return payload as YFinanceQuote[];
+    if (typeof payload !== 'object') return [];
+
+    const obj = payload as Record<string, unknown>;
+    const candidates = [obj.quotes, obj.data, obj.results, obj.items];
+    for (const c of candidates) {
+      if (Array.isArray(c)) return c as YFinanceQuote[];
+    }
+
+    const out: YFinanceQuote[] = [];
+    for (const [key, value] of Object.entries(obj)) {
+      if (!value || typeof value !== 'object') continue;
+      const q = value as Record<string, unknown>;
+      const current = q.current_price;
+      if (typeof current === 'number' && Number.isFinite(current)) {
+        out.push({
+          symbol: (q.symbol as string | undefined) ?? key,
+          current_price: current,
+          volume: typeof q.volume === 'number' ? (q.volume as number) : undefined,
+          timestamp: (q.timestamp as number | string | undefined)
+            ?? (q.regular_market_time as number | string | undefined),
+        });
+      }
+    }
+    return out;
   }
 
   /**

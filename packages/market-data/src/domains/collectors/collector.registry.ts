@@ -19,6 +19,8 @@
 
 import { EventEmitter } from 'events';
 import { BinanceCollector } from './binance.collector.js';
+import { FxCommoditiesCollector } from './fx-commodities.collector.js';
+import { RabbitForexCollector } from './rabbitforex.collector.js';
 import { YahooCollector } from './yahoo.collector.js';
 import { validateTick } from './tick.validator.js';
 import {
@@ -30,6 +32,7 @@ import {
   COMMODITY_SYMBOLS,
   type AssetKind,
 } from '../../config/symbols.js';
+import { env } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 import type {
   ICollector,
@@ -79,6 +82,9 @@ export class CollectorRegistry {
   /** Track validation errors for monitoring */
   private validationErrors = 0;
 
+  /** Pending subscriptions for collectors that are not connected yet */
+  private pendingSubscriptions = new Map<string, Set<string>>();
+
   constructor() {
     // Reset tick count every minute
     this.tickCountResetTimer = setInterval(() => {
@@ -98,18 +104,40 @@ export class CollectorRegistry {
    *
    * COLLECTOR ASSIGNMENT:
    * - Binance: All crypto symbols (real-time WebSocket)
-   * - Yahoo: Everything else (polling)
+    * - Yahoo: Stocks via internal yfinance-service (polling)
+    * - RabbitForex: Forex + metals (polling)
+    * - FX/Commodities: Indices + energy commodities via yfinance-service (polling)
    */
   async initialize(): Promise<void> {
     this.log.info('Initializing collectors...');
 
+    const sharedCollectorConfig = {
+      maxReconnectDelayMs: env.COLLECTOR_MAX_RECONNECT_DELAY_MS,
+      reconnectJitterPct: env.COLLECTOR_RECONNECT_JITTER_PCT,
+    };
+
     // Create Binance collector for crypto
-    const binance = new BinanceCollector();
+    const binance = new BinanceCollector(sharedCollectorConfig);
     this.registerCollector(binance);
 
     // Create Yahoo collector for traditional assets
-    const yahoo = new YahooCollector();
+    const yahoo = new YahooCollector({
+      ...sharedCollectorConfig,
+      rateLimitBackoffMs: env.YAHOO_RATE_LIMIT_BACKOFF_MS,
+    });
     this.registerCollector(yahoo);
+
+    const rabbit = new RabbitForexCollector({
+      ...sharedCollectorConfig,
+      rateLimitBackoffMs: env.YAHOO_RATE_LIMIT_BACKOFF_MS,
+    });
+    this.registerCollector(rabbit);
+
+    const fxCommodities = new FxCommoditiesCollector({
+      ...sharedCollectorConfig,
+      rateLimitBackoffMs: env.YAHOO_RATE_LIMIT_BACKOFF_MS,
+    });
+    this.registerCollector(fxCommodities);
 
     this.log.info({
       collectors: Array.from(this.collectors.keys()),
@@ -237,9 +265,39 @@ export class CollectorRegistry {
         from: prevState,
         to: state,
       }, 'Collector state changed');
+
+      // If this collector just became connected, apply any pending subscriptions.
+      if (state === 'connected') {
+        void this.applyPendingSubscriptions(collector);
+      }
     });
 
     this.collectors.set(collector.name, collector);
+  }
+
+  /**
+   * Apply any queued subscriptions for a collector.
+   * Used to avoid failing startup when a collector is reconnecting.
+   */
+  private async applyPendingSubscriptions(collector: ICollector): Promise<void> {
+    const pending = this.pendingSubscriptions.get(collector.name);
+    if (!pending || pending.size === 0) return;
+
+    if (collector.state !== 'connected') return;
+
+    const symbols = Array.from(pending);
+
+    try {
+      await collector.subscribe(symbols);
+      this.pendingSubscriptions.delete(collector.name);
+      this.log.info({
+        collector: collector.name,
+        symbolCount: symbols.length,
+        symbols: symbols.slice(0, 5),
+      }, 'Applied pending subscriptions');
+    } catch (error) {
+      this.log.error({ error, collector: collector.name }, 'Failed to apply pending subscriptions');
+    }
   }
 
   /**
@@ -251,6 +309,15 @@ export class CollectorRegistry {
 
       if (symbols.length === 0) {
         this.log.warn({ collector: name }, 'No symbols to subscribe');
+        continue;
+      }
+
+      // If collector isn't connected yet (e.g., reconnecting), queue subscriptions.
+      if (collector.state !== 'connected') {
+        const existing = this.pendingSubscriptions.get(name) ?? new Set<string>();
+        symbols.forEach(s => existing.add(s));
+        this.pendingSubscriptions.set(name, existing);
+        this.log.warn({ collector: name, state: collector.state }, 'Collector not connected; queued subscriptions');
         continue;
       }
 

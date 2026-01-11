@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560">
+    <defs>
+        <style>
+            .title {
+                font: 700 18px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+                fill: #0f172a;
+            }
+
+            .label {
+                font: 700 13px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+                fill: #0f172a;
+            }
+
+            .small {
+                font: 500 12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+                fill: #334155;
+            }
+
+            .colTitle {
+                font: 700 12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+                fill: #475569;
+            }
+
+            .box {
+                fill: #ffffff;
+                stroke: #94a3b8;
+                stroke-width: 1.5;
+                rx: 12;
+            }
+
+            .boxSoft {
+                fill: #f8fafc;
+                stroke: #94a3b8;
+                stroke-width: 1.5;
+                rx: 12;
+            }
+
+            .arrow {
+                stroke: #475569;
+                stroke-width: 2;
+                fill: none;
+                marker-end: url(#arrowHead);
+            }
+
+            .dashed {
+                stroke-dasharray: 6 6;
+            }
+        </style>
+        <marker id="arrowHead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+        </marker>
+    </defs>
+
+    <text x="40" y="40" class="title">Market Data Service — Clean Data Flow</text>
+
+    <!-- Column titles -->
+    <text x="60" y="80" class="colTitle">UPSTREAM</text>
+    <text x="340" y="80" class="colTitle">COLLECTOR</text>
+    <text x="690" y="80" class="colTitle">CORE</text>
+    <text x="940" y="80" class="colTitle">OUTPUTS</text>
+
+    <!-- Row y positions -->
+    <!-- y = 105, 185, 265, 345 -->
+
+    <!-- Upstreams -->
+    <rect x="40" y="105" width="260" height="60" class="box" />
+    <text x="60" y="135" class="label">Binance</text>
+    <text x="60" y="155" class="small">WebSocket • Crypto</text>
+
+    <rect x="40" y="185" width="260" height="60" class="box" />
+    <text x="60" y="215" class="label">yfinance-service</text>
+    <text x="60" y="235" class="small">REST • Stocks</text>
+
+    <rect x="40" y="265" width="260" height="60" class="box" />
+    <text x="60" y="295" class="label">yfinance-service</text>
+    <text x="60" y="315" class="small">REST • Indices + Energy</text>
+
+    <rect x="40" y="345" width="260" height="60" class="box" />
+    <text x="60" y="375" class="label">RabbitForexAPI</text>
+    <text x="60" y="395" class="small">REST • Forex + Metals</text>
+
+    <!-- Collectors -->
+    <rect x="320" y="105" width="320" height="60" class="boxSoft" />
+    <text x="340" y="135" class="label">Binance Collector</text>
+    <text x="340" y="155" class="small">Real-time ticks</text>
+
+    <rect x="320" y="185" width="320" height="60" class="boxSoft" />
+    <text x="340" y="215" class="label">Stocks Collector</text>
+    <text x="340" y="235" class="small">YahooCollector via yfinance-service</text>
+
+    <rect x="320" y="265" width="320" height="60" class="boxSoft" />
+    <text x="340" y="295" class="label">Indices + Energy Collector</text>
+    <text x="340" y="315" class="small">FxCommoditiesCollector</text>
+
+    <rect x="320" y="345" width="320" height="60" class="boxSoft" />
+    <text x="340" y="375" class="label">Forex + Metals Collector</text>
+    <text x="340" y="395" class="small">RabbitForexCollector</text>
+
+    <!-- Core -->
+    <rect x="680" y="205" width="220" height="80" class="box" />
+    <text x="700" y="240" class="label">Collector Registry</text>
+    <text x="700" y="260" class="small">Routing + validation</text>
+
+    <rect x="680" y="310" width="220" height="80" class="box" />
+    <text x="700" y="345" class="label">Normalizer</text>
+    <text x="700" y="365" class="small">Canonical tick format</text>
+
+    <!-- Outputs -->
+    <rect x="930" y="185" width="230" height="60" class="box" />
+    <text x="950" y="215" class="label">Price Cache (Redis)</text>
+    <text x="950" y="235" class="small">Cache + pub/sub</text>
+
+    <rect x="930" y="265" width="230" height="60" class="box" />
+    <text x="950" y="295" class="label">WebSocket + REST</text>
+    <text x="950" y="315" class="small">Clients consume ticks</text>
+
+    <rect x="930" y="345" width="230" height="60" class="box" />
+    <text x="950" y="375" class="label">Candle Aggregator</text>
+    <text x="950" y="395" class="small">Builds 1m OHLCV</text>
+
+    <rect x="930" y="425" width="230" height="60" class="box" />
+    <text x="950" y="455" class="label">PostgreSQL</text>
+    <text x="950" y="475" class="small">Stores candles</text>
+
+    <!-- Arrows: upstream -> collector (straight, per-row) -->
+    <path class="arrow" d="M 300 135 L 320 135" />
+    <path class="arrow" d="M 300 215 L 320 215" />
+    <path class="arrow" d="M 300 295 L 320 295" />
+    <path class="arrow" d="M 300 375 L 320 375" />
+
+    <!-- Arrows: collector -> registry (straight, no crossing) -->
+    <path class="arrow" d="M 640 135 L 680 235" />
+    <path class="arrow" d="M 640 215 L 680 235" />
+    <path class="arrow" d="M 640 295 L 680 235" />
+    <path class="arrow" d="M 640 375 L 680 235" />
+
+    <!-- Registry -> Normalizer -->
+    <path class="arrow" d="M 790 285 L 790 310" />
+
+    <!-- Normalizer -> Outputs -->
+    <path class="arrow" d="M 900 350 L 930 215" />
+    <path class="arrow" d="M 900 350 L 930 375" />
+
+    <!-- Redis -> WS/REST -->
+    <path class="arrow" d="M 1045 245 L 1045 265" />
+
+    <!-- Candle Aggregator -> Postgres -->
+    <path class="arrow" d="M 1045 405 L 1045 425" />
+
+    <!-- Optional: indicate that both Redis + Aggregator are fed by normalized ticks -->
+    <path class="arrow dashed" d="M 900 350 L 930 295" />
+</svg>

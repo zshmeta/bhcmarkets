@@ -85,7 +85,9 @@ export class CandleAggregator {
         high: tick.last,
         low: tick.last,
         close: tick.last,
-        volume: tick.volume || 0,
+        // Most sources expose rolling 24h volume, not per-tick volume.
+        // Treat it as a snapshot (last known) to avoid inflating candle volume.
+        volume: tick.volume ?? 0,
         timestamp: periodStart,
         tickCount: 1,
       };
@@ -96,7 +98,9 @@ export class CandleAggregator {
       builder.high = Math.max(builder.high, tick.last);
       builder.low = Math.min(builder.low, tick.last);
       builder.close = tick.last;
-      builder.volume += tick.volume || 0;
+      if (tick.volume !== undefined) {
+        builder.volume = tick.volume;
+      }
       builder.tickCount++;
     }
   }

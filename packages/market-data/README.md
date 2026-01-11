@@ -1,77 +1,93 @@
 # @repo/market-data
 
-Enterprise-grade market data service for BHC Markets trading platform.
+Real-time (and near real-time) market data service for the BHC Markets trading platform.
+
+If you only remember one thing: this service **collects prices from multiple upstream providers**, normalizes them into a single format, then serves them to the rest of the platform via **REST + WebSocket**.
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         DATA SOURCES                            │
-│  ┌───────────────┐              ┌───────────────────────────┐  │
-│  │   Binance     │ (WebSocket)  │       Yahoo Finance       │  │
-│  │   Collector   │              │        Collector          │  │
-│  │  (Crypto)     │              │  (Stocks/Forex/Indices)   │  │
-│  └───────┬───────┘              └────────────┬──────────────┘  │
-└──────────┼──────────────────────────────────┼──────────────────┘
-           │                                   │
-           └───────────────┬───────────────────┘
-                           │
-                 ┌─────────▼─────────┐
-                 │ Collector Registry │
-                 │ (Aggregates all   │
-                 │  collector ticks) │
-                 └─────────┬─────────┘
-                           │
-                 ┌─────────▼─────────┐
-                 │    Normalizer     │
-                 │ (Enriches ticks   │
-                 │  with metadata)   │
-                 └─────────┬─────────┘
-                           │
-      ┌────────────────────┼────────────────────┐
-      │                    │                    │
-┌─────▼─────┐      ┌───────▼───────┐    ┌──────▼──────┐
-│  Price    │      │   Candle      │    │  WebSocket  │
-│  Cache    │      │  Aggregator   │    │  Publisher  │
-│  (Redis)  │      │  (OHLCV)      │    │  (Clients)  │
-└─────┬─────┘      └───────┬───────┘    └──────┬──────┘
-      │                    │                   │
-┌─────▼─────┐      ┌───────▼───────┐    ┌─────▼──────┐
-│  REST API │      │   Database    │    │  Platform  │
-│  /prices  │      │   Storage     │    │    App     │
-└───────────┘      └───────────────┘    └────────────┘
+### Key concepts (plain English)
+
+- **Symbol**: the “thing” you want a price for (example: `BTC/USD`, `AAPL`, `EUR/USD`).
+- **Tick**: a single price update at a point in time.
+- **Candle (OHLCV)**: prices grouped into time buckets (1 minute, 5 minutes, etc.) used for charts.
+
+### Data flow
+
+<img src="./docs/architecture.svg" alt="Market Data architecture diagram" />
+
+Diagram source (editable): `docs/architecture.mmd`
+
+ASCII view (quick scan):
+
+```text
+Binance (WS, crypto)  -> BinanceCollector
+yfinance-service (stocks) -> YahooCollector (stocks)
+yfinance-service (indices+energy) -> FxCommoditiesCollector
+RabbitForexAPI (fx+metals) -> RabbitForexCollector
+
+All collectors -> CollectorRegistry -> Normalizer
+
+Normalizer -> Redis (cache+pubsub) -> WebSocket (/ws) + REST (/api/*)
+Normalizer -> CandleAggregator -> Postgres (candles)
 ```
 
 ## Data Sources
 
-| Source | Asset Classes | Update Method | Latency |
-|--------|--------------|---------------|---------|
-| **Binance** | Crypto | WebSocket | ~50-100ms |
-| **Yahoo Finance** | Stocks, Forex, Indices, Commodities | Polling (15-30s) | ~15-30s |
+| Source | Asset Classes | Update Method | Typical cadence |
+|--------|--------------|---------------|----------------|
+| **Binance** | Crypto | WebSocket | sub-second |
+| **yfinance-service** (internal) | Stocks, Indices, Energy commodities | REST polling (batched) | ~15s (configurable) |
+| **RabbitForexAPI** (internal) | Forex, Metals | REST polling (batched) | ~1s (configurable) |
+
+Why we do it this way:
+
+- Binance is excellent for free real-time crypto.
+- “Yahoo-style” data is useful for equities/indices/commodities, but direct scraping is unreliable at scale. We centralize it behind an internal `yfinance-service` to reduce breakage and concentrate rate limiting/caching.
+- Forex + metals are served by RabbitForexAPI because it provides a single snapshot table that updates frequently.
+
+Note: you may still see the field name `sources.yahoo` in code/config. That’s just the **upstream symbol identifier** (the same identifiers used by yfinance/Yahoo). In production we fetch those quotes via `yfinance-service`, not by scraping from every machine.
 
 ## Supported Symbols
 
+The source of truth is the symbol registry in `src/config/symbols.ts` and the runtime endpoint `GET /api/symbols`.
+Below are a few examples so you know what the format looks like.
+
 ### Crypto (via Binance)
-BTC/USD, ETH/USD, SOL/USD, BNB/USD, XRP/USD, ADA/USD, DOGE/USD, AVAX/USD, DOT/USD, LINK/USD, MATIC/USD, UNI/USD, ATOM/USD, LTC/USD, NEAR/USD
+BTC/USD, ETH/USD, SOL/USD, BNB/USD, XRP/USD, ADA/USD, DOGE/USD, AVAX/USD, DOT/USD, LINK/USD, MATIC/USD, LTC/USD
 
-### Forex (via Yahoo)
-EUR/USD, GBP/USD, USD/JPY, AUD/USD, USD/CAD, USD/CHF, NZD/USD, EUR/GBP
+### Forex (via RabbitForexAPI)
+EUR/USD, GBP/USD, USD/JPY, AUD/USD, USD/CAD, USD/CHF, NZD/USD, EUR/GBP, EUR/JPY, GBP/JPY
 
-### Stocks (via Yahoo)
-AAPL, MSFT, GOOGL, AMZN, NVDA, META, TSLA, JPM, V, WMT
+### Stocks (via yfinance-service)
+AAPL, MSFT, GOOGL, AMZN, NVDA, META, TSLA, JPM, V, JNJ, AIR.PA, MC.PA
 
-### Indices (via Yahoo)
-^GSPC (S&P 500), ^DJI (Dow Jones), ^IXIC (NASDAQ), ^VIX (VIX)
+### Indices (via yfinance-service)
+SPX, NDX, DJI, VIX, FTSE, DAX, N225
 
-### Commodities (via Yahoo)
-GC=F (Gold), SI=F (Silver), CL=F (Crude Oil), NG=F (Natural Gas)
+### Commodities
+
+- Metals (via RabbitForexAPI): XAU/USD, XAG/USD
+- Energy (via yfinance-service): WTI, BRENT, NATGAS
+
+## Reliability features (what makes it “enterprise-grade”)
+
+This service is built to keep working even if upstream providers misbehave.
+
+- **Strict tick validation**: drops malformed ticks and rejects timestamps that are too old / too far in the future.
+- **Defensive timestamping**: providers that send “stale” timestamps can be safely normalized.
+- **Non-overlapping polling**: polling collectors queue/coalesce polls so they don’t pile up under latency.
+- **Reconnect jitter + max delay**: avoids thundering-herd reconnect storms.
+- **Rate-limit detection/backoff**: especially important for Yahoo-style sources.
+- **Circuit breaker**: stops hammering an upstream after repeated failures, then retries after a cooldown.
+- **Optional file logging**: can write logs to a file for on-box debugging.
 
 ## Quick Start
 
 ### Prerequisites
-- Node.js 18+
+- Bun (repo default) or Node.js 18+
 - PostgreSQL (for candle storage)
-- Redis (optional, falls back to in-memory)
+- Redis (recommended; used for caching + pub/sub)
 
 ### Environment Variables
 
@@ -82,21 +98,53 @@ DATABASE_URL=postgres://user:pass@localhost:5432/bhc
 # Optional
 REDIS_URL=redis://localhost:6379
 PORT=4001          # HTTP API port
-WS_PORT=4002       # WebSocket port
+WS_PORT=4002       # WebSocket port (path: /ws)
 NODE_ENV=development
 LOG_LEVEL=info
+
+# Internal upstream services
+YFINANCE_SERVICE_BASE_URL=http://100.100.13.10:8000
+RABBITFOREX_BASE_URL=http://100.100.13.10:3000
+
+# Poll cadences
+YFINANCE_STOCKS_POLL_INTERVAL_MS=15000
+FX_COMMODITIES_POLL_INTERVAL_MS=15000
+RABBITFOREX_POLL_INTERVAL_MS=1000
+
+# Optional: also write logs to a file
+MARKET_DATA_LOG_FILE_PATH=/var/log/bhc/market-data.log
 ```
 
 ### Running
 
 ```bash
-# Development
-npm run dev
+# From repo root (recommended)
+bun run --filter=@repo/market-data dev
 
-# Production
-npm run build
-npm run start
+# Or from this package folder
+bun run dev
 ```
+
+## WebSocket quick test (subscribe to a few assets)
+
+The WebSocket server runs on `ws://localhost:4002/ws`.
+
+### Option A: `wscat` (Node tool)
+
+```bash
+npx wscat -c ws://localhost:4002/ws -x '{"type":"subscribe","symbols":["BTC/USD","AAPL","EUR/USD","XAU/USD","WTI","SPX"]}'
+```
+
+### Option B: `websocat` (single binary)
+
+```bash
+printf '%s\n' '{"type":"subscribe","symbols":["BTC/USD","AAPL","EUR/USD","XAU/USD","WTI","SPX"]}' | websocat -E ws://localhost:4002/ws
+```
+
+You should see messages like:
+
+- `{"type":"subscribed", ...}`
+- `{"type":"tick", "data": { ... } }`
 
 ## API Endpoints
 
@@ -189,33 +237,33 @@ Connect to `ws://localhost:4002/ws`
 
 ```bash
 # Unit tests (no external dependencies)
-npm run test
+bun run --filter=@repo/market-data test
 
 # Integration tests (requires running service)
-npm run test:integration
+bun run --filter=@repo/market-data test:integration
 
 # Watch mode
-npm run test:watch
+bun run --filter=@repo/market-data test:watch
 
 # Coverage report
-npm run test:coverage
+bun run --filter=@repo/market-data test:coverage
 ```
 
 ## Project Structure
 
 ```
 src/
-├── config/           # Environment config, symbol definitions
+├── config/           # Env config + symbol registry
 ├── domains/
-│   ├── collectors/   # Data source collectors (Binance, Yahoo)
-│   ├── normalizer/   # Tick enrichment and validation
-│   ├── cache/        # Redis price cache
-│   ├── historical/   # Candle aggregation and storage
+│   ├── collectors/   # Upstream connectors (Binance / yfinance-service / RabbitForex)
+│   ├── normalizer/   # Tick validation + canonical formatting
+│   ├── cache/        # Redis price cache + pub/sub
+│   ├── historical/   # Candle aggregation + storage
 │   ├── stream/       # WebSocket server for clients
 │   └── health/       # Health monitoring
 ├── api/              # REST API routes
 ├── db/               # Database connection
-├── utils/            # Logger, helpers
+├── utils/            # Logging + helpers
 └── index.ts          # Bootstrap
 ```
 

@@ -32,7 +32,7 @@ const envSchema = z.object({
   // Redis - used for price caching and pub/sub between services
   // Optional in dev (will use in-memory fallback), required in production
 
-  REDIS_URL: z.string().optional(),
+  REDIS_URL: z.string().default('redis://:bhcm@100.100.13.10:6379'),
 
   // WebSocket server for clients (TradingView charts)
   WS_PORT: z.coerce.number().default(4002),
@@ -45,10 +45,43 @@ const envSchema = z.object({
   YAHOO_POLL_INTERVAL_MS: z.coerce.number().default(15000),
   YAHOO_BATCH_SIZE: z.coerce.number().default(20), // Symbols per request
 
+  // Internal yfinance-service (stocks)
+  // This is a self-hosted REST proxy used to avoid direct Yahoo scraping from every service.
+  // Example: http://100.100.13.10:8000
+  YFINANCE_SERVICE_BASE_URL: z.string().default('http://100.100.13.10:8000'),
+  YFINANCE_STOCKS_POLL_INTERVAL_MS: z.coerce.number().default(15000),
+  YFINANCE_BATCH_SIZE: z.coerce.number().default(100),
+
+  // FX rates (free/default)
+  // Default provider: open.er-api.com (USD base). One request yields many currencies.
+  FX_RATES_URL: z.string().default('https://open.er-api.com/v6/latest/USD'),
+  FX_COMMODITIES_POLL_INTERVAL_MS: z.coerce.number().default(15000),
+
+  // RabbitForexAPI (forex + metals)
+  // Self-hosted FX+metals API.
+  // Example: http://100.100.13.10:3000
+  RABBITFOREX_BASE_URL: z.string().default('http://100.100.13.10:3000'),
+  // Polling interval for RabbitForexAPI endpoints.
+  // If Rabbit refreshes quotes every second, set this to 1000.
+  RABBITFOREX_POLL_INTERVAL_MS: z.coerce.number().default(1000),
+
+  // Collector reconnect behavior
+  // Jitter helps prevent thundering-herd reconnects across services.
+  COLLECTOR_MAX_RECONNECT_DELAY_MS: z.coerce.number().default(30000),
+  COLLECTOR_RECONNECT_JITTER_PCT: z.coerce.number().default(0.2),
+
+  // Yahoo Finance rate limiting backoff
+  // Yahoo is unofficial and will 429 under load; back off aggressively.
+  YAHOO_RATE_LIMIT_BACKOFF_MS: z.coerce.number().default(60000),
+
   // FMP (Financial Modeling Prep) API
   // Get your free API key at: https://financialmodelingprep.com/
   // Free tier: 250 API calls per day
   FMP_API_KEY: z.string().optional(),
+
+  // Polygon.io (optional)
+  // If set, can be used by collectors/routes that support Polygon.
+  POLYGON_API_KEY: z.string().optional(),
 
   // Circuit breaker settings
   // WHAT IS A CIRCUIT BREAKER:
@@ -64,6 +97,13 @@ const envSchema = z.object({
 
   // Logging
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
+
+  // Optional file logging
+  // If set, logs will also be written to the given file path.
+  MARKET_DATA_LOG_FILE_PATH: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+    z.string().optional()
+  ),
 });
 
 // Parse and validate environment

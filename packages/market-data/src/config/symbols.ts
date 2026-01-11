@@ -146,6 +146,14 @@ export const STOCK_SYMBOLS: SymbolDefinition[] = [
 
   // Healthcare
   { symbol: 'JNJ', name: 'Johnson & Johnson', kind: 'stock', base: 'JNJ', quote: 'USD', tickSize: 0.01, lotSize: 1, sources: { yahoo: 'JNJ' } },
+
+  // France (Euronext Paris) — ticker format commonly used by Yahoo/yfinance
+  // NOTE: adjust this list to your preferred FR universe.
+  { symbol: 'AIR.PA', name: 'Airbus SE', kind: 'stock', base: 'AIR', quote: 'EUR', tickSize: 0.01, lotSize: 1, sources: { yahoo: 'AIR.PA' } },
+  { symbol: 'OR.PA', name: "L'Oréal S.A.", kind: 'stock', base: 'OR', quote: 'EUR', tickSize: 0.01, lotSize: 1, sources: { yahoo: 'OR.PA' } },
+  { symbol: 'MC.PA', name: 'LVMH Moët Hennessy Louis Vuitton', kind: 'stock', base: 'MC', quote: 'EUR', tickSize: 0.01, lotSize: 1, sources: { yahoo: 'MC.PA' } },
+  { symbol: 'TTE.PA', name: 'TotalEnergies SE', kind: 'stock', base: 'TTE', quote: 'EUR', tickSize: 0.01, lotSize: 1, sources: { yahoo: 'TTE.PA' } },
+  { symbol: 'SAN.PA', name: 'Sanofi', kind: 'stock', base: 'SAN', quote: 'EUR', tickSize: 0.01, lotSize: 1, sources: { yahoo: 'SAN.PA' } },
 ];
 
 /**

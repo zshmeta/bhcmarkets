@@ -1,0 +1,43 @@
+```mermaid
+flowchart LR
+  %% Clean, row-based layout to avoid crisscrossing edges
+
+  subgraph U[Upstreams]
+    direction TB
+    u1[Binance\n(WebSocket)\nCrypto]
+    u2[yfinance-service\n(REST)\nStocks]
+    u3[yfinance-service\n(REST)\nIndices + Energy]
+    u4[RabbitForexAPI\n(REST)\nForex + Metals]
+  end
+
+  subgraph C[Collectors]
+    direction TB
+    c1[Binance Collector]
+    c2[Stocks Collector\n(YahooCollector via yfinance-service)]
+    c3[Indices + Energy Collector\n(FxCommoditiesCollector)]
+    c4[Forex + Metals Collector\n(RabbitForexCollector)]
+  end
+
+  subgraph K[Core]
+    direction TB
+    reg[Collector Registry\n(routing + validation)]
+    norm[Normalizer\n(canonical tick format)]
+  end
+
+  subgraph O[Outputs]
+    direction TB
+    redis[Price Cache\n(Redis + pub/sub)]
+    ws[WebSocket + REST\n/ws + /api/*]
+    candles[Candle Aggregator\n(1m OHLCV)]
+    pg[(PostgreSQL\nCandles)]
+  end
+
+  u1 --> c1 --> reg
+  u2 --> c2 --> reg
+  u3 --> c3 --> reg
+  u4 --> c4 --> reg
+
+  reg --> norm
+  norm --> redis --> ws
+  norm --> candles --> pg
+```

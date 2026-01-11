@@ -90,6 +90,9 @@ export abstract class BaseCollector implements ICollector {
   /** Health metrics: last error message */
   private lastErrorMessage?: string;
 
+  /** Health metrics: last error type */
+  private lastErrorType?: string;
+
   /** Timer for tick count reset */
   private tickCountResetTimer?: NodeJS.Timeout;
 
@@ -105,6 +108,9 @@ export abstract class BaseCollector implements ICollector {
     this.config = {
       debug: config.debug ?? false,
       reconnectDelayMs: config.reconnectDelayMs ?? 1000,
+      rateLimitBackoffMs: config.rateLimitBackoffMs ?? 60000,
+      maxReconnectDelayMs: config.maxReconnectDelayMs ?? 30000,
+      reconnectJitterPct: config.reconnectJitterPct ?? 0.2,
       maxReconnectAttempts: config.maxReconnectAttempts ?? Infinity,
     };
 
@@ -305,10 +311,13 @@ export abstract class BaseCollector implements ICollector {
    */
   protected emitError(error: CollectorError): void {
     this.lastErrorMessage = error.message;
+    this.lastErrorType = error.type;
     this.emitter.emit('error', error);
 
-    // Count failure for circuit breaker (only for retryable errors)
-    if (error.retryable) {
+    // Count failure for circuit breaker (only for retryable errors).
+    // Rate limiting is a controlled, expected failure mode and should
+    // not trip the circuit breaker.
+    if (error.retryable && error.type !== 'rate_limited') {
       this.recordFailure();
     }
   }
@@ -344,16 +353,21 @@ export abstract class BaseCollector implements ICollector {
    */
   private handleConnectionFailure(error: Error): void {
     this.log.error({ error }, 'Connection failed');
-    this.recordFailure();
 
+    const isRateLimited = this.isRateLimitedError(error);
     this.emitError({
-      type: 'connection_failed',
+      type: isRateLimited ? 'rate_limited' : 'connection_failed',
       message: error.message,
       source: this.name,
       timestamp: Date.now(),
       retryable: true,
       originalError: error,
     });
+
+    // Only trip circuit breaker for non-rate-limit failures.
+    if (!isRateLimited) {
+      this.recordFailure();
+    }
 
     this.setState('reconnecting');
     this.scheduleReconnect();
@@ -387,14 +401,23 @@ export abstract class BaseCollector implements ICollector {
 
     // Calculate backoff delay
     const baseDelay = this.config.reconnectDelayMs;
-    const backoffDelay = Math.min(
+    let backoffDelay = Math.min(
       baseDelay * Math.pow(2, this.reconnectAttempts),
-      30000 // Cap at 30 seconds
+      this.config.maxReconnectDelayMs
     );
 
-    this.log.info({ delayMs: backoffDelay, attempt: this.reconnectAttempts + 1 }, 'Scheduling reconnect');
+    // If we're being rate limited, back off harder.
+    if (this.lastErrorType === 'rate_limited' || this.isRateLimitMessage(this.lastErrorMessage)) {
+      backoffDelay = Math.max(backoffDelay, this.config.rateLimitBackoffMs);
+    }
 
-    this.reconnectTimer = setTimeout(() => this.attemptReconnect(), backoffDelay);
+    // Add jitter (+0% .. +reconnectJitterPct)
+    const jitterPct = Math.max(0, Math.min(1, this.config.reconnectJitterPct));
+    const delayWithJitter = Math.round(backoffDelay * (1 + Math.random() * jitterPct));
+
+    this.log.info({ delayMs: delayWithJitter, attempt: this.reconnectAttempts + 1 }, 'Scheduling reconnect');
+
+    this.reconnectTimer = setTimeout(() => this.attemptReconnect(), delayWithJitter);
   }
 
   /**
@@ -421,10 +444,44 @@ export abstract class BaseCollector implements ICollector {
 
       this.log.info('Reconnection successful');
     } catch (error) {
-      this.log.error({ error }, 'Reconnection attempt failed');
-      this.recordFailure();
+      const err = error as Error;
+      this.log.error({ error: err }, 'Reconnection attempt failed');
+
+      const isRateLimited = this.isRateLimitedError(err);
+      this.emitError({
+        type: isRateLimited ? 'rate_limited' : 'connection_failed',
+        message: err.message,
+        source: this.name,
+        timestamp: Date.now(),
+        retryable: true,
+        originalError: err,
+      });
+
+      if (!isRateLimited) {
+        this.recordFailure();
+      }
       this.scheduleReconnect();
     }
+  }
+
+  // ============================================================
+  // ERROR CLASSIFICATION
+  // ============================================================
+
+  private isRateLimitMessage(message?: string): boolean {
+    const msg = message?.toLowerCase() ?? '';
+    return (
+      msg.includes('too many requests') ||
+      msg.includes('rate limit') ||
+      msg.includes('rate limited') ||
+      msg.includes('status 429') ||
+      msg.includes('http 429') ||
+      msg.includes('429')
+    );
+  }
+
+  private isRateLimitedError(error: Error): boolean {
+    return this.isRateLimitMessage(error.message);
   }
 
   // ============================================================

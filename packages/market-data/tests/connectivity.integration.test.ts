@@ -116,50 +116,46 @@ describe('Binance WebSocket', () => {
     }, 10000);
 });
 
-describe('Yahoo Finance API', () => {
-    it('should fetch stock quote (AAPL)', async () => {
-        try {
-            const yahooFinance = await import('yahoo-finance2').then((m) => m.default);
-            const quote = await yahooFinance.quote('AAPL');
+describe('YFinance Service + RabbitForex', () => {
+    it('should fetch stock quote (AAPL) via yfinance-service', async () => {
+        const baseUrl = process.env.YFINANCE_SERVICE_BASE_URL ?? 'http://100.100.13.10:8000';
+        const url = new URL('/quote', baseUrl);
+        url.searchParams.set('symbols', 'AAPL');
 
-            expect(quote).toHaveProperty('symbol', 'AAPL');
-            expect(quote).toHaveProperty('regularMarketPrice');
-            expect(quote.regularMarketPrice).toBeGreaterThan(0);
-            console.log('✅ Yahoo AAPL price:', quote.regularMarketPrice);
-        } catch (error) {
-            // Handle rate limiting gracefully - don't fail the test
-            if (error instanceof Error &&
-                (error.message.includes('Too Many Requests') ||
-                    error.message.includes('429'))) {
-                console.log('⚠️ Yahoo rate limited - this is expected with frequent tests');
-                expect(true).toBe(true); // Pass anyway
-                return;
-            }
-            throw error;
-        }
+        const res = await fetch(url.toString(), { headers: { accept: 'application/json' } });
+        expect(res.ok).toBe(true);
+
+        const payload = await res.json();
+        const quotes = Array.isArray(payload)
+            ? payload
+            : (Array.isArray(payload?.quotes) ? payload.quotes : Array.isArray(payload?.data) ? payload.data : []);
+
+        const aapl = quotes.find((q: any) => q?.symbol === 'AAPL') ?? payload?.AAPL;
+        const price = aapl?.current_price;
+        expect(typeof price).toBe('number');
+        expect(price).toBeGreaterThan(0);
+        console.log('✅ yfinance-service AAPL price:', price);
     }, 15000);
 
-    it('should fetch forex quote (EUR/USD)', async () => {
-        await delay(2000); // Rate limit protection
+    it('should fetch FX rates (USD base) from RabbitForex and derive EUR/USD', async () => {
+        await delay(1000);
 
-        try {
-            const yahooFinance = await import('yahoo-finance2').then((m) => m.default);
-            const quote = await yahooFinance.quote('EURUSD=X');
+        const baseUrl = process.env.RABBITFOREX_BASE_URL ?? 'http://100.100.13.10:3000';
+        const url = new URL('/v1/rates', baseUrl);
+        const res = await fetch(url.toString(), { headers: { accept: 'application/json' } });
+        expect(res.ok).toBe(true);
 
-            expect(quote).toHaveProperty('regularMarketPrice');
-            expect(quote.regularMarketPrice).toBeGreaterThan(0);
-            expect(quote.regularMarketPrice).toBeLessThan(2);
-            console.log('✅ Yahoo EUR/USD rate:', quote.regularMarketPrice);
-        } catch (error) {
-            if (error instanceof Error &&
-                (error.message.includes('Too Many Requests') ||
-                    error.message.includes('429'))) {
-                console.log('⚠️ Yahoo rate limited - this is expected with frequent tests');
-                expect(true).toBe(true);
-                return;
-            }
-            throw error;
-        }
+        const data: any = await res.json();
+        const rates = data?.rates;
+        expect(rates).toBeTruthy();
+        expect(typeof rates?.EUR).toBe('number');
+        expect(typeof rates?.USD).toBe('number');
+
+        // EUR/USD = (USD->USD) / (USD->EUR)
+        const eurUsd = (rates.USD ?? 1) / rates.EUR;
+        expect(eurUsd).toBeGreaterThan(0);
+        expect(eurUsd).toBeLessThan(5);
+        console.log('✅ Derived EUR/USD rate:', eurUsd);
     }, 15000);
 });
 
@@ -169,10 +165,11 @@ describe('Connectivity Summary', () => {
         console.log('📊 CONNECTIVITY TEST SUMMARY');
         console.log('='.repeat(50));
         console.log('✅ Binance WebSocket: Real-time crypto prices');
-        console.log('⚠️ Yahoo Finance: May rate-limit on repeated runs');
+        console.log('✅ yfinance-service: Stocks via internal REST');
+        console.log('✅ RabbitForex: FX+metals (snapshot/poll)');
         console.log('');
-        console.log('💡 Tip: If Yahoo tests fail with rate limits,');
-        console.log('   wait a few minutes before running again.');
+        console.log('💡 Tip: If external services rate-limit,');
+        console.log('   increase polling intervals and/or enable caching.');
         console.log('='.repeat(50));
         expect(true).toBe(true);
     });

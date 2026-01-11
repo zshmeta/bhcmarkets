@@ -207,6 +207,15 @@ export interface CollectorConfig {
   /** Custom reconnect delay (default: exponential backoff) */
   reconnectDelayMs?: number;
 
+  /** Minimum delay to apply after rate limiting (default: 60s) */
+  rateLimitBackoffMs?: number;
+
+  /** Maximum reconnect backoff delay cap (default: 30s) */
+  maxReconnectDelayMs?: number;
+
+  /** Add random jitter to reconnect delay (0-1, default: 0.2 = +0-20%) */
+  reconnectJitterPct?: number;
+
   /** Maximum reconnect attempts before giving up (default: unlimited) */
   maxReconnectAttempts?: number;
 }
