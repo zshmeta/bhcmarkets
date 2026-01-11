@@ -157,13 +157,8 @@ let usingFallback = false;
 export async function getRedisClient(): Promise<IRedisLike> {
   if (redisClient) return redisClient;
 
-  // If no Redis URL configured, use in-memory fallback
   if (!env.REDIS_URL) {
-    log.warn('No REDIS_URL configured, using in-memory cache');
-    redisClient = new InMemoryCache();
-    usingFallback = true;
-    isConnected = true;
-    return redisClient;
+    throw new Error('REDIS_URL is required');
   }
 
   // Try to connect to Redis
@@ -205,11 +200,8 @@ export async function getRedisClient(): Promise<IRedisLike> {
 
     return redisClient!;
   } catch (error) {
-    log.warn({ error }, 'Failed to connect to Redis, using in-memory fallback');
-    redisClient = new InMemoryCache();
-    usingFallback = true;
-    isConnected = true;
-    return redisClient;
+    log.error({ error }, 'Failed to connect to Redis');
+    throw error;
   }
 }
 
@@ -224,18 +216,12 @@ export async function getRedisClient(): Promise<IRedisLike> {
  * our InMemoryCache implementation handles this correctly.
  */
 export async function getSubscriberClient(): Promise<IRedisLike> {
-  // If using fallback or subscriber already exists, return it
-  if (usingFallback) {
-    return getRedisClient();
-  }
-
   if (subscriberClient) {
     return subscriberClient;
   }
 
-  // Create a separate Redis client for subscriptions
   if (!env.REDIS_URL) {
-    return getRedisClient();
+    throw new Error('REDIS_URL is required');
   }
 
   try {
@@ -255,8 +241,8 @@ export async function getSubscriberClient(): Promise<IRedisLike> {
 
     return subscriberClient;
   } catch (error) {
-    log.warn({ error }, 'Failed to create subscriber client, using main client');
-    return getRedisClient();
+    log.error({ error }, 'Failed to create Redis subscriber client');
+    throw error;
   }
 }
 

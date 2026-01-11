@@ -69,7 +69,7 @@ import { logger } from './utils/logger.js';
 import { CollectorRegistry } from './domains/collectors/collector.registry.js';
 import { NormalizerService } from './domains/normalizer/normalizer.service.js';
 import { PriceCache } from './domains/cache/price.cache.js';
-import { closeRedis, isRedisConnected, isUsingFallback } from './domains/cache/redis.client.js';
+import { closeRedis, isRedisConnected, isUsingFallback, getRedisClient, getSubscriberClient } from './domains/cache/redis.client.js';
 import { HistoricalService } from './domains/historical/historical.service.js';
 import { MarketDataWebSocketServer } from './domains/stream/websocket.server.js';
 import { HealthService } from './domains/health/health.service.js';
@@ -189,6 +189,12 @@ class MarketDataService {
     log.info('Connecting to database...');
     await getDbClient({ connectionString : env.DATABASE_URL });
     log.info('Database connected');
+
+    // 1b. Redis connection (required for cache + pub/sub)
+    log.info('Connecting to Redis...');
+    await getRedisClient();
+    await getSubscriberClient();
+    log.info('Redis connected');
 
 
     // 2. Initialize components
