@@ -50,7 +50,9 @@ describe('OrderValidator', () => {
       });
 
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain(expect.stringContaining('account'));
+      expect(result.errors).toEqual(
+        expect.arrayContaining([expect.stringContaining('account')])
+      );
     });
 
     it('should reject invalid symbol format', () => {

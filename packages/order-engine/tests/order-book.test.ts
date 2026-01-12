@@ -63,7 +63,7 @@ describe('OrderBook', () => {
       orderBook.addOrder(createOrder({ side: 'buy', price: 50000, quantity: 2 }));
 
       const snapshot = orderBook.getSnapshot(1);
-      expect(snapshot.bids[0]?.quantity).toBe(3);
+      expect(snapshot.bids[0]?.quantity).toBe('3');
     });
   });
 
@@ -78,7 +78,7 @@ describe('OrderBook', () => {
       orderBook.removeOrder(order1.id);
 
       const snapshot = orderBook.getSnapshot(1);
-      expect(snapshot.bids[0]?.quantity).toBe(2);
+      expect(snapshot.bids[0]?.quantity).toBe('2');
     });
 
     it('should remove entire level when last order removed', () => {
@@ -133,8 +133,8 @@ describe('OrderBook', () => {
       expect(snapshot.symbol).toBe('BTC-USD');
       expect(snapshot.bids.length).toBe(2);
       expect(snapshot.asks.length).toBe(2);
-      expect(snapshot.bids[0]?.price).toBe(50000);
-      expect(snapshot.asks[0]?.price).toBe(50100);
+      expect(snapshot.bids[0]?.price).toBe('50000');
+      expect(snapshot.asks[0]?.price).toBe('50100');
     });
 
     it('should limit depth', () => {

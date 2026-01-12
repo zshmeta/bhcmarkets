@@ -17,7 +17,7 @@
  * ├─────────────────────────────────────────────────────┤
  * │  ┌───────────────┐  ┌──────────────────────────┐   │
  * │  │   REST API    │  │    WebSocket Server      │   │
- * │  │  (Port 4003)  │  │      (Port 4004)         │   │
+ * │  │  (Port 4000)  │  │      (Port 4040)         │   │
  * │  └───────┬───────┘  └────────────┬─────────────┘   │
  * │          │                       │                  │
  * │          └───────────┬───────────┘                  │
@@ -49,7 +49,7 @@
 
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
-import { isDatabaseConnected, closeDb, isRedisConnectedWithConfig, closeRedis, subscribe, getDbClient, getPubSubWithConfig } from '@repo/database';
+import { isDatabaseConnected, closeDb, isRedisConnectedWithConfig, closeRedis, subscribe, getDbClient, getPubSubWithConfig, getRedisWithConfig } from '@repo/database';
 import { OrderManager } from './domains/orders/order-manager.js';
 import { OrderEngineWebSocket } from './domains/stream/websocket-server.js';
 import { RestApiServer } from './api/rest-api.js';
@@ -117,9 +117,23 @@ async function waitForRedisConnected(options: { url: string; retryMs?: number; t
 
   // Ensure pub/sub clients are created; ioredis will reconnect automatically.
   getPubSubWithConfig({ url: options.url });
+  const redis = getRedisWithConfig({ url: options.url });
 
   while (Date.now() - startedAt < timeoutMs) {
-    if (isRedisConnectedWithConfig({ url: options.url })) return;
+    try {
+      // A successful ping implies TCP + AUTH are both working.
+      if (redis) {
+        await redis.ping();
+      }
+      if (isRedisConnectedWithConfig({ url: options.url })) return;
+    } catch (err: any) {
+      const msg = typeof err?.message === 'string' ? err.message : String(err);
+      if (/NOAUTH|WRONGPASS|invalid username-password pair|invalid password|ERR\s+invalid\s+password|NOPERM/i.test(msg)) {
+        throw new Error(
+          `Redis authentication/ACL failed (${msg}). Set REDIS_URL like redis://:PASSWORD@host:6379`
+        );
+      }
+    }
     await new Promise((resolve) => setTimeout(resolve, retryMs));
   }
 

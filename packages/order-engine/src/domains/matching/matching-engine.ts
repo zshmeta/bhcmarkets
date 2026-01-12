@@ -134,13 +134,15 @@ export class MatchingEngine {
         this.currentPrice = result.trades[result.trades.length - 1]!.price;
       }
 
-      // Determine final status
-      if (result.filledQuantity >= order.quantity) {
-        result.status = 'filled';
-        this.emit({ type: 'order_filled', orderId: order.id });
-      } else if (result.filledQuantity > 0) {
-        result.status = 'partially_filled';
-        this.emit({ type: 'order_partially_filled', orderId: order.id, filledQty: result.filledQuantity });
+      // Determine final status (but don't override explicit terminal states)
+      if (result.status !== 'rejected' && result.status !== 'cancelled') {
+        if (result.filledQuantity >= order.quantity) {
+          result.status = 'filled';
+          this.emit({ type: 'order_filled', orderId: order.id });
+        } else if (result.filledQuantity > 0) {
+          result.status = 'partially_filled';
+          this.emit({ type: 'order_partially_filled', orderId: order.id, filledQty: result.filledQuantity });
+        }
       }
 
       result.remainingQuantity = order.quantity - result.filledQuantity;
@@ -232,15 +234,21 @@ export class MatchingEngine {
   // ===========================================================================
 
   private matchMarketOrder(order: EngineOrder, result: MatchResult): void {
-    const matchingOrders = this.orderBook.getMatchingOrders(order.side);
+    // Snapshot the iterator to avoid skipping levels/orders when the book mutates during fills.
+    const matchingOrders = Array.from(this.orderBook.getMatchingOrders(order.side));
 
     for (const makerOrder of matchingOrders) {
       if (order.filledQuantity >= order.quantity) break;
 
+      const makerWasFilled = makerOrder.filledQuantity >= makerOrder.quantity;
       const trade = this.executeTrade(order, makerOrder);
       if (trade) {
         result.trades.push(trade);
         result.filledQuantity += trade.quantity;
+
+        if (!makerWasFilled && makerOrder.filledQuantity >= makerOrder.quantity) {
+          this.emit({ type: 'order_filled', orderId: makerOrder.id });
+        }
 
         // Update maker order in book
         const update = this.orderBook.updateOrderFill(
@@ -269,16 +277,36 @@ export class MatchingEngine {
     result: MatchResult,
     timeInForce: TimeInForce
   ): void {
-    // First try to match against existing orders
-    const matchingOrders = this.orderBook.getMatchingOrders(order.side, order.price);
+    // Snapshot the iterator to avoid skipping levels/orders when the book mutates during fills.
+    const matchingOrders = Array.from(this.orderBook.getMatchingOrders(order.side, order.price));
+
+    // FOK must be all-or-nothing: pre-check liquidity before executing any trades.
+    if (timeInForce === 'FOK') {
+      const available = matchingOrders.reduce((sum, maker) => {
+        const remaining = maker.quantity - maker.filledQuantity;
+        return sum + Math.max(0, remaining);
+      }, 0);
+
+      if (available < order.quantity) {
+        result.status = 'rejected';
+        result.rejectReason = 'Could not fill entire order (FOK)';
+        this.emit({ type: 'order_rejected', orderId: order.id, reason: result.rejectReason });
+        return;
+      }
+    }
 
     for (const makerOrder of matchingOrders) {
       if (order.filledQuantity >= order.quantity) break;
 
+      const makerWasFilled = makerOrder.filledQuantity >= makerOrder.quantity;
       const trade = this.executeTrade(order, makerOrder);
       if (trade) {
         result.trades.push(trade);
         result.filledQuantity += trade.quantity;
+
+        if (!makerWasFilled && makerOrder.filledQuantity >= makerOrder.quantity) {
+          this.emit({ type: 'order_filled', orderId: makerOrder.id });
+        }
 
         // Update maker order
         const update = this.orderBook.updateOrderFill(
@@ -303,12 +331,7 @@ export class MatchingEngine {
           break;
 
         case 'FOK':
-          // Reject if not fully filled
-          if (result.filledQuantity < order.quantity) {
-            result.status = 'rejected';
-            result.rejectReason = 'Could not fill entire order (FOK)';
-            // Rollback trades? In production, this needs careful handling
-          }
+          // FOK liquidity was pre-validated above.
           break;
 
         case 'GTC':

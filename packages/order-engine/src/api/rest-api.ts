@@ -62,6 +62,7 @@ export class RestApiServer {
   private server: Server | null = null;
   private routes: Route[] = [];
   private orderManager: OrderManager | null = null;
+  private listeningPort: number | null = null;
 
   private async ensureDbConnected(res: ServerResponse): Promise<boolean> {
     const connected = await isDatabaseConnected();
@@ -98,10 +99,23 @@ export class RestApiServer {
       });
 
       this.server.listen(port, () => {
-        log.info({ port }, 'REST API server started');
+        const address = this.server?.address();
+        if (address && typeof address === 'object') {
+          this.listeningPort = address.port;
+        } else {
+          this.listeningPort = port;
+        }
+        log.info({ port: this.listeningPort }, 'REST API server started');
         resolve();
       });
     });
+  }
+
+  /**
+   * Get the bound port after start(). Useful for tests when started with port 0.
+   */
+  getListeningPort(): number | null {
+    return this.listeningPort;
   }
 
   /**
@@ -112,6 +126,8 @@ export class RestApiServer {
       if (this.server) {
         this.server.close(() => {
           log.info('REST API server stopped');
+          this.server = null;
+          this.listeningPort = null;
           resolve();
         });
       } else {

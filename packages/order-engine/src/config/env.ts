@@ -25,38 +25,38 @@ config();
  * Schema for environment variables with sensible defaults for development.
  */
 const envSchema = z.object({
-  // Server configuration (service-scoped to avoid cross-service PORT collisions)
-  ORDER_ENGINE_PORT: z.coerce.number().default(4003),
+  // Server configuration
+  PORT: z.coerce.number().default(4000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Database - required for order persistence
-  DATABASE_URL: z.string().min(1),
+  DATABASE_URL: z.string().default('postgresql://bhcm:bhcm@100.100.13.10:5432/bhcmarkets'),
 
-  // Redis - required for pub/sub between services and order book snapshots
-  REDIS_URL: z.string().min(1),
+  // Redis - used for pub/sub between services and order book snapshots
+  REDIS_URL: z.string().default('redis://:bhcm@100.100.13.10:6379'),
 
   // WebSocket server for real-time order updates
-  ORDER_ENGINE_WS_PORT: z.coerce.number().default(4004),
+  WS_PORT: z.coerce.number().default(4040),
 
   // Order engine configuration
   // Maximum orders per account (prevents abuse)
-  MAX_ORDERS_PER_ACCOUNT: z.coerce.number().default(100),
-
-  // Order expiration for GTC orders (in days, 0 = no expiration)
-  ORDER_EXPIRATION_DAYS: z.coerce.number().default(30),
-
-  // Price validation tolerance (percentage deviation from market price)
-  PRICE_DEVIATION_TOLERANCE: z.coerce.number().default(0.1), // 10%
-
-  // Matching engine configuration
-  // How often to persist order book snapshots (ms)
-  ORDER_BOOK_SNAPSHOT_INTERVAL_MS: z.coerce.number().default(60000),
-
-  // Maximum trades per batch before flushing to DB
-  TRADE_BATCH_SIZE: z.coerce.number().default(100),
-
-  // Trade flush interval (ms)
-  TRADE_FLUSH_INTERVAL_MS: z.coerce.number().default(1000),
+//  MAX_ORDERS_PER_ACCOUNT: z.coerce.number().default(100),
+//
+//  // Order expiration for GTC orders (in days, 0 = no expiration)
+//  ORDER_EXPIRATION_DAYS: z.coerce.number().default(30),
+//
+//  // Price validation tolerance (percentage deviation from market price)
+//  PRICE_DEVIATION_TOLERANCE: z.coerce.number().default(0.1), // 10%
+//
+//  // Matching engine configuration
+//  // How often to persist order book snapshots (ms)
+//  ORDER_BOOK_SNAPSHOT_INTERVAL_MS: z.coerce.number().default(60000),
+//
+//  // Maximum trades per batch before flushing to DB
+//  TRADE_BATCH_SIZE: z.coerce.number().default(100),
+//
+//  // Trade flush interval (ms)
+//  TRADE_FLUSH_INTERVAL_MS: z.coerce.number().default(1000),
 
   // Circuit breaker settings
   CIRCUIT_BREAKER_THRESHOLD: z.coerce.number().default(5),
@@ -69,20 +69,13 @@ const envSchema = z.object({
   // Logging
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
 
+  // Market data service URL (for price validation)
+  MARKET_DATA_URL: z.string().default('http://localhost:4040'),
+  MARKET_DATA_WS_URL: z.string().default('ws://localhost:6060/ws'),
 });
 
-// Normalize common platform env var names into service-scoped ones.
-// This keeps local tooling flexible while preventing accidental cross-service PORT reuse.
-const normalizedEnv = {
-  ...process.env,
-} as Record<string, unknown>;
-
-// Back-compat: if someone only sets PORT/WS_PORT, use those.
-if (!normalizedEnv.ORDER_ENGINE_PORT && process.env.PORT) normalizedEnv.ORDER_ENGINE_PORT = process.env.PORT;
-if (!normalizedEnv.ORDER_ENGINE_WS_PORT && process.env.WS_PORT) normalizedEnv.ORDER_ENGINE_WS_PORT = process.env.WS_PORT;
-
 // Parse and validate environment
-const parsed = envSchema.safeParse(normalizedEnv);
+const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
   console.error('❌ Invalid environment configuration:');

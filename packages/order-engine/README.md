@@ -25,7 +25,7 @@ The order engine is a standalone microservice that handles:
 ├─────────────────────────────────────────────────────┤
 │  ┌───────────────┐  ┌──────────────────────────┐   │
 │  │   REST API    │  │    WebSocket Server      │   │
-│  │  (Port 4003)  │  │      (Port 4004)         │   │
+│  │  (Port 4000)  │  │      (Port 4040)         │   │
 │  └───────┬───────┘  └────────────┬─────────────┘   │
 │          │                       │                  │
 │          └───────────┬───────────┘                  │
@@ -162,8 +162,8 @@ pnpm start
 ```env
 # Server Configuration
 NODE_ENV=development
-PORT=4003
-WS_PORT=4004
+PORT=4000
+WS_PORT=4040
 HOST=0.0.0.0
 
 # Database
@@ -226,7 +226,7 @@ GET    /stats                    - Service statistics
 #### Connect
 
 ```
-ws://localhost:4004
+ws://localhost:4040
 ```
 
 #### Subscribe to Order Book
@@ -307,7 +307,7 @@ Trade:
 ### Place Order (REST)
 
 ```typescript
-const response = await fetch('http://localhost:4003/orders', {
+const response = await fetch('http://localhost:4000/orders', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -330,7 +330,7 @@ const result = await response.json();
 ### Subscribe to Order Book (WebSocket)
 
 ```typescript
-const ws = new WebSocket('ws://localhost:4004');
+const ws = new WebSocket('ws://localhost:4040');
 
 ws.onopen = () => {
   ws.send(JSON.stringify({

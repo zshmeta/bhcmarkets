@@ -126,6 +126,8 @@ export class RiskGateway {
     private circuitBreakerActive = false;
     private globalTradingEnabled = true;
 
+    private hasWarnedNoRiskService = false;
+
     private refreshTimer?: NodeJS.Timeout;
     private log: Logger | Console;
     private config: Required<Pick<
@@ -152,18 +154,29 @@ export class RiskGateway {
      */
     async syncLimits(): Promise<void> {
         if (!this.config.riskService) {
-            (this.log as Console).warn?.('No risk service configured, using defaults');
+            if (!this.hasWarnedNoRiskService) {
+                this.hasWarnedNoRiskService = true;
+                (this.log as Console).warn?.('No risk service configured, using defaults');
+            }
+
             return;
         }
 
         try {
             // Load all symbol limits
             const symbols = await this.config.riskService.getAllSymbolLimits();
+            let updatedCount = 0;
             for (const limit of symbols) {
-                this.symbolLimits.set(limit.symbol, limit);
+                const existing = this.symbolLimits.get(limit.symbol);
+                if (!existing || existing.updatedAt.getTime() !== limit.updatedAt.getTime()) {
+                    this.symbolLimits.set(limit.symbol, limit);
+                    updatedCount++;
+                }
             }
 
-            (this.log as Console).info?.(`Synced ${symbols.length} symbol limits to cache`);
+            if (updatedCount > 0) {
+                (this.log as Console).info?.(`Synced ${updatedCount} symbol limits to cache`);
+            }
         } catch (error) {
             (this.log as Console).error?.('Failed to sync limits from backend', error);
         }
@@ -174,6 +187,13 @@ export class RiskGateway {
      */
     startAutoRefresh(): void {
         if (this.refreshTimer) return;
+
+        // If there is no backend risk service, there is nothing to refresh.
+        // Log once (via syncLimits) and skip scheduling the interval.
+        if (!this.config.riskService) {
+            void this.syncLimits();
+            return;
+        }
 
         this.refreshTimer = setInterval(
             () => this.syncLimits(),
