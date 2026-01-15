@@ -40,7 +40,7 @@ describe('TradingService', () => {
       
       expect(result).toEqual({
         currency: 'BTC',
-        amount: '1.5',
+        amount: '1.5000000000',
       });
     });
 
@@ -59,7 +59,7 @@ describe('TradingService', () => {
       
       expect(result).toEqual({
         currency: 'USD',
-        amount: '75000', // 1.5 * 50000
+        amount: '75000.0000000000', // 1.5 * 50000
       });
     });
 
@@ -78,7 +78,7 @@ describe('TradingService', () => {
       
       expect(result).toEqual({
         currency: 'USD',
-        amount: '76500', // 1.5 * 51000
+        amount: '76500.0000000000', // 1.5 * 51000
       });
     });
 
@@ -142,7 +142,7 @@ describe('TradingService', () => {
       // 3. Lock funds
       expect(mockAccountService.lockFunds).toHaveBeenCalledWith({
         accountId: 'acc-usd-1',
-        amount: '50000',
+        amount: '50000.0000000000',
       });
 
       // 4. Call engine
@@ -164,7 +164,7 @@ describe('TradingService', () => {
       // Verify unlock happened
       expect(mockAccountService.unlockFunds).toHaveBeenCalledWith({
         accountId: 'acc-usd-1',
-        amount: '50000',
+        amount: '50000.0000000000',
       });
 
       // Verify result
@@ -203,7 +203,7 @@ describe('TradingService', () => {
       // Verify unlock happened
       expect(mockAccountService.unlockFunds).toHaveBeenCalledWith({
         accountId: 'acc-usd-1',
-        amount: '50000',
+        amount: '50000.0000000000',
       });
     });
   });
