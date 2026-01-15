@@ -59,7 +59,16 @@ export class TradingService {
       amount: lock.amount,
     });
 
-    const response = await this.engineClient.placeOrder(input);
+    let response;
+    try {
+      response = await this.engineClient.placeOrder(input);
+    } catch (error) {
+      await this.accountService.unlockFunds({
+        accountId: account.id,
+        amount: lock.amount,
+      });
+      throw error;
+    }
 
     if (!response.success) {
       // Rollback lock if engine rejected or failed

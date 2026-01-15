@@ -189,6 +189,23 @@ describe('TradingService', () => {
       // Verify no engine call
       expect(mockEngineClient.placeOrder).not.toHaveBeenCalled();
     });
+
+    it('should unlock funds and rethrow if engine throws network error', async () => {
+      // Setup engine network error
+      const networkError = new Error('Network timeout');
+      mockEngineClient.placeOrder.mockRejectedValue(networkError);
+
+      await expect(service.placeOrder(orderInput)).rejects.toThrow('Network timeout');
+
+      // Verify lock happened
+      expect(mockAccountService.lockFunds).toHaveBeenCalled();
+
+      // Verify unlock happened
+      expect(mockAccountService.unlockFunds).toHaveBeenCalledWith({
+        accountId: 'acc-usd-1',
+        amount: '50000',
+      });
+    });
   });
 });
 });
