@@ -153,4 +153,4 @@ const AccountStatus = () => {
   );
 }
 
-export default AccountStatus;
+export { AccountStatus };

@@ -1,6 +1,6 @@
 import { useIsMobile } from '../../hooks/useMediaQuery';
-import { MobileLayout } from './MobileLayout';
-import { DesktopLayout } from './DesktopLayout';
+import MobileLayout from './MobileLayout';
+import DesktopLayout from './DesktopLayout';
 
 /**
  * AdaptiveLayout - Root layout component that switches between Mobile and Desktop layouts

@@ -165,4 +165,4 @@ const CurrentOrdersView = ({
     );
 }
 
-export default CurrentOrdersView;
+export { CurrentOrdersView };

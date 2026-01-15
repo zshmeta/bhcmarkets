@@ -59,11 +59,11 @@ export const TriggerButton = styled.button`
   justify-content: center;
   width: 32px;
   height: 32px;
-  
+
   background: var(--bg-secondary, #161B22);
   border: 1px solid var(--border-subtle, #262C36);
   border-radius: 0.25rem; /* 4px */
-  
+
   color: var(--text-secondary, #9AA5B1);
   cursor: pointer;
   transition: all 0.1s ease-out;
@@ -88,14 +88,14 @@ export const ModalOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  
+
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
-  
+
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   z-index: 9000; /* Above most content, below tooltips */
   animation: ${fadeIn} 0.2s ease-out;
 `;
@@ -111,10 +111,10 @@ export const ModalPanel = styled.div`
   border: 1px solid var(--border, #30363D);
   border-radius: 0.5rem; /* 8px */
   box-shadow: 0 20px 25px rgba(0, 0, 0, 0.4);
-  
+
   width: 90%;
   max-width: 360px;
-  
+
   animation: ${slideIn} 0.2s ease-out;
 `;
 
@@ -149,7 +149,7 @@ export const CloseButton = styled.button`
   justify-content: center;
   width: 28px;
   height: 28px;
-  
+
   background: none;
   border: none;
   color: var(--text-tertiary, #6E7681);
@@ -165,18 +165,18 @@ export const CloseButton = styled.button`
 `;
 
 /* ═══════════════════════════════════════════════════════════
- * SHORTCUTS LIST
+ * ITEMS LIST (Help actions)
  * ═══════════════════════════════════════════════════════════
- * Vertical list of keyboard shortcuts with consistent spacing.
+ * Vertical list of help actions with consistent spacing.
  */
-export const ShortcutsList = styled.div`
+export const ItemsList = styled.div`
   padding: 0.75rem 1rem; /* 12px 16px */
   display: flex;
   flex-direction: column;
   gap: 0.5rem; /* 8px between items */
 `;
 
-export const ShortcutItem = styled.div`
+export const ItemRow = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem; /* 12px between key and description */
@@ -184,36 +184,95 @@ export const ShortcutItem = styled.div`
 `;
 
 /* ═══════════════════════════════════════════════════════════
- * KEYBOARD KEY BADGE
+ * ITEM BADGE
  * ═══════════════════════════════════════════════════════════
- * Styled <kbd> element that looks like a physical keyboard key.
- * The bottom shadow creates a 3D pressed-key effect.
+ * Small icon badge shown at the start of each row.
  */
-export const KeyBadge = styled.kbd`
+export const ItemBadge = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 48px;
-  padding: 0.25rem 0.5rem; /* 4px 8px */
-  
+  width: 32px;
+  height: 32px;
+
   background: var(--bg-tertiary, #1C2128);
   border: 1px solid var(--border, #30363D);
   border-radius: 0.25rem;
-  
-  /* Monospace font for consistent key width */
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.75rem; /* 12px */
-  font-weight: 500;
+
   color: var(--text-primary, #E6EDF3);
-  
-  /* 3D key effect: shadow at bottom edge */
-  box-shadow: 0 2px 0 var(--border, #30363D);
 `;
 
-export const KeyDescription = styled.span`
+export const ItemContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem; /* 2px */
+  flex: 1;
+  min-width: 0;
+`;
+
+export const ItemTitle = styled.span`
+  font-size: 0.75rem; /* 12px */
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const ItemDescription = styled.span`
   font-size: 0.75rem; /* 12px */
   color: var(--text-secondary, #9AA5B1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
+
+const ActionBase = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+
+  border-radius: 0.25rem;
+  color: var(--text-tertiary, #6E7681);
+  transition: all 0.1s ease-out;
+
+  &:hover {
+    background: var(--bg-tertiary, #1C2128);
+    color: var(--text-primary, #E6EDF3);
+  }
+`;
+
+export const ItemLink = styled(ActionBase)`
+  text-decoration: none;
+`;
+
+export const ItemButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+
+  background: none;
+  border: none;
+  border-radius: 0.25rem;
+  color: var(--text-tertiary, #6E7681);
+  cursor: pointer;
+  transition: all 0.1s ease-out;
+
+  &:hover {
+    background: var(--bg-tertiary, #1C2128);
+    color: var(--text-primary, #E6EDF3);
+  }
+`;
+
+// Legacy aliases (pre-help-modal)
+export const ShortcutsList = ItemsList;
+export const ShortcutItem = ItemRow;
+export const KeyBadge = ItemBadge;
+export const KeyDescription = ItemDescription;
 
 /* ═══════════════════════════════════════════════════════════
  * FOOTER SECTION

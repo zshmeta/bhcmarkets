@@ -108,4 +108,4 @@ const useTabs = (
     };
 }
 
-export default useTabs;
+export { useTabs };

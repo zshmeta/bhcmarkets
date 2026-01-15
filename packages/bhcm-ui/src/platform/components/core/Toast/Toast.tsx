@@ -115,4 +115,4 @@ const ToastContainer = ({ toasts = [], onRemove }: ToastContainerProps) => {
     );
 }
 
-export default ToastContainer;
+export { ToastContainer };

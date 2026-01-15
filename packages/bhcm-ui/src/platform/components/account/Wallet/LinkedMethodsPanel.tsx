@@ -207,4 +207,4 @@ const LinkedMethodsPanel = ({ highlightAdd }: LinkedMethodsPanelProps) => {
   );
 }
 
-export default LinkedMethodsPanel;
+export { LinkedMethodsPanel };

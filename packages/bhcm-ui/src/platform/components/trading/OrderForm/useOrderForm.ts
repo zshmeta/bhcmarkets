@@ -79,6 +79,9 @@ export interface OrderFormTranslations {
     confirmDegraded: string;
     invalidAmount: string;
     invalidPrice: string;
+    invalidTrailingValue: string;
+    invalidTriggerPrice: string;
+    invalidLimitPrice: string;
     insufficientBalance: string;
 }
 
@@ -98,15 +101,16 @@ export interface UseOrderFormReturn {
 
     // Modal state
     showDegradedConfirm: boolean;
+    showConfirmModal: boolean;
 
     // Translations
     translations: OrderFormTranslations;
 
     // Input refs
-    priceInputRef: React.RefObject<HTMLInputElement>;
-    quantityInputRef: React.RefObject<HTMLInputElement>;
-    tpInputRef: React.RefObject<HTMLInputElement>;
-    slInputRef: React.RefObject<HTMLInputElement>;
+    priceInputRef: React.RefObject<HTMLInputElement | null>;
+    quantityInputRef: React.RefObject<HTMLInputElement | null>;
+    tpInputRef: React.RefObject<HTMLInputElement | null>;
+    slInputRef: React.RefObject<HTMLInputElement | null>;
 
     // Actions - Form
     setSide: (side: OrderSide) => void;
@@ -141,6 +145,8 @@ export interface UseOrderFormReturn {
     // Actions - Submit
     handleSubmit: (e: React.FormEvent) => void;
     setShowDegradedConfirm: (show: boolean) => void;
+    setShowConfirmModal: (show: boolean) => void;
+    handleConfirmOrder: () => void;
 
     // Format helper
     formatBuyOrderText: (asset: string) => string;
@@ -158,16 +164,16 @@ const useOrderForm = (
     const { t } = useI18n();
 
     // ─── Form State ───
-    const [side, setSide] = useState<OrderSide>('buy');
-    const [orderCategory, setOrderCategory] = useState<OrderCategory>('spot');
+    const [side, setSide] = useState<OrderSide>(() => sideFromLevel2Book ?? 'buy');
+    const [orderCategory, setOrderCategoryState] = useState<OrderCategory>('spot');
     const [type, setType] = useState<OrderType>('limit');
-    const [price, setPrice] = useState('');
+    const [price, setPrice] = useState(() => priceFromLevel2Book ?? '');
     const [quantity, setQuantity] = useState('');
-    const [total, setTotal] = useState('0');
     const [quantityPercent, setQuantityPercent] = useState(0);
     const [takeProfitPrice, setTakeProfitPrice] = useState('');
     const [stopLossPrice, setStopLossPrice] = useState('');
     const [showDegradedConfirm, setShowDegradedConfirm] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     // Conditional order fields
     const [triggerPrice, setTriggerPrice] = useState('');
@@ -191,7 +197,6 @@ const useOrderForm = (
     const storeBalances = useWalletStore(selectBalances);
     const focusMode = useTradingStore(selectFocusMode);
     const createOrder = useTradingStore((state) => state.createOrder);
-    const createOCOOrder = useTradingStore((state) => state.createOCOOrder);
     const createTrailingStopOrder = useTradingStore((state) => state.createTrailingStopOrder);
     const setFocusMode = useTradingStore((state) => state.setFocusMode);
 
@@ -210,30 +215,22 @@ const useOrderForm = (
     const baseBalance = storeBalances.find(b => b.asset === baseAsset);
     const quoteBalance = storeBalances.find(b => b.asset === quoteAsset);
 
-    // ─── Reset Fields on Category Change ───
-    useEffect(() => {
-        if (orderCategory === 'spot') {
+    const setOrderCategory = useCallback((cat: OrderCategory) => {
+        setOrderCategoryState(cat);
+        if (cat === 'spot') {
             setType('limit');
             setTriggerPrice('');
             setLimitPrice('');
-        } else if (orderCategory === 'conditional') {
+        } else {
             setType('stop_limit');
-        }
-    }, [orderCategory]);
-
-    // ─── Handle External Price/Side ───
-    useEffect(() => {
-        if (priceFromLevel2Book) {
-            setPrice(priceFromLevel2Book);
-            if (orderCategory === 'conditional') {
+            if (priceFromLevel2Book) {
                 setTriggerPrice(priceFromLevel2Book);
             }
         }
-        if (sideFromLevel2Book) setSide(sideFromLevel2Book);
-    }, [priceFromLevel2Book, sideFromLevel2Book, orderCategory]);
+    }, [priceFromLevel2Book]);
 
-    // ─── Calculate Total ───
-    useEffect(() => {
+    // ─── Calculate Total (Derived) ───
+    const total = useMemo(() => {
         let priceForCalc = '0';
         if (orderCategory === 'spot') {
             if (type === 'limit' && price) priceForCalc = price;
@@ -246,10 +243,9 @@ const useOrderForm = (
         if (priceForCalc && quantity) {
             const p = parseFloat(priceForCalc);
             const q = parseFloat(quantity);
-            setTotal(!isNaN(p) && !isNaN(q) ? (p * q).toFixed(2) : '0');
-        } else {
-            setTotal('0');
+            return !isNaN(p) && !isNaN(q) ? (p * q).toFixed(2) : '0';
         }
+        return '0';
     }, [price, quantity, type, metrics, orderCategory, triggerPrice, limitPrice]);
 
     // ─── Max Quantity Calculation ───
@@ -266,19 +262,9 @@ const useOrderForm = (
 
     const updateQuantityFromPercent = useCallback((pct: number) => {
         const max = getMaxQuantity();
+        setQuantityPercent(clamp(pct, 0, 100));
         if (max > 0) setQuantity((max * pct / 100).toFixed(6));
     }, [getMaxQuantity]);
-
-    // ─── Sync Quantity Percent ───
-    useEffect(() => {
-        const max = getMaxQuantity();
-        if (max > 0 && quantity) {
-            const pct = Math.round((parseFloat(quantity) / max) * 100);
-            setQuantityPercent(clamp(pct, 0, 100));
-        } else {
-            setQuantityPercent(0);
-        }
-    }, [quantity, getMaxQuantity]);
 
     // ─── Quick Fill Handlers ───
     const setFromBestBid = useCallback(() => {
@@ -373,12 +359,12 @@ const useOrderForm = (
                 quantity,
                 takeProfitPrice: takeProfitPrice || undefined,
                 stopLossPrice: stopLossPrice || undefined,
-            }, metrics?.mid);
+            });
 
         } else if (orderCategory === 'conditional') {
             if (type === 'trailing_stop') {
                 if (!trailingValue || parseFloat(trailingValue) <= 0) {
-                    toast.warning(t.OrderForm?.invalidTrailingValue || 'Invalid trailing value');
+                    toast.warning(t.OrderForm.invalidTrailingValue);
                     return;
                 }
                 order = createTrailingStopOrder({
@@ -389,11 +375,11 @@ const useOrderForm = (
                 });
             } else {
                 if (!triggerPrice || parseFloat(triggerPrice) <= 0) {
-                    toast.warning(t.OrderForm?.invalidTriggerPrice || 'Invalid trigger price');
+                    toast.warning(t.OrderForm.invalidTriggerPrice);
                     return;
                 }
                 if (['stop_limit', 'take_profit_limit'].includes(type) && (!limitPrice || parseFloat(limitPrice) <= 0)) {
-                    toast.warning(t.OrderForm?.invalidLimitPrice || 'Invalid limit price');
+                    toast.warning(t.OrderForm.invalidLimitPrice);
                     return;
                 }
                 order = createOrder({
@@ -401,7 +387,7 @@ const useOrderForm = (
                     triggerPrice,
                     price: ['stop_limit', 'take_profit_limit'].includes(type) ? limitPrice : undefined,
                     quantity,
-                }, metrics?.mid);
+                });
             }
         }
 
@@ -419,6 +405,7 @@ const useOrderForm = (
             setComment('');
             if (type === 'limit') setPrice('');
             setShowDegradedConfirm(false);
+            setShowConfirmModal(false);
             setFocusMode(false);
         } else {
             toast.error(t.OrderForm.insufficientBalance);
@@ -426,10 +413,15 @@ const useOrderForm = (
     }, [
         dataConfidence, t, quantity, price, type, side, symbol, orderCategory,
         takeProfitPrice, stopLossPrice, triggerPrice, limitPrice, trailingType,
-        trailingValue, trailingActivationPrice, showTp, showSl, comment,
-        metrics, showDegradedConfirm, createOrder,
+        trailingValue, trailingActivationPrice, showTp, showSl,
+        showDegradedConfirm, createOrder,
         createTrailingStopOrder, setFocusMode
     ]);
+
+    const handleConfirmOrder = useCallback(() => {
+        // The view's modal is currently informational; submission happens via the form.
+        setShowConfirmModal(false);
+    }, []);
 
     // ─── Submit Button Validation ───
     const isSubmitDisabled = useMemo(() => {
@@ -491,6 +483,9 @@ const useOrderForm = (
         confirmDegraded: t.OrderForm.confirmDegraded,
         invalidAmount: t.OrderForm.invalidAmount,
         invalidPrice: t.OrderForm.invalidPrice,
+        invalidTrailingValue: t.OrderForm.invalidTrailingValue,
+        invalidTriggerPrice: t.OrderForm.invalidTriggerPrice,
+        invalidLimitPrice: t.OrderForm.invalidLimitPrice,
         insufficientBalance: t.OrderForm.insufficientBalance,
     }), [t]);
 
@@ -513,6 +508,7 @@ const useOrderForm = (
         estimated,
         isSubmitDisabled,
         showDegradedConfirm,
+        showConfirmModal,
         translations,
         priceInputRef,
         quantityInputRef,
@@ -527,9 +523,6 @@ const useOrderForm = (
         setStopLossPrice,
         setTriggerPrice,
         setLimitPrice,
-        setOcoLimitPrice: () => { }, // Deprecated
-        setOcoStopPrice: () => { }, // Deprecated
-        setOcoStopLimitPrice: () => { }, // Deprecated
         setTrailingType,
         setTrailingValue,
         setTrailingActivationPrice,
@@ -547,6 +540,8 @@ const useOrderForm = (
         handleInputBlur,
         handleSubmit,
         setShowDegradedConfirm,
+        setShowConfirmModal,
+        handleConfirmOrder,
         formatBuyOrderText: (asset: string) => formatMessage(t.OrderForm.placeBuyOrder, { symbol: asset }),
         formatSellOrderText: (asset: string) => formatMessage(t.OrderForm.placeSellOrder, { symbol: asset }),
         bestBidPrice: bestBid?.price || metrics?.mid || '0.00',
@@ -554,4 +549,4 @@ const useOrderForm = (
     };
 }
 
-export default useOrderForm;
+export { useOrderForm };

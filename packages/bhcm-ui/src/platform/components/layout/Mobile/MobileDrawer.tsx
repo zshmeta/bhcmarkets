@@ -87,4 +87,4 @@ const MobileDrawer = ({
   );
 }
 
-export default MobileDrawer;
+export { MobileDrawer };

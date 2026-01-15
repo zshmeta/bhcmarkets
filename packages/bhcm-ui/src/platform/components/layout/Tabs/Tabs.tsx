@@ -1,5 +1,5 @@
-import { useTabs } from './useTabs';
-import { TabsView } from './Tabs.view';
+import {useTabs} from './useTabs';
+import {TabsView} from './Tabs.view';
 
 /* ═══════════════════════════════════════════════════════════
  * BOTTOM TABS CONTAINER
@@ -44,4 +44,4 @@ const Tabs = ({ onPriceClick }: TabsProps) => {
   );
 }
 
-export default Tabs;
+export { Tabs };

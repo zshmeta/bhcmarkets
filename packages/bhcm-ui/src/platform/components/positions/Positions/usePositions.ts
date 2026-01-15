@@ -168,4 +168,4 @@ const usePositions = (): UsePositionsReturn => {
     };
 }
 
-export default usePositions;
+export { usePositions };

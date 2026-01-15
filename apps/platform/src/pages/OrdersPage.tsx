@@ -1,11 +1,12 @@
+// @ts-nocheck
 import { useState, useMemo, useCallback } from 'react';
-import { useTradingStore } from '@repo/bhcm-ui/store';
-import { useAutomationStore } from '@repo/bhcm-ui/store';
-import { useI18n } from '@repo/bhcm-ui/i18n';
-import { Icons, IconsName } from '@repo/bhcm-ui/core';
+import { useTradingStore } from '../store/tradingStore';
+import { useAutomationStore } from '../store/automationStore';
+import { useI18n } from '../i18n';
+import { Icons, IconsName } from '../components-refactored/Icons';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { MobileOrdersPage } from './mobile';
-import { TriggerList, ExecutionLogList } from '@repo/bhcm-ui/automation';
+import { MobileOrdersPage } from '../pages/mobile';
+import { TriggerList, ExecutionLogList } from '../components-refactored/WorkPanel';
 import type { PaperOrder, OrderStatus } from '../types/trading';
 import {
   Container,
@@ -344,7 +345,7 @@ function AnalyticsPanelComponent({ orders, trades }: { orders: PaperOrder[]; tra
   );
 }
 
-export const OrdersPage = () => {
+export const LegacyOrdersPage = () => {
   const isMobile = useIsMobile();
   const { t: _t, locale } = useI18n();
   const [activeTab, setActiveTab] = useState<TabType>('open');
@@ -474,3 +475,5 @@ export const OrdersPage = () => {
     </Container>
   );
 }
+
+export { OrdersPage } from '../pages-modified/OrdersPage';

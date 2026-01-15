@@ -195,4 +195,4 @@ const AccountOverviewCard = () => {
   );
 }
 
-export default AccountOverviewCard;
+export { AccountOverviewCard };

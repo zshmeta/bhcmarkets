@@ -1,4 +1,3 @@
-import ts from "typescript";
 import { config as base } from "./eslint-config/base";
 import tseslint from 'typescript-eslint';
 
@@ -14,7 +13,11 @@ export default tseslint.configs.mergeConfigs([
   },
   {
     files: ["**/*.ts", "**/*.tsx"],
-    ignores: ["**/dist/**", "**/node_modules/**"],
+    ignores: [
+      "**/dist/**",
+      "**/node_modules/**",
+      "apps/platform/src/pages/**",
+    ],
   },
   {
     files: ["**/*.test.ts", "**/*.test.tsx"],
@@ -30,9 +33,8 @@ export default tseslint.configs.mergeConfigs([
   },
   {
     parserOptions: {
-      project: true,
-      tsconfigRootDir: ts.sys.getCurrentDirectory(),
-      dirname,
+      projectService: true,
+      tsconfigRootDir: process.cwd(),
     },
   },
 ]);

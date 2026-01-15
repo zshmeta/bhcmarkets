@@ -101,10 +101,10 @@ export interface OrderFormViewProps {
     translations: OrderFormTranslations;
 
     // Input refs
-    priceInputRef: React.RefObject<HTMLInputElement>;
-    quantityInputRef: React.RefObject<HTMLInputElement>;
-    tpInputRef: React.RefObject<HTMLInputElement>;
-    slInputRef: React.RefObject<HTMLInputElement>;
+    priceInputRef: React.RefObject<HTMLInputElement | null>;
+    quantityInputRef: React.RefObject<HTMLInputElement | null>;
+    tpInputRef: React.RefObject<HTMLInputElement | null>;
+    slInputRef: React.RefObject<HTMLInputElement | null>;
 
     // Actions - Form
     onSideChange: (side: OrderSide) => void;
@@ -637,4 +637,4 @@ const OrderFormView = ({
     );
 }
 
-export default OrderFormView;
+export { OrderFormView };

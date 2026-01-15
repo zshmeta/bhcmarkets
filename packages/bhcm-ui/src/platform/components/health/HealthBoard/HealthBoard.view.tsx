@@ -199,4 +199,5 @@ const HealthBoardView = ({
     );
 }
 
+export { HealthBoardView };
 export default HealthBoardView;

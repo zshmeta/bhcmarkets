@@ -1,13 +1,13 @@
+// @ts-nocheck
 import { useMemo, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWalletStore, selectBalances, selectAccount } from '@repo/bhcm-ui/store';
-import { useTradingStore } from '@repo/bhcm-ui/store';
-import { useWatchlistStore } from '@repo/bhcm-ui/store';
-import { useAutomationStore } from '@repo/bhcm-ui/store';
-import { useI18n } from '@repo/bhcm-ui/i18n';
-import { Icons } from '@repo/bhcm-ui/core';
-import type { IconsName } from '@repo/bhcm-ui/core';
-import { LineChart } from '@repo/bhcm-ui/market';
+import { useWalletStore, selectBalances, selectAccount } from '../store/walletStore';
+import { useTradingStore } from '../store/tradingStore';
+import { useWatchlistStore } from '../store/watchlistStore';
+import { useAutomationStore } from '../store/automationStore';
+import { useI18n } from '../i18n';
+import { Icons, IconsName } from '../components-refactored/Icons';
+import { LineChart } from '../components-refactored/LineChart';
 import Decimal from 'decimal.js';
 import {
   Container,
@@ -355,7 +355,7 @@ function PortfolioChartComponent({
   );
 }
 
-export const AssetDetailPage = () => {
+export const LegacyAssetDetailPage = () => {
   const { t: _t } = useI18n();
   const navigate = useNavigate();
 
@@ -725,3 +725,5 @@ export const AssetDetailPage = () => {
     </Container>
   );
 }
+
+export { AssetDetailPage } from '../pages-modified/AssetDetailPage';

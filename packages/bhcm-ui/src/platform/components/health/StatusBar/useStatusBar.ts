@@ -118,4 +118,4 @@ const useStatusBar = (): UseStatusBarReturn => {
     };
 }
 
-export default useStatusBar;
+export { useStatusBar };

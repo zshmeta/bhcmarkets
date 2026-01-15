@@ -147,4 +147,4 @@ const AssetBalancesPanel = ({ onDeposit, onWithdraw }: AssetBalancesPanelProps) 
   );
 }
 
-export default AssetBalancesPanel;
+export { AssetBalancesPanel };

@@ -373,4 +373,4 @@ const useChart = (): UseChartReturn => {
     };
 }
 
-export default useChart;
+export { useChart };

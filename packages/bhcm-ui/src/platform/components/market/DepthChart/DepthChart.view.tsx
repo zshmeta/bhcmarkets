@@ -161,4 +161,4 @@ const DepthChartView = ({
     );
 }
 
-export default DepthChartView;
+export { DepthChartView };

@@ -1,7 +1,7 @@
 import { useI18n } from '../../i18n';
 import { useAutomationStore } from '../../store/automationStore';
 import { Icons } from '../Icons';
-import { Trigger, TriggerStatus } from '../../types/automation';
+import { Trigger, TriggerStatus } from '@repo/types/triggers';
 import { formatTime } from '../../utils';
 import {
   Container, TriggerItem, Header, SymbolType, Symbol, Type, Status, StatusDot,
@@ -128,4 +128,4 @@ const TriggerList = ({ filterSymbol, showHistory = false, compact = false }: Tri
 }
 
 
-export default TriggerList;
+export { TriggerList };

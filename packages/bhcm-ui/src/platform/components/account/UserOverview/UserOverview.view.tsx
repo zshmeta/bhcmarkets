@@ -164,4 +164,4 @@ const UserOverviewView = ({
     );
 }
 
-export default UserOverviewView;
+export { UserOverviewView };

@@ -1,5 +1,5 @@
-import useCurrentOrders from './useCurrentOrders';
-import CurrentOrdersView from './CurrentOrders.view';
+import {useCurrentOrders} from './useCurrentOrders';
+import {CurrentOrdersView} from './CurrentOrders.view';
 import { toast } from '../Toast';
 
 /* ═══════════════════════════════════════════════════════════
@@ -7,7 +7,7 @@ import { toast } from '../Toast';
  * ═══════════════════════════════════════════════════════════
  * Smart component that connects the store via useCurrentOrders hook
  * to the pure CurrentOrdersView presentational component.
- * 
+ *
  * This thin layer enables:
  * - CurrentOrdersView to be reused anywhere without store dependencies
  * - Testing CurrentOrdersView in isolation with mock data
@@ -35,4 +35,4 @@ const CurrentOrders = () => {
   );
 }
 
-export default CurrentOrders;
+export { CurrentOrders };

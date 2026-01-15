@@ -6,7 +6,7 @@ import { HealthBoardView } from './HealthBoard.view';
  * ═══════════════════════════════════════════════════════════
  * Smart component that connects the store via useHealthBoard hook
  * to the pure HealthBoardView presentational component.
- * 
+ *
  * This thin layer enables:
  * - HealthBoardView to be reused anywhere without store dependencies
  * - Testing HealthBoardView in isolation with mock data
@@ -46,6 +46,6 @@ const HealthBoard = ({ compact = false }: HealthBoardProps) => {
             compact={compact}
         />
     );
-}
+};
 
-export default HealthBoard;
+export { HealthBoard };

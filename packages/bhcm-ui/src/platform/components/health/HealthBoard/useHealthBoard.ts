@@ -213,4 +213,5 @@ const useHealthBoard = (): UseHealthBoardReturn => {
     };
 }
 
-export default useHealthBoard;
+export { useHealthBoard };
+

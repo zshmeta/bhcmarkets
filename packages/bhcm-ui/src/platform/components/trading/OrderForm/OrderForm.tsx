@@ -1,5 +1,5 @@
-import { useOrderForm } from './useOrderForm';
-import { OrderFormView } from './OrderForm.view';
+import {useOrderForm} from './useOrderForm';
+import {OrderFormView} from './OrderForm.view';
 import { useI18n } from '../../i18n';
 import type { OrderSide } from '../../types/trading';
 
@@ -13,13 +13,11 @@ import type { OrderSide } from '../../types/trading';
 interface OrderFormProps {
   priceFromLevel2Book?: string;
   sideFromLevel2Book?: OrderSide;
-  compact?: boolean;
 }
 
 const OrderForm = ({
   priceFromLevel2Book,
   sideFromLevel2Book,
-  compact: _compact = false
 }: OrderFormProps) => {
   const { t } = useI18n();
   const hookData = useOrderForm(priceFromLevel2Book, sideFromLevel2Book);
@@ -35,7 +33,7 @@ const OrderForm = ({
       estimated={hookData.estimated}
       isSubmitDisabled={hookData.isSubmitDisabled}
       showDegradedConfirm={hookData.showDegradedConfirm}
-      showAllInConfirm={hookData.showAllInConfirm}
+      showConfirmModal={hookData.showConfirmModal}
       translations={hookData.translations}
       priceInputRef={hookData.priceInputRef}
       quantityInputRef={hookData.quantityInputRef}
@@ -50,13 +48,13 @@ const OrderForm = ({
       onStopLossPriceChange={hookData.setStopLossPrice}
       onTriggerPriceChange={hookData.setTriggerPrice}
       onLimitPriceChange={hookData.setLimitPrice}
-      onOcoLimitPriceChange={hookData.setOcoLimitPrice}
-      onOcoStopPriceChange={hookData.setOcoStopPrice}
-      onOcoStopLimitPriceChange={hookData.setOcoStopLimitPrice}
       onTrailingTypeChange={hookData.setTrailingType}
       onTrailingValueChange={hookData.setTrailingValue}
       onTrailingActivationPriceChange={hookData.setTrailingActivationPrice}
       onQuantityPercentChange={hookData.setQuantityPercent}
+      onShowTpChange={hookData.setShowTp}
+      onShowSlChange={hookData.setShowSl}
+      onCommentChange={hookData.setComment}
       onSetFromBestBid={hookData.setFromBestBid}
       onSetFromBestAsk={hookData.setFromBestAsk}
       onSetFromMid={hookData.setFromMid}
@@ -67,14 +65,14 @@ const OrderForm = ({
       onInputBlur={hookData.handleInputBlur}
       onSubmit={hookData.handleSubmit}
       onShowDegradedConfirm={hookData.setShowDegradedConfirm}
-      onShowAllInConfirm={hookData.setShowAllInConfirm}
-      onAllInConfirm={hookData.handleAllInConfirm}
-      formatBuyOrderText={hookData.formatBuyOrderText}
-      formatSellOrderText={hookData.formatSellOrderText}
+      onShowConfirmModal={hookData.setShowConfirmModal}
+      onConfirmOrder={hookData.handleConfirmOrder}
+      bestBidPrice={hookData.bestBidPrice}
+      bestAskPrice={hookData.bestAskPrice}
       commonConfirm={t.common.confirm}
       commonCancel={t.common.cancel}
     />
   );
 }
 
-export default OrderForm;
+export { OrderForm };

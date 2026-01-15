@@ -101,4 +101,4 @@ const StatusCard = ({
   );
 }
 
-export default StatusCard;
+export { StatusCard };

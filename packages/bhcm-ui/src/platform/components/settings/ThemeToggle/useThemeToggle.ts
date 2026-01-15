@@ -57,4 +57,4 @@ const useThemeToggle = (): UseThemeToggleReturn => {
     return { theme, ariaLabel, IconsName, onToggle };
 }
 
-export default useThemeToggle;
+export { useThemeToggle };

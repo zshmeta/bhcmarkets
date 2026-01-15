@@ -1,5 +1,5 @@
-import { useRiskBanner } from './useRiskBanner';
-import { RiskBannerView } from './RiskBanner.view';
+import {useRiskBanner} from './useRiskBanner';
+import {RiskBannerView} from './RiskBanner.view';
 
 /* ═══════════════════════════════════════════════════════════
  * RISK RIBBON CONTAINER
@@ -41,4 +41,4 @@ const RiskBanner = ({ compact = false, full = false }: RiskBannerProps) => {
     );
 }
 
-export default RiskBanner;
+export { RiskBanner };

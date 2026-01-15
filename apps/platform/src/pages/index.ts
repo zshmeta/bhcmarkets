@@ -6,8 +6,8 @@ export { WalletPage } from './WalletPage';
 export { SettingsPage } from './SettingsPage';
 export { MarketsPage } from './MarketsPage';
 export { AssetDetailPage } from './AssetDetailPage';
-// export { AuthPage } from './AuthPage';        // TODO: Implement
-// export { OrdersPage } from './OrdersPage';    // TODO: Implement
+export { AuthPage } from './AuthPage';
+export { OrdersPage } from './OrdersPage';
 
 // Desktop Page Styles (for custom usage)
 export * as TradePageStyles from './TradePage.styles';

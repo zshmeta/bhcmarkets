@@ -49,4 +49,4 @@ const useRecentPositions = (compact: boolean = false): UseRecentPositionsReturn 
     };
 }
 
-export default useRecentPositions;
+export { useRecentPositions };

@@ -77,4 +77,4 @@ const useNetworkStatus = (): UseNetworkStatusReturn => {
     };
 }
 
-export default useNetworkStatus;
+export { useNetworkStatus };

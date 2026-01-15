@@ -134,4 +134,4 @@ const RecentPositionsView = ({
     );
 }
 
-export default RecentPositionsView;
+export { RecentPositionsView }  ;

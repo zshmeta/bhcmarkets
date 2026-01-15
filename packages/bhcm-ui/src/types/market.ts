@@ -44,3 +44,21 @@ export interface Trade {
 
 
 export type DataConfidenceLevel = 'live' | 'degraded' | 'stale' | 'resyncing';
+
+export type NetworkEventType =
+    | 'connected'
+    | 'disconnected'
+    | 'reconnecting'
+    | 'latency_spike'
+    | 'latency_normal'
+    | 'gap_detected'
+    | 'resync_start'
+    | 'resync_complete'
+    | 'rate_drop'
+    | 'rate_normal';
+
+export interface NetworkEvent {
+    type: NetworkEventType;
+    timestamp: number;
+    details?: string;
+}

@@ -24,4 +24,4 @@ const ThemeToggleView = ({ IconsName, ariaLabel, onToggle }: ThemeToggleViewProp
     );
 }
 
-export default ThemeToggleView;
+export { ThemeToggleView };

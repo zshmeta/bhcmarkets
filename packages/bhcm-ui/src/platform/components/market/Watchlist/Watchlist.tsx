@@ -55,4 +55,4 @@ const Watchlist = ({ onSymbolChange, isCollapsed = false, compact: _compact = fa
   );
 }
 
-export default Watchlist;
+export { Watchlist };

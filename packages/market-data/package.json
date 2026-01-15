@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@repo/database": "*",
+        "@repo/types": "workspace:*",
         "axios": "catalog:",
         "dotenv": "catalog:",
         "drizzle-orm": "catalog:",

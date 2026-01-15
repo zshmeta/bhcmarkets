@@ -123,4 +123,4 @@ const useLevel2Book = (): UseLevel2BookReturn => {
     };
 }
 
-export default useLevel2Book;
+export { useLevel2Book };

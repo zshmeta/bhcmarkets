@@ -1,5 +1,5 @@
-import { useStatusBar } from './useStatusBar';
-import { StatusBarView } from './StatusBar.view';
+import {useStatusBar} from './useStatusBar';
+import {StatusBarView} from './StatusBar.view';
 
 /* ═══════════════════════════════════════════════════════════
  * OBSERVABILITY PANEL CONTAINER
@@ -11,4 +11,4 @@ const StatusBar = () => {
     return <StatusBarView {...props} />;
 }
 
-export default StatusBar;
+export { StatusBar };

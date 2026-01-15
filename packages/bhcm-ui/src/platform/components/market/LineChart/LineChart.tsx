@@ -5,13 +5,13 @@ import { ChartContainer, PlaceholderBox, LineChartSvg } from './LineChart.styles
  * LineChart COMPONENT
  * ═══════════════════════════════════════════════════════════
  * A compact line chart for displaying trends in small spaces.
- * 
+ *
  * Features:
  * - Auto-scales to fit data range
  * - Gradient fill under the line for visual depth
  * - Color indicates direction: green=up, red=down
  * - Graceful placeholder when data insufficient
- * 
+ *
  * SVG Note: Uses hardcoded hex colors because SVG stop-color
  * cannot parse CSS var() in gradient definitions.
  */
@@ -155,4 +155,4 @@ const LineChart = ({
   );
 }
 
-export default LineChart;
+export { LineChart };

@@ -182,4 +182,4 @@ const useNetworkHealth = (onClose: () => void): UseNetworkHealthReturn => {
     };
 }
 
-export default useNetworkHealth;
+export { useNetworkHealth };

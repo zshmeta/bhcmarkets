@@ -16,4 +16,4 @@ const LanguageToggleView = ({ targetLanguage, label, onToggle }: LanguageToggleV
     );
 }
 
-export default LanguageToggleView;
+export { LanguageToggleView };

@@ -1,6 +1,6 @@
 /**
  * bhcm-ui Component Library
- * 
+ *
  * Presentational (dumb) components organized by domain.
  * All components are props-driven with no store dependencies.
  */
@@ -32,5 +32,4 @@ export * from './health';
 // Automation and triggers
 export * from './automation';
 
-// Help and notifications
-export * from './help';
+// Note: Help UI is exported via the layout/settings domains (e.g. HelpFAQ).

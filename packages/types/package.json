@@ -7,7 +7,9 @@
     ".": "./index.ts",
     "./market": "./market.ts",
     "./trading": "./trading.ts",
-    "./user": "./user.ts"
+    "./triggers": "./triggers.ts",
+    "./user": "./user.ts",
+    "./symbols": "./symbols.ts"
   },
   "types": "./index.ts",
   "scripts": {

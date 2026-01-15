@@ -32,4 +32,4 @@ const useNotifBell = (): UseNotifBellReturn => {
     };
 }
 
-export default useNotifBell;
+export { useNotifBell } ;

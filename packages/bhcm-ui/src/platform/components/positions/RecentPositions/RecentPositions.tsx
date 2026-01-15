@@ -1,12 +1,12 @@
-import { useRecentPositions } from './useRecentPositions';
-import { RecentPositionsView } from './RecentPositions.view';
+import {useRecentPositions} from './useRecentPositions';
+import {RecentPositionsView} from './RecentPositions.view';
 
 /* ═══════════════════════════════════════════════════════════
  * RECENT TRADES CONTAINER
  * ═══════════════════════════════════════════════════════════
  * Smart component that connects the store via useRecentPositions hook
  * to the pure RecentPositionsView presentational component.
- * 
+ *
  * This thin layer enables:
  * - RecentPositionsView to be reused anywhere without store dependencies
  * - Testing RecentPositionsView in isolation with mock data
@@ -39,4 +39,4 @@ const RecentPositions = ({
     );
 }
 
-export default RecentPositions;
+export { RecentPositions };

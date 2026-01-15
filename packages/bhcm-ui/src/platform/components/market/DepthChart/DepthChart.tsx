@@ -6,7 +6,7 @@ import { DepthChartView } from './DepthChart.view';
  * ═══════════════════════════════════════════════════════════
  * Smart component that connects the store via useDepthChart hook
  * to the pure DepthChartView presentational component.
- * 
+ *
  * This thin layer enables:
  * - DepthChartView to be reused anywhere without store dependencies
  * - Testing DepthChartView in isolation with mock data
@@ -31,4 +31,4 @@ const DepthChart = () => {
     );
 }
 
-export default DepthChart;
+export { DepthChart };

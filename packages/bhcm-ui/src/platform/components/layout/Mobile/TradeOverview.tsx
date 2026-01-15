@@ -121,4 +121,4 @@ const TradeOverview = ({ onTradeClick }: TradeOverviewProps) => {
   );
 }
 
-export default TradeOverview;
+export { TradeOverview };

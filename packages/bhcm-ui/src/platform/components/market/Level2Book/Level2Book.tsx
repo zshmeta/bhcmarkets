@@ -1,4 +1,4 @@
-import useLevel2Book from './useLevel2Book';
+import {useLevel2Book} from './useLevel2Book';
 import { Level2BookView } from './Level2Book.view';
 
 /* ═══════════════════════════════════════════════════════════
@@ -6,7 +6,7 @@ import { Level2BookView } from './Level2Book.view';
  * ═══════════════════════════════════════════════════════════
  * Smart component that connects the store via useLevel2Book hook
  * to the pure Level2BookView presentational component.
- * 
+ *
  * This thin layer enables:
  * - Level2BookView to be reused anywhere without store dependencies
  * - Testing Level2BookView in isolation with mock data
@@ -54,4 +54,4 @@ const Level2Book = ({
   );
 }
 
-export default Level2Book;
+export { Level2Book };

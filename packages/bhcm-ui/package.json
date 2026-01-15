@@ -29,7 +29,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/types": "*",
     "decimal.js": "catalog:",
+    "lightweight-charts": "^5.1.0",
     "lucide-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

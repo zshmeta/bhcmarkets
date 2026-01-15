@@ -27,4 +27,4 @@ const useLanguageToggle = (): UseLanguageToggleReturn  => {
     };
 }
 
-export default useLanguageToggle;
+export { useLanguageToggle };

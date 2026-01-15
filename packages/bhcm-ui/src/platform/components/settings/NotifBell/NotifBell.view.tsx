@@ -16,4 +16,4 @@ const NotifBellView = ({ enabled, title, ariaLabel, onToggle }: NotifBellViewPro
     );
 }
 
-export default NotifBellView;
+export { NotifBellView };

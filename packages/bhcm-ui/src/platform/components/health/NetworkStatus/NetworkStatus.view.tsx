@@ -72,4 +72,4 @@ const NetworkStatusView = ({
     );
 }
 
-export default NetworkStatusView;
+export { NetworkStatusView };

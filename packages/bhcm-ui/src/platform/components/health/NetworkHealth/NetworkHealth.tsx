@@ -1,5 +1,5 @@
-import { useNetworkHealth } from './useNetworkHealth';
-import { NetworkHealthView } from './NetworkHealth.view';
+import {useNetworkHealth} from './useNetworkHealth';
+import {NetworkHealthView} from './NetworkHealth.view';
 
 /* ═══════════════════════════════════════════════════════════
  * DIAGNOSTICS DRAWER CONTAINER
@@ -23,4 +23,4 @@ const NetworkHealth = ({ isOpen, onClose }: NetworkHealthProps) => {
   );
 }
 
-export default NetworkHealth;
+export { NetworkHealth };

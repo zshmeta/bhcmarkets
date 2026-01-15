@@ -64,4 +64,4 @@ const MobileActionSheet = ({
   );
 }
 
-export default MobileActionSheet;
+export { MobileActionSheet };

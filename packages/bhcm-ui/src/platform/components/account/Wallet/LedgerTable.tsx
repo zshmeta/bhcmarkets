@@ -160,4 +160,4 @@ const LedgerTable = () => {
   );
 }
 
-export default LedgerTable;
+export { LedgerTable };

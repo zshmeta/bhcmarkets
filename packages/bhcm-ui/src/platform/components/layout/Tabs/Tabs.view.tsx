@@ -1,8 +1,8 @@
 import { Positions } from '../../positions/Positions';
 import { CurrentOrders } from '../../positions/CurrentOrders';
 import { Level2Book } from '../../market/Level2Book';
-import TriggerForm from '../../trading/WorkPanel/TriggerForm';
-import TriggerList from '../../trading/WorkPanel/TriggerList';
+import {TriggerForm} from '../../trading/WorkPanel/TriggerForm';
+import {TriggerList} from '../../trading/WorkPanel/TriggerList';
 import { Icons } from '../../core/Icons';
 import type { LeftTab, RightTab, AutomationCounts } from './useTabs';
 import {
@@ -158,4 +158,4 @@ const TabsView = ({
     );
 }
 
-export default TabsView;
+export { TabsView };

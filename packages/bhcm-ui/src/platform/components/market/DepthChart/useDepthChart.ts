@@ -122,4 +122,4 @@ const useDepthChart = (): UseDepthChartReturn => {
     };
 }
 
-export default useDepthChart;
+export { useDepthChart };

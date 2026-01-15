@@ -34,6 +34,13 @@ interface AuthActions {
     changePassword: (oldPw: string, newPw: string) => { success: boolean; error?: string };
 }
 
+const AUTH_STORAGE_KEY = 'bhcm.authenticated';
+
+const getInitialAuth = () => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(AUTH_STORAGE_KEY) === '1';
+};
+
 const mockUser: User = {
     id: 'demo-user',
     username: 'demo',
@@ -50,16 +57,18 @@ const defaultPreferences: Preferences = {
 };
 
 export const useAuthStore = create<AuthState & AuthActions>((set) => ({
-    isAuthenticated: true, // Auto-authenticated for demo
-    user: mockUser,
+    isAuthenticated: getInitialAuth(),
+    user: getInitialAuth() ? mockUser : null,
     preferences: defaultPreferences,
 
     login: (username, password) => {
-        set({ isAuthenticated: true, user: mockUser });
+        if (typeof window !== 'undefined') localStorage.setItem(AUTH_STORAGE_KEY, '1');
+        set({ isAuthenticated: true, user: { ...mockUser, username: username || mockUser.username, lastLogin: Date.now() } });
         return { success: true };
     },
 
     logout: () => {
+        if (typeof window !== 'undefined') localStorage.removeItem(AUTH_STORAGE_KEY);
         set({ isAuthenticated: false, user: null });
     },
 

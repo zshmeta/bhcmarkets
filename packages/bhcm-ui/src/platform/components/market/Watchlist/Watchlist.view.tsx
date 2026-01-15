@@ -1,6 +1,6 @@
 import { useMemo, memo } from 'react';
 import { Icons } from '../Icons';
-import LineChart from '../LineChart';
+import {LineChart} from '../LineChart';
 import type { SymbolInfo, WatchlistCategory } from '../../store/watchlistStore';
 import type { WatchlistPosition, WatchlistTranslations } from './useWatchlist';
 import {
@@ -424,4 +424,4 @@ const WatchlistView = ({
     );
 };
 
-export default WatchlistView;
+export { WatchlistView };

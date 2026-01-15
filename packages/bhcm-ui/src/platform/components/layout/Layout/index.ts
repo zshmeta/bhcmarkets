@@ -1,10 +1,11 @@
 /* Layout Module - Public API */
 
 export { AccountMenu } from './AccountMenu';
-export { AdaptiveLayout } from './AdaptiveLayout';
 export { AssetSnapshot } from './AssetSnapshot';
-export { DesktopLayout } from './DesktopLayout';
-export { MobileHeader } from './MobileHeader';
-export { MobileLayout } from './MobileLayout';
 export { TopNav } from './TopNav';
+
+export { default as AdaptiveLayout } from './AdaptiveLayout';
+export { default as DesktopLayout } from './DesktopLayout';
+export { default as MobileLayout } from './MobileLayout';
+export { default as MobileHeader } from './MobileHeader';
 

@@ -3,8 +3,8 @@ import { useI18n } from '../../i18n';
 import { useAutomationStore } from '../../store/automationStore';
 import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
 import { toast } from '../Toast';
-import { TriggerType, TriggerOperator, CrossDirection, QuantityMode, TriggerCondition, TriggerAction } from '../../types/automation';
-import { OrderSide, OrderType } from '../../types/trading';
+import { TriggerType, TriggerOperator, CrossDirection, QuantityMode, TriggerCondition, TriggerAction } from '@repo/types/triggers';
+import { OrderSide, OrderType } from '@repo/types/trading';
 import {
   Container, Form, FieldGroup, Label, InputRow, InputWrapper, InputSuffix, Toggle, ToggleBtn,
   CheckboxGroup, CheckboxLabel, Checkbox, SubmitBtn, CancelBtn,
@@ -102,4 +102,4 @@ const TriggerForm = ({ onSuccess, onCancel, compact = false }: TriggerFormProps)
   );
 }
 
-export default TriggerForm;
+export { TriggerForm };

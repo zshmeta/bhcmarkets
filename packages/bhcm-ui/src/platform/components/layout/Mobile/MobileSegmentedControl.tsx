@@ -62,4 +62,4 @@ const MobileSegmentedControl = ({
   );
 }
 
-export default MobileSegmentedControl;
+export { MobileSegmentedControl };

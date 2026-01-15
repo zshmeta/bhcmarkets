@@ -164,4 +164,3 @@ const useUserOverview = (): UseUserOverviewReturn => {
 }
 
 export { useUserOverview };
-export default useUserOverview;

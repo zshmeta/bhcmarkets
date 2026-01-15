@@ -45,4 +45,4 @@ const useCurrentOrders = (): UseCurrentOrdersReturn => {
     };
 }
 
-export default useCurrentOrders;
+export { useCurrentOrders };

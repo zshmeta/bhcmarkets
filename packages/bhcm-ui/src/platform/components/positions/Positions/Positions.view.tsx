@@ -246,4 +246,4 @@ const PositionsView = ({
     );
 }
 
-export default PositionsView;
+export { PositionsView };

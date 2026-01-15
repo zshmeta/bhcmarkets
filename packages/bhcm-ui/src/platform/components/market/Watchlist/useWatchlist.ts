@@ -262,4 +262,4 @@ const useWatchlist = (
     };
 };
 
-export default useWatchlist;
+export { useWatchlist };

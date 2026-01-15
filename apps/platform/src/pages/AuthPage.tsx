@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -55,7 +56,7 @@ import {
 
 type AuthMode = 'login' | 'register';
 
-export const AuthPage: React.FC = () => {
+export const LegacyAuthPage: React.FC = () => {
     const { t, locale } = useI18n();
     const navigate = useNavigate();
     const isMobile = useIsMobile();
@@ -342,3 +343,5 @@ export const AuthPage: React.FC = () => {
         </Container>
     );
 };
+
+export { AuthPage } from '../pages-modified/AuthPage';

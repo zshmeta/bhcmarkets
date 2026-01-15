@@ -161,4 +161,4 @@ const OnboardingGuide = ({ stage, onOpenDeposit, onScrollToMethods }: Onboarding
   return null;
 }
 
-export default OnboardingGuide;
+export { OnboardingGuide };

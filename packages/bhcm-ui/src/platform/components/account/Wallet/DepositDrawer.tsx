@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useWalletStore, selectPaymentMethods, selectCryptoAddresses, selectDeposits } from '../../store/walletStore';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
-import { StatusCard } from './StatusCard';
+import {StatusCard} from './StatusCard';
 import {
   Overlay,
   Drawer,
@@ -175,4 +175,4 @@ const DepositDrawer = ({ isOpen, onClose }: DepositDrawerProps) => {
   );
 }
 
-export default DepositDrawer;
+export { DepositDrawer };

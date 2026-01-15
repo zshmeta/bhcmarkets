@@ -3,7 +3,7 @@ import Decimal from 'decimal.js';
 import { useWalletStore, selectPaymentMethods, selectCryptoAddresses, selectBalances, selectWithdraws } from '../../store/walletStore';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
-import { StatusCard } from './StatusCard';
+import {StatusCard} from './StatusCard';
 import {
   Overlay, Drawer, Header, Title, CloseButton, Content,
   WarningCard, WarningInfo, AddSourceBtn, Field, LabelRow, Label, MaxButton,
@@ -189,4 +189,4 @@ const WithdrawDrawer = ({ isOpen, onClose }: WithdrawDrawerProps) => {
   );
 }
 
-export default WithdrawDrawer;
+export { WithdrawDrawer };

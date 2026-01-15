@@ -1,7 +1,7 @@
 import { useI18n } from '../../i18n';
 import { useAutomationStore } from '../../store/automationStore';
 import { Icons } from '../Icons';
-import { ExecutionLog } from '../../types/automation';
+import type { ExecutionLog } from '@repo/types/triggers';
 import { formatTime } from '../../utils';
 import { Container, LogItem, Header, Time, Result, Reason, Details, DetailItem, DetailLabel, OrderLink, ErrorMessage, EmptyState } from './ExecutionLogList.styles';
 
@@ -40,10 +40,10 @@ function LogItemComponent({ log, symbol }: LogItemComponentProps) {
   const { t } = useI18n();
 
   if (!t.automation || !t.automation.logDetails) {
-    return <LogItem $result={log.result as any}>ERROR: i18n_MISSING</LogItem>;
+    return <LogItem $result="failed">ERROR: i18n_MISSING</LogItem>;
   }
 
-  const getResultText = (result: string) => {
+  const getResultText = (result: ExecutionLog['result']) => {
     switch (result) {
       case 'success': return t.automation.logDetails.success;
       case 'failed': return t.automation.logDetails.failed;
@@ -52,13 +52,16 @@ function LogItemComponent({ log, symbol }: LogItemComponentProps) {
     }
   };
 
-  const getErrorCodeText = (code: string) => (t.automation.logDetails as any)[code] || code;
+  const getErrorCodeText = (code: string) => {
+    const labels: Record<string, string> = t.automation.logDetails.errorCodes;
+    return labels[code] || code;
+  };
 
   return (
-    <LogItem $result={log.result as any}>
+    <LogItem $result={log.result}>
       <Header>
         <Time>{formatTime(log.firedAt, true)}</Time>
-        <Result $result={log.result as any}>{getResultText(log.result)}</Result>
+        <Result $result={log.result}>{getResultText(log.result)}</Result>
       </Header>
       <Reason><strong>{symbol}</strong>: {log.confidenceReason || 'Trigger condition met'}</Reason>
       <Details>
@@ -71,4 +74,4 @@ function LogItemComponent({ log, symbol }: LogItemComponentProps) {
   );
 }
 
-export default ExecutionLogList;
+export { ExecutionLogList };

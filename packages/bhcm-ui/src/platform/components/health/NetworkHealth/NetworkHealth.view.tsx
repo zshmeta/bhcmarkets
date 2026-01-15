@@ -140,4 +140,4 @@ const NetworkHealthView = ({
     );
 }
 
-export default NetworkHealthView;
+export { NetworkHealthView }  ;

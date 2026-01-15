@@ -228,4 +228,4 @@ const RiskBannerView = ({
     );
 }
 
-export default RiskBannerView;
+export  {RiskBannerView};

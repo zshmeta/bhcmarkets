@@ -1,6 +1,6 @@
-import { useNetworkStatus } from './useNetworkStatus';
-import { NetworkStatusView } from './NetworkStatus.view';
-import { NetworkHealth } from '../NetworkHealth/NetworkHealth';
+import {useNetworkStatus} from './useNetworkStatus';
+import {NetworkStatusView} from './NetworkStatus.view';
+import {NetworkHealth} from '../NetworkHealth/NetworkHealth';
 
 /* ═══════════════════════════════════════════════════════════
  * DATA CONFIDENCE BAR CONTAINER
@@ -18,4 +18,4 @@ const NetworkStatus = () => {
   );
 }
 
-export default NetworkStatus;
+export { NetworkStatus };

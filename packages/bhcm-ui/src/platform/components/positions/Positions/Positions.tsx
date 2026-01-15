@@ -1,5 +1,5 @@
-import usePositions from './usePositions';
-import PositionsView from './Positions.view';
+import {usePositions} from './usePositions';
+import {PositionsView} from './Positions.view';
 
 /* ═══════════════════════════════════════════════════════════
  * POSITIONS CONTAINER
@@ -52,5 +52,5 @@ const Positions = () => {
     );
 }
 
-export default Positions;
+export { Positions };
 
