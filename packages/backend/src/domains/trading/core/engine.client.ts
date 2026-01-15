@@ -1,3 +1,5 @@
+import { logger } from '../../../config/logger.js';
+
 export interface PlaceOrderInput {
   accountId: string;
   symbol: string;
@@ -32,16 +34,17 @@ export class HttpEngineClient implements EngineClient {
       if (!response.ok) {
         // Try to parse error message
         try {
-          const data = await response.json();
+          const data: any = await response.json();
           return { success: false, error: data.message || response.statusText };
         } catch {
           return { success: false, error: response.statusText };
         }
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
       return { success: true, orderId: data.orderId };
     } catch (e) {
+      logger.error('Failed to place order', { error: e, input });
       return { success: false, error: 'Engine unavailable' };
     }
   }
@@ -57,7 +60,7 @@ export class HttpEngineClient implements EngineClient {
 
       if (!response.ok) {
         try {
-            const data = await response.json();
+            const data: any = await response.json();
             return { success: false, error: data.message || response.statusText };
         } catch {
              return { success: false, error: response.statusText };
@@ -66,6 +69,7 @@ export class HttpEngineClient implements EngineClient {
 
       return { success: true };
     } catch (e) {
+      logger.error('Failed to cancel order', { error: e, orderId, accountId });
       return { success: false, error: 'Engine unavailable' };
     }
   }
