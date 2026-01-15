@@ -25,7 +25,7 @@ describe('HttpEngineClient', () => {
 
         const mockResponse = {
             ok: true,
-            json: async () => ({ orderId: 'ord-123' })
+            json: async () => ({ success: true, orderId: 'ord-123' })
         };
         (global.fetch as any).mockResolvedValue(mockResponse);
 
@@ -64,7 +64,7 @@ describe('HttpEngineClient', () => {
 
         const mockResponse = {
             ok: true,
-            json: async () => ({})
+            json: async () => ({ success: true })
         };
         (global.fetch as any).mockResolvedValue(mockResponse);
 
@@ -91,7 +91,7 @@ describe('HttpEngineClient', () => {
         const mockResponse = {
             ok: false,
             status: 400,
-            json: async () => ({ message: 'Invalid quantity' }) 
+            json: async () => ({ success: false, message: 'Invalid quantity' }) 
         };
         (global.fetch as any).mockResolvedValue(mockResponse);
 
@@ -107,7 +107,7 @@ describe('HttpEngineClient', () => {
         const mockResponse = {
             ok: false,
             status: 404,
-            json: async () => ({ message: 'Order not found' })
+            json: async () => ({ success: false, message: 'Order not found' })
         };
         (global.fetch as any).mockResolvedValue(mockResponse);
 

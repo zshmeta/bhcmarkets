@@ -12,6 +12,31 @@ export interface PlaceOrderInput {
   clientOrderId?: string;
 }
 
+export interface EngineTrade {
+  price: number;
+  quantity: number;
+  timestamp: number;
+}
+
+export interface EnginePlaceOrderResponse {
+  success: boolean;
+  orderId?: string;
+  status?: string;
+  filledQuantity?: number;
+  remainingQuantity?: number;
+  averagePrice?: number;
+  trades?: EngineTrade[];
+  errors?: string[];
+  error?: string;
+  message?: string;
+}
+
+export interface EngineCancelOrderResponse {
+  success: boolean;
+  error?: string;
+  message?: string;
+}
+
 export interface EngineClient {
   placeOrder(input: PlaceOrderInput): Promise<{ success: boolean; orderId?: string; error?: string }>;
   cancelOrder(orderId: string, accountId: string): Promise<{ success: boolean; error?: string }>;
@@ -34,14 +59,15 @@ export class HttpEngineClient implements EngineClient {
       if (!response.ok) {
         // Try to parse error message
         try {
-          const data: any = await response.json();
-          return { success: false, error: data.message || response.statusText };
+          const data = await response.json() as EnginePlaceOrderResponse;
+          const errorMessage = data.message || data.error || (data.errors ? data.errors.join(', ') : undefined) || response.statusText;
+          return { success: false, error: errorMessage };
         } catch {
           return { success: false, error: response.statusText };
         }
       }
 
-      const data: any = await response.json();
+      const data = await response.json() as EnginePlaceOrderResponse;
       return { success: true, orderId: data.orderId };
     } catch (e) {
       logger.error('Failed to place order', { error: e, input });
@@ -60,8 +86,8 @@ export class HttpEngineClient implements EngineClient {
 
       if (!response.ok) {
         try {
-            const data: any = await response.json();
-            return { success: false, error: data.message || response.statusText };
+            const data = await response.json() as EngineCancelOrderResponse;
+            return { success: false, error: data.message || data.error || response.statusText };
         } catch {
              return { success: false, error: response.statusText };
         }
