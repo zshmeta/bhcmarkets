@@ -1,5 +1,5 @@
 import { useState, useRef, createRef } from 'react';
-import { GlobalStyles } from './theme/globalStyles';
+import { GlobalStyles } from './platform/components/theme/globalStyles';
 
 // View components (presentational only)
 import { PositionsView } from './components-refactored/Positions/Positions.view';
