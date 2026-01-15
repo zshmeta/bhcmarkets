@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import http from 'http';
 
-const BASE_URL = 'http://localhost:4001';
+const BASE_URL = 'http://localhost:6000';
 
 /**
  * Helper to make HTTP requests.

@@ -1,0 +1,315 @@
+openapi: 3.0.3
+info:
+  title: BHC Markets - Backend API
+  version: 0.1.0
+  description: |
+    REST API for the backend service.
+
+    This spec is intentionally minimal (enough to import into Hoppscotch and
+    have a discoverable endpoint list). You can iteratively enrich request/response
+    schemas as the API stabilizes.
+servers:
+  - url: http://localhost:8080
+    description: Local dev (default)
+  - url: http://{host}:{port}
+    description: Custom host/port
+    variables:
+      host:
+        default: localhost
+      port:
+        default: '8080'
+
+tags:
+  - name: Health
+  - name: Auth
+  - name: Accounts
+  - name: Admin
+
+paths:
+  /healthz:
+    get:
+      tags: [Health]
+      summary: Liveness
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /readyz:
+    get:
+      tags: [Health]
+      summary: Readiness (DB required)
+      responses:
+        '200':
+          description: Ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+        '503':
+          description: Not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyJson'
+      responses:
+        '200':
+          description: Tokens/session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+        '503':
+          description: DB not connected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyJson'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+        '503':
+          description: DB not connected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyJson'
+      responses:
+        '200':
+          description: Tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/code:
+    post:
+      tags: [Auth]
+      summary: Generate auth code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyJson'
+      responses:
+        '200':
+          description: Auth code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/exchange:
+    post:
+      tags: [Auth]
+      summary: Exchange auth code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyJson'
+      responses:
+        '200':
+          description: Tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/logout-all:
+    post:
+      tags: [Auth]
+      summary: Logout all sessions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /auth/sessions:
+    get:
+      tags: [Auth]
+      summary: List active sessions
+      responses:
+        '200':
+          description: Sessions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /accounts:
+    get:
+      tags: [Accounts]
+      summary: List accounts
+      responses:
+        '200':
+          description: Accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+    post:
+      tags: [Accounts]
+      summary: Create account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyJson'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /accounts/{id}:
+    get:
+      tags: [Accounts]
+      summary: Get account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: List users
+      responses:
+        '200':
+          description: Users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /admin/accounts:
+    get:
+      tags: [Admin]
+      summary: List accounts
+      responses:
+        '200':
+          description: Accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /admin/risk/dashboard:
+    get:
+      tags: [Admin]
+      summary: Risk dashboard
+      responses:
+        '200':
+          description: Dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /admin/risk/circuit-breaker/activate:
+    post:
+      tags: [Admin]
+      summary: Activate circuit breaker
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+  /admin/risk/circuit-breaker/deactivate:
+    post:
+      tags: [Admin]
+      summary: Deactivate circuit breaker
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyJson'
+
+components:
+  schemas:
+    AnyJson:
+      description: Placeholder schema (any JSON object).
+      type: object
+      additionalProperties: true

@@ -1,0 +1,10 @@
+export const useMarketStore = (selector: any) => selector({});
+export const selectConnectionStatus = () => ({ state: 'connected' });
+export const selectMetrics = () => ({});
+export const selectLevel2Book = () => ({});
+export const selectBestBid = () => ({});
+export const selectBestAsk = () => ({});
+export const selectTicker = () => ({});
+export const selectDataConfidence = () => ({ level: 'high' });
+export const selectNetworkHealth = () => ({});
+export const selectTrades = () => [];

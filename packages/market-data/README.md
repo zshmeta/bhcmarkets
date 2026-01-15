@@ -97,8 +97,8 @@ DATABASE_URL=postgres://user:pass@localhost:5432/bhc
 
 # Optional
 REDIS_URL=redis://localhost:6379
-PORT=4001          # HTTP API port
-WS_PORT=4002       # WebSocket port (path: /ws)
+PORT=6000          # HTTP API port
+WS_PORT=6060       # WebSocket port (path: /ws)
 NODE_ENV=development
 LOG_LEVEL=info
 
@@ -127,18 +127,18 @@ bun run dev
 
 ## WebSocket quick test (subscribe to a few assets)
 
-The WebSocket server runs on `ws://localhost:4002/ws`.
+The WebSocket server runs on `ws://localhost:6060/ws`.
 
 ### Option A: `wscat` (Node tool)
 
 ```bash
-npx wscat -c ws://localhost:4002/ws -x '{"type":"subscribe","symbols":["BTC/USD","AAPL","EUR/USD","XAU/USD","WTI","SPX"]}'
+npx wscat -c ws://localhost:6060/ws -x '{"type":"subscribe","symbols":["BTC/USD","AAPL","EUR/USD","XAU/USD","WTI","SPX"]}'
 ```
 
 ### Option B: `websocat` (single binary)
 
 ```bash
-printf '%s\n' '{"type":"subscribe","symbols":["BTC/USD","AAPL","EUR/USD","XAU/USD","WTI","SPX"]}' | websocat -E ws://localhost:4002/ws
+printf '%s\n' '{"type":"subscribe","symbols":["BTC/USD","AAPL","EUR/USD","XAU/USD","WTI","SPX"]}' | websocat -E ws://localhost:6060/ws
 ```
 
 You should see messages like:
@@ -183,7 +183,7 @@ Query parameters:
 
 ## WebSocket Protocol
 
-Connect to `ws://localhost:4002/ws`
+Connect to `ws://localhost:6060/ws`
 
 ### Subscribe to symbols
 ```json

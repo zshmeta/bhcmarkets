@@ -345,7 +345,7 @@ The backend communicates with the order engine service for:
 
 ```typescript
 // Example: Place order via order engine
-const response = await fetch('http://localhost:4003/orders', {
+const response = await fetch('http://localhost:4000/orders', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -364,7 +364,7 @@ const response = await fetch('http://localhost:4003/orders', {
 Fetches current prices and historical data from the market data service:
 
 ```typescript
-const prices = await fetch('http://localhost:4001/api/prices').then(r => r.json());
+const prices = await fetch('http://localhost:6000/api/prices').then(r => r.json());
 ```
 
 ## Error Handling

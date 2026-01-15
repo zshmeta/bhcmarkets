@@ -50,8 +50,8 @@ BHC Markets is a distributed trading platform built as a Bun monorepo with multi
          │               │               │
 ┌────────▼────────┐ ┌────▼──────┐ ┌─────▼────────┐
 │ Order Engine    │ │Market Data│ │Email Worker  │
-│ REST: :4003     │ │REST: :4001│ │(Cloudflare)  │
-│ WS:   :4004     │ │WS:  :4002 │ │              │
+│ REST: :4000     │ │REST: :6000│ │(Cloudflare)  │
+│ WS:   :4040     │ │WS:  :6060 │ │              │
 └────────┬────────┘ └────┬──────┘ └──────────────┘
          │               │
 ┌────────┼───────────────┼────────────────────────────────────┐
@@ -90,7 +90,7 @@ BHC Markets is a distributed trading platform built as a Bun monorepo with multi
 - Admin: User management, audit logs
 - Risk: Risk limits, circuit breakers
 
-### Order Engine (Ports 4003/4004)
+### Order Engine (Ports 4000/4040)
 
 **Responsibilities:**
 - Order validation and placement
@@ -113,7 +113,7 @@ BHC Markets is a distributed trading platform built as a Bun monorepo with multi
 - **Position Manager**: Tracks open positions
 - **Ledger Service**: Double-entry accounting
 
-### Market Data Service (Ports 4001/4002)
+### Market Data Service (Ports 6000/6060)
 
 **Responsibilities:**
 - Collect real-time price data from external sources
@@ -156,7 +156,7 @@ BHC Markets is a distributed trading platform built as a Bun monorepo with multi
 1. User submits order in Platform app
    │
    ▼
-2. Platform sends POST /orders to Order Engine (:4003)
+2. Platform sends POST /orders to Order Engine (: 4000)
    │
    ▼
 3. Order Engine validates order
@@ -321,7 +321,7 @@ CREATE INDEX idx_trades_symbol_created ON trades(symbol, created_at DESC);
 CREATE UNIQUE INDEX idx_balances_account_asset ON balances(account_id, asset);
 
 -- Candles
-CREATE UNIQUE INDEX idx_candles_symbol_tf_time 
+CREATE UNIQUE INDEX idx_candles_symbol_tf_time
   ON candles(symbol, timeframe, open_time DESC);
 ```
 

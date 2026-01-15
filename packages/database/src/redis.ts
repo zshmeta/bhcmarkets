@@ -29,6 +29,17 @@ let redis: Redis | null = null;
 let pubClient: Redis | null = null;
 let subClient: Redis | null = null;
 let usingFallback = false;
+let hasLoggedAuthError = false;
+let hasLoggedConnectionError = false;
+
+function isRedisAuthErrorMessage(message: string): boolean {
+  // Redis auth failures vary by version/config:
+  // - "NOAUTH Authentication required."
+  // - "WRONGPASS invalid username-password pair"
+  // - "ERR invalid password"
+  // - "NOPERM" (ACL) for some commands
+  return /NOAUTH|WRONGPASS|invalid username-password pair|invalid password|ERR\s+invalid\s+password|NOPERM/i.test(message);
+}
 
 // In-memory fallback for development without Redis
 const memoryStore = new Map<string, string>();
@@ -113,10 +124,34 @@ export function getRedisWithConfig(config?: RedisConfig): Redis | null {
         if (times > 3) return null;
         return Math.min(times * 100, 3000);
       },
+      reconnectOnError: (err) => {
+        // Auth/ACL errors indicate a permanent configuration problem; don't loop forever.
+        const msg = typeof err?.message === 'string' ? err.message : String(err);
+        if (isRedisAuthErrorMessage(msg)) return false;
+        return true;
+      },
     });
 
     redis.on('error', (err) => {
-      console.error('[redis] Connection error:', err.message);
+      const msg = err?.message ?? String(err);
+      if (isRedisAuthErrorMessage(msg)) {
+        if (!hasLoggedAuthError) {
+          hasLoggedAuthError = true;
+          console.error(
+            `[redis] Authentication/ACL failed (${msg}). ` +
+              `Check REDIS_URL includes credentials, e.g. redis://:PASSWORD@host:6379`
+          );
+        }
+
+        // Stop reconnect attempts; this won't fix itself without config changes.
+        try {
+          redis?.disconnect();
+        } catch {
+          // ignore
+        }
+        return;
+      }
+      console.error('[redis] Connection error:', msg);
     });
 
     redis.on('connect', () => {
@@ -162,16 +197,60 @@ export function getPubSubWithConfig(config?: RedisConfig): { pub: Redis | null; 
   }
 
   if (!pubClient) {
-    pubClient = new Redis(url);
+    pubClient = new Redis(url, {
+      reconnectOnError: (err) => {
+        const msg = typeof err?.message === 'string' ? err.message : String(err);
+        if (isRedisAuthErrorMessage(msg)) return false;
+        return true;
+      },
+    });
     pubClient.on('error', (err) => {
-      console.error('[redis:pub] Error:', err.message);
+      const msg = err?.message ?? String(err);
+      if (isRedisAuthErrorMessage(msg)) {
+        if (!hasLoggedAuthError) {
+          hasLoggedAuthError = true;
+          console.error(
+            `[redis] Authentication/ACL failed (${msg}). ` +
+              `Check REDIS_URL includes credentials, e.g. redis://:PASSWORD@host:6379`
+          );
+        }
+        try {
+          pubClient?.disconnect();
+        } catch {
+          // ignore
+        }
+        return;
+      }
+      console.error('[redis:pub] Error:', msg);
     });
   }
 
   if (!subClient) {
-    subClient = new Redis(url);
+    subClient = new Redis(url, {
+      reconnectOnError: (err) => {
+        const msg = typeof err?.message === 'string' ? err.message : String(err);
+        if (isRedisAuthErrorMessage(msg)) return false;
+        return true;
+      },
+    });
     subClient.on('error', (err) => {
-      console.error('[redis:sub] Error:', err.message);
+      const msg = err?.message ?? String(err);
+      if (isRedisAuthErrorMessage(msg)) {
+        if (!hasLoggedAuthError) {
+          hasLoggedAuthError = true;
+          console.error(
+            `[redis] Authentication/ACL failed (${msg}). ` +
+              `Check REDIS_URL includes credentials, e.g. redis://:PASSWORD@host:6379`
+          );
+        }
+        try {
+          subClient?.disconnect();
+        } catch {
+          // ignore
+        }
+        return;
+      }
+      console.error('[redis:sub] Error:', msg);
     });
   }
 

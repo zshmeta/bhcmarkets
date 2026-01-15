@@ -35,8 +35,8 @@ apps/
 ```
 packages/
 ├── backend/      → Main HTTP API (port 8080)
-├── order-engine/ → Order matching engine (REST: 4003, WS: 4004)
-├── market-data/  → Market data service (REST: 4001, WS: 4002)
+├── order-engine/ → Order matching engine (REST: 4000, WS: 4040)
+├── market-data/  → Market data service (REST: 6000, WS: 6060)
 ├── database/     → Drizzle ORM schemas and migrations
 ├── ledger/       → Double-entry bookkeeping system
 ├── trading-ui/   → Trading terminal React components
@@ -97,8 +97,8 @@ packages/
 
    This command starts:
    - Backend API → http://localhost:8080
-   - Order Engine → http://localhost:4003 (WS: 4004)
-   - Market Data → http://localhost:4001 (WS: 4002)
+   - Order Engine → http://localhost:4000 (WS: 4040)
+   - Market Data → http://localhost:6000 (WS: 6060)
    - Auth Portal → http://localhost:5173
    - Trading Platform → http://localhost:5174
 
@@ -212,7 +212,7 @@ The order engine uses **price-time priority**:
 3. Market orders execute immediately
 4. Limit orders cross if price matches or improves
 
-Supported order types: Market, Limit, Stop, Stop-Limit  
+Supported order types: Market, Limit, Stop, Stop-Limit
 Time-in-force: GTC, IOC, FOK, GTD
 
 ### Double-Entry Ledger

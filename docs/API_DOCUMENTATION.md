@@ -2,6 +2,22 @@
 
 This document outlines the API endpoints defined in the backend services and their usage across the frontend applications.
 
+## Hoppscotch (API Client)
+
+You can use **Hoppscotch** to browse and test the APIs by importing our OpenAPI specs:
+
+- Backend API spec: [docs/openapi/backend.yaml](openapi/backend.yaml)
+- Order Engine API spec: [docs/openapi/order-engine.yaml](openapi/order-engine.yaml)
+
+In Hoppscotch:
+1. Open **Collections** → **Import**
+2. Choose **OpenAPI**
+3. Import one (or both) YAML files
+
+Notes:
+- Order-engine cancel requests require the `X-Account-ID` header.
+- Some endpoints intentionally return `503` when the database is not connected.
+
 ## Backend HTTP API
 
 The backend exposes a RESTful API via `packages/backend`.

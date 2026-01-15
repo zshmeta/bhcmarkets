@@ -7,7 +7,7 @@
  * - GET /positions - List user's positions
  * - GET /positions/:id - Get specific position
  *
- * Note: Order placement goes directly to Order Engine (port 4003).
+ * Note: Order placement goes directly to Order Engine (port 4000).
  * These routes read from the shared database using raw SQL.
  */
 

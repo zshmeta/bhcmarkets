@@ -26,7 +26,7 @@ config();
  */
 const envSchema = z.object({
   // Server configuration
-  PORT: z.coerce.number().default(4000),
+  ORDER_ENGINE_PORT: z.coerce.number().default(4000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Database - required for order persistence
@@ -36,7 +36,7 @@ const envSchema = z.object({
   REDIS_URL: z.string().default('redis://:bhcm@100.100.13.10:6379'),
 
   // WebSocket server for real-time order updates
-  WS_PORT: z.coerce.number().default(4040),
+  ORDER_ENGINE_WS_PORT: z.coerce.number().default(4040),
 
   // Order engine configuration
   // Maximum orders per account (prevents abuse)

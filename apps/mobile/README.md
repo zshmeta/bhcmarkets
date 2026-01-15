@@ -73,8 +73,8 @@ Create `.env` in the app directory:
 ```bash
 # API endpoints
 EXPO_PUBLIC_API_URL=http://localhost:8080
-EXPO_PUBLIC_MARKET_DATA_WS=ws://localhost:4002/ws
-EXPO_PUBLIC_ORDER_ENGINE_WS=ws://localhost:4004/ws
+EXPO_PUBLIC_MARKET_DATA_WS=ws://localhost:6060/ws
+EXPO_PUBLIC_ORDER_ENGINE_WS=ws://localhost:4040/ws
 
 # OneSignal (push notifications)
 EXPO_PUBLIC_ONESIGNAL_APP_ID=your-onesignal-app-id
@@ -231,7 +231,7 @@ function App() {
 
     const subscription = onNotification((notification) => {
       console.log('Received notification:', notification);
-      
+
       if (notification.data?.type === 'trade_filled') {
         // Navigate to order details
         navigation.navigate('OrderDetails', { id: notification.data.orderId });

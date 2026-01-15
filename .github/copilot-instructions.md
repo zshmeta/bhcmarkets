@@ -18,8 +18,8 @@ apps/           → Frontend applications (React + Vite)
 
 packages/       → Shared backend services and libraries
   backend/      → Main HTTP API server (port 8080)
-  order-engine/ → Order matching engine (REST: 4003, WS: 4004)
-  market-data/  → Market data service (REST: 4001, WS: 4002)
+  order-engine/ → Order matching engine (REST: 4000, WS: 4040)
+  market-data/  → Market data service (REST: 6000, WS: 6060)
   database/     → Drizzle ORM schemas and migrations
   ledger/       → Double-entry bookkeeping (balances, holds, settlements)
   trading-ui/   → Trading terminal React components
@@ -33,15 +33,15 @@ packages/       → Shared backend services and libraries
 | Service      | HTTP | WebSocket |
 | ------------ | ---- | --------- |
 | Backend API  | 8080 | -         |
-| Order Engine | 4003 | 4004      |
-| Market Data  | 4001 | 4002      |
+| Order Engine | 4000 | 4040      |
+| Market Data  | 6000 | 6060      |
 
 ### Data Flow
 
 ```
 Frontend Apps → Backend API (auth/accounts/orders/positions) → PostgreSQL
-             → Order Engine (orders via :4003) → Matching Engine → Ledger → PostgreSQL
-             → Market Data WS (:4002/ws) → Binance/Yahoo → Redis cache
+             → Order Engine (orders via :4000) → Matching Engine → Ledger → PostgreSQL
+             → Market Data WS (:6060/ws) → Binance/Yahoo → Redis cache
 ```
 
 ## Development Commands
@@ -152,14 +152,14 @@ Time-in-force options: GTC, IOC, FOK, GTD
 
 ## WebSocket Protocols
 
-### Market Data (port 4002, path: /ws)
+### Market Data (port 6060, path: /ws)
 
 ```json
 // Subscribe: { "type": "subscribe", "symbols": ["BTC/USD"] }
 // Server tick: { "type": "tick", "data": { "symbol": "BTC/USD", "last": 50000, ... } }
 ```
 
-### Order Engine (port 4004, path: /ws)
+### Order Engine (port 4040, path: /ws)
 
 Real-time order book updates and trade notifications.
 
@@ -196,6 +196,6 @@ See [docs/API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md) for endpoint details.
 Key base URLs:
 
 - Backend API: `http://localhost:8080`
-- Order Engine REST: `http://localhost:4003`
-- Order Engine WS: `ws://localhost:4004`
-- Market Data WS: `ws://localhost:4002`
+- Order Engine REST: `http://localhost:4000`
+- Order Engine WS: `ws://localhost:4040/ws`
+- Market Data WS: `ws://localhost:6060/ws`

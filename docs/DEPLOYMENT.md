@@ -77,14 +77,14 @@ BCRYPT_ROUNDS=10
 CORS_ORIGINS=https://auth.bhcmarkets.com,https://platform.bhcmarkets.com,https://admin.bhcmarkets.com
 
 # Order Engine
-ORDER_ENGINE_PORT=4003
-ORDER_ENGINE_WS_PORT=4004
+ORDER_ENGINE_PORT=4000
+ORDER_ENGINE_WS_PORT=4040
 MAX_ORDERS_PER_ACCOUNT=1000
 RATE_LIMIT_ORDERS_PER_SECOND=10
 
 # Market Data
-MARKET_DATA_PORT=4001
-MARKET_DATA_WS_PORT=4002
+MARKET_DATA_PORT=6000
+MARKET_DATA_WS_PORT=6060
 YAHOO_POLL_INTERVAL_MS=15000
 
 # Logging
@@ -210,8 +210,8 @@ module.exports = {
       instances: 1,
       env_production: {
         NODE_ENV: 'production',
-        PORT: 4003,
-        WS_PORT: 4004,
+        PORT: 4000,
+        WS_PORT: 4040,
       },
     },
     {
@@ -222,8 +222,8 @@ module.exports = {
       instances: 1,
       env_production: {
         NODE_ENV: 'production',
-        PORT: 4001,
-        WS_PORT: 4002,
+        PORT: 6000,
+        WS_PORT: 6060,
       },
     },
   ],
@@ -306,8 +306,8 @@ services:
       DATABASE_URL: postgresql://bhcmarkets:${DB_PASSWORD}@postgres:5432/bhcmarkets
       REDIS_URL: redis://redis:6379
     ports:
-      - "4003:4003"
-      - "4004:4004"
+      - "4000:4000"
+      - "4040:4040"
     depends_on:
       - postgres
       - redis
@@ -324,8 +324,8 @@ services:
       DATABASE_URL: postgresql://bhcmarkets:${DB_PASSWORD}@postgres:5432/bhcmarkets
       REDIS_URL: redis://redis:6379
     ports:
-      - "4001:4001"
-      - "4002:4002"
+      - "6000:6000"
+      - "6060:6060"
     depends_on:
       - postgres
       - redis
@@ -475,11 +475,11 @@ upstream backend_api {
 }
 
 upstream order_engine {
-    server localhost:4003;
+    server localhost:4000;
 }
 
 upstream market_data {
-    server localhost:4001;
+    server localhost:6000;
 }
 
 # HTTP redirect to HTTPS
@@ -515,7 +515,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
-        
+
         # Rate limiting
         limit_req zone=api_limit burst=20 nodelay;
     }
@@ -530,7 +530,7 @@ server {
     ssl_certificate_key /etc/nginx/ssl/key.pem;
 
     location /market-data {
-        proxy_pass http://localhost:4002;
+        proxy_pass http://localhost:6060;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
@@ -539,7 +539,7 @@ server {
     }
 
     location /order-engine {
-        proxy_pass http://localhost:4004;
+        proxy_pass http://localhost:4040;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";

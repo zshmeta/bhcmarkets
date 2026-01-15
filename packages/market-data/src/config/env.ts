@@ -11,6 +11,7 @@
  */
 
 import { config } from 'dotenv';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
@@ -19,7 +20,13 @@ import { z } from 'zod';
 // Repo convention: all services share the root-level `.env`.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootEnvPath = path.resolve(__dirname, '../../../../.env');
-config({ path: rootEnvPath });
+const rootEnvExamplePath = path.resolve(__dirname, '../../../../.env.example');
+
+if (fs.existsSync(rootEnvPath)) {
+  config({ path: rootEnvPath });
+} else if (fs.existsSync(rootEnvExamplePath)) {
+  config({ path: rootEnvExamplePath });
+}
 
 // Also load a local .env if present (package-level overrides in dev).
 config();
@@ -30,7 +37,7 @@ config();
  */
 const envSchema = z.object({
   // Server configuration
-  MARKET_DATA_PORT: z.coerce.number().default(4001),
+  MARKET_DATA_PORT: z.coerce.number().default(6000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Database - required for storing candles
@@ -43,7 +50,7 @@ const envSchema = z.object({
   REDIS_URL: z.string().min(1),
 
   // WebSocket server for clients (TradingView charts)
-  MARKET_DATA_WS_PORT: z.coerce.number().default(4002),
+  MARKET_DATA_WS_PORT: z.coerce.number().default( 6060),
 
   // Polling intervals in milliseconds
   // WHY THESE DEFAULTS:
