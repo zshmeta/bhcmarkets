@@ -1,5 +1,6 @@
 // Trading domain components - order entry, charts, orderbook
-export * from './Level2Book';
-export * from './Chart';
-export * from './DepthChart';
+export * from './WorkPanel/WorkPanel';
+export * from './WorkPanel/ExecutionLogList';
+export * from './WorkPanel/TriggerForm';
+export * from './WorkPanel/TriggerList';
 export * from './OrderForm';
