@@ -10,7 +10,7 @@ export interface Category {
     items: SymbolItem[];
 }
 
-export interface CategorizedSymbolSelectorProps {
+export interface SymbolSelectorProps {
     categories: Category[];
     selectedSymbol?: string;
     onSelect: (symbol: string) => void;

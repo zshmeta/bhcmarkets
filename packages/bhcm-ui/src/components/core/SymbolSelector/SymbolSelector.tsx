@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Icons } from '../Icons';
-import type { CategorizedSymbolSelectorProps } from './CategorizedSymbolSelector.types';
+import type { SymbolSelectorProps } from './SymbolSelector.types';
 import {
     Container,
     TriggerButton,
@@ -13,14 +13,14 @@ import {
     CategoryHeader,
     SymbolList,
     SymbolItem,
-} from './CategorizedSymbolSelector.styles';
+} from './SymbolSelector.styles';
 
-const CategorizedSymbolSelector = ({
-    categories,
-    selectedSymbol,
-    onSelect,
-    className,
-}: CategorizedSymbolSelectorProps) => {
+
+
+
+function SymbolSelector({
+    categories, selectedSymbol, onSelect, className,
+}: SymbolSelectorProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'watchlists' | 'all'>('all');
     const [searchQuery, setSearchQuery] = useState('');
@@ -55,8 +55,7 @@ const CategorizedSymbolSelector = ({
 
     const filteredCategories = categories.map(cat => ({
         ...cat,
-        items: cat.items.filter(item =>
-            item.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+        items: cat.items.filter(item => item.symbol.toLowerCase().includes(searchQuery.toLowerCase())
         )
     })).filter(cat => cat.items.length > 0 || searchQuery === ''); // Show empty categories if no search, else hide empty
 
@@ -91,8 +90,7 @@ const CategorizedSymbolSelector = ({
                                 placeholder="Search..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                autoFocus
-                            />
+                                autoFocus />
                             <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#6E7681' }}>
                                 <Icons name="search" size="xs" />
                             </span>
@@ -131,6 +129,6 @@ const CategorizedSymbolSelector = ({
             )}
         </Container>
     );
-};
+}
 
-export default CategorizedSymbolSelector;
+export default SymbolSelector;

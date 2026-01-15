@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import CategorizedSymbolSelector from './CategorizedSymbolSelector';
-import type { Category } from './CategorizedSymbolSelector.types';
+import SymbolSelector from './SymbolSelector';
+import type { Category } from './SymbolSelector.types';
 
 const mockCategories: Category[] = [
     {
@@ -48,9 +48,9 @@ const mockCategories: Category[] = [
     }
 ];
 
-const meta: Meta<typeof CategorizedSymbolSelector> = {
-    title: 'Trading/CategorizedSymbolSelector',
-    component: CategorizedSymbolSelector,
+const meta: Meta<typeof SymbolSelector> = {
+    title: 'Trading/SymbolSelector',
+    component: SymbolSelector,
     tags: ['autodocs'],
     parameters: {
         layout: 'centered',
@@ -58,7 +58,7 @@ const meta: Meta<typeof CategorizedSymbolSelector> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof CategorizedSymbolSelector>;
+type Story = StoryObj<typeof SymbolSelector>;
 
 export const Default: Story = {
     args: {
