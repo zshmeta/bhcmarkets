@@ -26,6 +26,7 @@ export type AppConfig = {
   maxSessionsPerUser: number; // cap to prevent unbounded session growth
   bcryptRounds: number; // hashing cost for passwords and refresh token hashes
   corsOrigins: string[]; // explicit allowlist for CORS; use "*" only in dev
+  orderEngineUrl: string;
 };
 
 export function loadEnv(): AppConfig {
@@ -59,6 +60,7 @@ export function loadEnv(): AppConfig {
     maxSessionsPerUser: toInt(process.env.MAX_SESSIONS_PER_USER, 10),
     bcryptRounds: toInt(process.env.BCRYPT_ROUNDS, 10),
     corsOrigins,
+    orderEngineUrl: process.env.ORDER_ENGINE_URL || "http://localhost:4000",
   };
 }
 
