@@ -1,10 +1,11 @@
 
 import { AccountServiceInterface, CurrencyCode } from '../../account/core/account.types.js';
-import { EngineClient, PlaceOrderInput } from './engine.client.js';
+import { EngineClient, PlaceOrderInput, EnginePlaceOrderResponse } from './engine.client.js';
 import { getSymbolDef } from '../../../../../market-data/src/config/symbols.js';
 
 // Helper for safe decimal multiplication
-function multiplyDecimals(a: number | string, b: number | string): string {
+// TODO: Replace with BigInt/Decimal library for production precision
+function multiplyToFixed(a: number | string, b: number | string): string {
   const valA = typeof a === 'string' ? parseFloat(a) : a;
   const valB = typeof b === 'string' ? parseFloat(b) : b;
   return (valA * valB).toFixed(10);
@@ -45,7 +46,7 @@ export class TradingService {
         throw new Error('Price (or estimated price) is required for buy orders to calculate lock amount');
       }
 
-      const total = multiplyDecimals(input.quantity, input.price);
+      const total = multiplyToFixed(input.quantity, input.price);
       return {
         currency: symbolDef.quote,
         amount: total,
@@ -53,7 +54,7 @@ export class TradingService {
     }
   }
 
-  async placeOrder(input: PlaceOrderInput): Promise<any> {
+  async placeOrder(input: PlaceOrderInput): Promise<EnginePlaceOrderResponse> {
     const lock = this.calculateLockAmount(input);
 
     // Note: input.accountId is treated as userId here to find the correct currency account
