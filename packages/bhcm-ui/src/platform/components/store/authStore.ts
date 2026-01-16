@@ -1,5 +1,6 @@
 // Stub auth store for bhcm-ui components
 import { create } from 'zustand';
+import { apiClient } from '../api/apiClient';
 
 interface User {
     id: string;
@@ -26,7 +27,7 @@ interface AuthState {
 }
 
 interface AuthActions {
-    login: (username: string, password: string) => { success: boolean };
+    login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
     updateProfile: (data: Partial<User>) => void;
     updateAvatar: (avatar: string) => void;
@@ -35,10 +36,11 @@ interface AuthActions {
 }
 
 const AUTH_STORAGE_KEY = 'bhcm.authenticated';
+const ACCESS_TOKEN_KEY = 'bhcm.accessToken';
 
 const getInitialAuth = () => {
     if (typeof window === 'undefined') return false;
-    return localStorage.getItem(AUTH_STORAGE_KEY) === '1';
+    return localStorage.getItem(AUTH_STORAGE_KEY) === '1' || !!localStorage.getItem(ACCESS_TOKEN_KEY);
 };
 
 const mockUser: User = {
@@ -61,10 +63,24 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     user: getInitialAuth() ? mockUser : null,
     preferences: defaultPreferences,
 
-    login: (username, password) => {
-        if (typeof window !== 'undefined') localStorage.setItem(AUTH_STORAGE_KEY, '1');
-        set({ isAuthenticated: true, user: { ...mockUser, username: username || mockUser.username, lastLogin: Date.now() } });
-        return { success: true };
+    login: async (username, password) => {
+        try {
+            const response = await apiClient.post<{ user: User; accessToken: string }>('/auth/login', { username, password });
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(AUTH_STORAGE_KEY, '1');
+                localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+            }
+            set({ isAuthenticated: true, user: response.user });
+            return { success: true };
+        } catch (_) {
+            // Fallback to demo logic only if using demo credentials
+            if (username === 'demo' && password === 'demo') {
+                if (typeof window !== 'undefined') localStorage.setItem(AUTH_STORAGE_KEY, '1');
+                set({ isAuthenticated: true, user: { ...mockUser, username: username || mockUser.username, lastLogin: Date.now() } });
+                return { success: true };
+            }
+            return { success: false, error: 'Authentication failed' };
+        }
     },
 
     logout: () => {

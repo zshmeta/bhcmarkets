@@ -11,6 +11,16 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/binance-api/, ''),
       },
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/ws-market': {
+        target: 'ws://localhost:3001',
+        changeOrigin: true,
+        ws: true,
+      },
     },
   },
 })
