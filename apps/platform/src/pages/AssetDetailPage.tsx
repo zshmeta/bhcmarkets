@@ -1,13 +1,13 @@
-// @ts-nocheck
 import { useMemo, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWalletStore, selectBalances, selectAccount } from '../store/walletStore';
-import { useTradingStore } from '../store/tradingStore';
-import { useWatchlistStore } from '../store/watchlistStore';
-import { useAutomationStore } from '../store/automationStore';
-import { useI18n } from '../i18n';
-import { Icons, IconsName } from '../components-refactored/Icons';
-import { LineChart } from '../components-refactored/LineChart';
+import { useWalletStore, selectBalances, selectAccount } from '@repo/bhcm-ui/store';
+import { useTradingStore } from '@repo/bhcm-ui/store';
+import { useWatchlistStore } from '@repo/bhcm-ui/store';
+import { useAutomationStore } from '@repo/bhcm-ui/store';
+import { useI18n } from '@repo/bhcm-ui/i18n';
+import { Icons } from '@repo/bhcm-ui/core';
+import type { IconsName } from '@repo/bhcm-ui/core';
+import { LineChart } from '@repo/bhcm-ui/market';
 import Decimal from 'decimal.js';
 import {
   Container,
@@ -355,7 +355,7 @@ function PortfolioChartComponent({
   );
 }
 
-export const LegacyAssetDetailPage = () => {
+export const AssetDetailPage = () => {
   const { t: _t } = useI18n();
   const navigate = useNavigate();
 
@@ -366,13 +366,20 @@ export const LegacyAssetDetailPage = () => {
 
   const balances = useWalletStore(selectBalances);
   const account = useWalletStore(selectAccount);
-  const performanceMetrics = useWalletStore((state) => state.performanceMetrics);
-  const ledger = useWalletStore((state) => state.ledger);
+  const performanceMetricsStore = useWalletStore((state) => state.performanceMetrics);
+  const performanceMetrics = performanceMetricsStore ?? {
+    winRate: 0,
+    profitFactor: 0,
+    maxDrawdown: 0,
+    totalRealizedPnl: '0',
+  };
+
+  const ledger = useWalletStore((state) => state.ledger) ?? [];
   const positions = useTradingStore((state) => state.positions);
-  const orders = useTradingStore((state) => state.orders);
-  const triggers = useAutomationStore((state) => state.triggers);
-  const executionLogs = useAutomationStore((state) => state.executionLogs);
-  const symbols = useWatchlistStore((state) => state.symbols);
+  const orders = useTradingStore((state) => state.orders) ?? [];
+  const triggers = useAutomationStore((state) => state.triggers) ?? [];
+  const executionLogs = useAutomationStore((state) => state.executionLogs) ?? [];
+  const symbols = useWatchlistStore((state) => state.symbols) ?? [];
   const setSelectedSymbol = useWatchlistStore((state) => state.setSelectedSymbol);
 
   const getPosition = useCallback((symbol: string) => {
@@ -573,8 +580,8 @@ export const LegacyAssetDetailPage = () => {
             <MetricItem><MetricIcons><Icons name="check-circle" size="xs" /></MetricIcons><MetricContent><MetricValue $positive={totals.totalRealizedPnl >= 0} $negative={totals.totalRealizedPnl < 0}>{totals.totalRealizedPnl >= 0 ? '+' : ''}${totals.totalRealizedPnl.toFixed(2)}</MetricValue><MetricLabel>Realized P&L</MetricLabel></MetricContent></MetricItem>
             <MetricItem><MetricIcons><Icons name="activity" size="xs" /></MetricIcons><MetricContent><MetricValue $positive={totals.totalUnrealizedPnl >= 0} $negative={totals.totalUnrealizedPnl < 0}>{totals.totalUnrealizedPnl >= 0 ? '+' : ''}${totals.totalUnrealizedPnl.toFixed(2)}</MetricValue><MetricLabel>Unrealized P&L</MetricLabel></MetricContent></MetricItem>
             <MetricItem><MetricIcons><Icons name="target" size="xs" /></MetricIcons><MetricContent><MetricValue>{tradingStats.winRate.toFixed(1)}%</MetricValue><MetricLabel>Win Rate</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="bar-chart-2" size="xs" /></MetricIcons><MetricContent><MetricValue>{performanceMetrics.profitFactor.toFixed(2)}</MetricValue><MetricLabel>Profit Factor</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="trending-down" size="xs" /></MetricIcons><MetricContent><MetricValue $negative={performanceMetrics.maxDrawdown > 0}>{performanceMetrics.maxDrawdown.toFixed(2)}%</MetricValue><MetricLabel>Max Drawdown</MetricLabel></MetricContent></MetricItem>
+            <MetricItem><MetricIcons><Icons name="bar-chart-2" size="xs" /></MetricIcons><MetricContent><MetricValue>{(performanceMetrics?.profitFactor ?? 0).toFixed(2)}</MetricValue><MetricLabel>Profit Factor</MetricLabel></MetricContent></MetricItem>
+            <MetricItem><MetricIcons><Icons name="trending-down" size="xs" /></MetricIcons><MetricContent><MetricValue $negative={(performanceMetrics?.maxDrawdown ?? 0) > 0}>{(performanceMetrics?.maxDrawdown ?? 0).toFixed(2)}%</MetricValue><MetricLabel>Max Drawdown</MetricLabel></MetricContent></MetricItem>
             <MetricItem><MetricIcons><Icons name="repeat" size="xs" /></MetricIcons><MetricContent><MetricValue>{tradingStats.totalTrades}</MetricValue><MetricLabel>Total Trades</MetricLabel></MetricContent></MetricItem>
           </MetricsGrid>
         </HeroMain>
@@ -725,5 +732,3 @@ export const LegacyAssetDetailPage = () => {
     </Container>
   );
 }
-
-export { AssetDetailPage } from '../pages-modified/AssetDetailPage';

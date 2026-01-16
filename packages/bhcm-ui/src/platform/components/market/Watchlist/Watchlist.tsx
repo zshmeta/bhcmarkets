@@ -17,11 +17,14 @@ interface WatchlistProps {
 const Watchlist = ({ onSymbolChange, isCollapsed = false, compact: _compact = false }: WatchlistProps) => {
   const {
     symbols,
+    categories,
     selectedSymbol,
     favorites,
     pinned,
     searchQuery,
     showFavoritesOnly,
+    expandedCategories,
+    activeTab,
     getPosition,
     translations,
     inputRef,
@@ -30,25 +33,29 @@ const Watchlist = ({ onSymbolChange, isCollapsed = false, compact: _compact = fa
     handleClearSearch,
     handleToggleFavoritesFilter,
     toggleFavorite,
+    handleToggleCategory,
+    handleTabChange,
     handleKeyDown,
   } = useWatchlist(onSymbolChange);
 
   return (
     <WatchlistView
       symbols={symbols}
+      categories={categories}
       selectedSymbol={selectedSymbol}
       favorites={favorites}
-      pinned={pinned}
       searchQuery={searchQuery}
-      showFavoritesOnly={showFavoritesOnly}
+      expandedCategories={expandedCategories}
+      activeTab={activeTab}
       getPosition={getPosition}
       translations={translations}
       inputRef={inputRef}
       onSymbolSelect={handleSymbolSelect}
       onSearchChange={handleSearchChange}
       onClearSearch={handleClearSearch}
-      onToggleFavoritesFilter={handleToggleFavoritesFilter}
       onToggleFavorite={toggleFavorite}
+      onToggleCategory={handleToggleCategory}
+      onTabChange={handleTabChange}
       onKeyDown={handleKeyDown}
       isCollapsed={isCollapsed}
     />

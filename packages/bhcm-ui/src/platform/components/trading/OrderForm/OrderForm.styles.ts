@@ -20,7 +20,8 @@ const flashBorder = keyframes`
 export const Container = styled.div<{ $focused?: boolean }>`
   display: flex;
   flex-direction: column;
-  width: 360px;
+  width: 100%;
+  min-width: 300px;
   background: var(--bg-surface, #161B22);
   border: 1px solid var(--border-subtle, #30363D);
   border-radius: 8px;
@@ -31,11 +32,7 @@ export const Container = styled.div<{ $focused?: boolean }>`
   border: 1px solid var(--border-subtle, #30363D);
   border-radius: 8px;
   padding: 12px;
-  margin: 16px;
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-right: 0;
-  margin-left: 0;
+  margin: 0;
 
   .card-header {
     padding: 12px 16px;
@@ -413,7 +410,8 @@ export const SubmitBtn = styled.button<{ $side: 'buy' | 'sell'; disabled?: boole
 
   &:disabled {
     background: var(--bg-tertiary, #21262D);
-    color: var(--text-disabled, #484F58);
+    color: var(--text-secondary, #9AA5B1);
+    opacity: 0.7;
     cursor: not-allowed;
   }
   

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Trigger, TriggerStatus } from '../../../types/automation';
 import type { ExecutionLog } from '@repo/types/triggers';
+import { generateUUID } from '../utils/uuid';
 
 /* ═══════════════════════════════════════════════════════════
  * AUTOMATION STORE
@@ -42,7 +43,7 @@ export const useAutomationStore = create<AutomationState & AutomationActions>((s
     addTrigger: (triggerData) => {
         const newTrigger: Trigger = {
             ...triggerData,
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             createdAt: Date.now(),
         } as Trigger;
         set((state) => ({ triggers: [...state.triggers, newTrigger] }));

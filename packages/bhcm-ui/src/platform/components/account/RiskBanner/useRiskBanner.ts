@@ -169,9 +169,9 @@ const useRiskBanner = (): UseRiskBannerReturn => {
 
     const getRiskLabel = (level: RiskLevel): string => {
         switch (level) {
-            case 'low': return t.RiskBanner.low;
-            case 'medium': return t.RiskBanner.medium;
-            case 'high': return t.RiskBanner.high;
+            case 'low': return t.RiskBanner?.low || 'Low';
+            case 'medium': return t.RiskBanner?.medium || 'Medium';
+            case 'high': return t.RiskBanner?.high || 'High';
         }
     };
 
@@ -203,16 +203,16 @@ const useRiskBanner = (): UseRiskBannerReturn => {
 
     // Translations
     const translations: RiskBannerTranslations = {
-        title: t.RiskBanner.title,
-        low: t.RiskBanner.low,
-        medium: t.RiskBanner.medium,
-        high: t.RiskBanner.high,
-        positionRatio: t.RiskBanner.positionRatio,
-        unrealizedPnL: t.RiskBanner.unrealizedPnL,
-        winRate: t.RiskBanner.winRate,
-        profitFactor: t.RiskBanner.profitFactor,
-        maxDrawdown: t.RiskBanner.maxDrawdown,
-        totalRealizedPnl: t.RiskBanner.totalRealizedPnl,
+        title: t.RiskBanner?.title || 'Risk Analysis',
+        low: t.RiskBanner?.low || 'Low',
+        medium: t.RiskBanner?.medium || 'Medium',
+        high: t.RiskBanner?.high || 'High',
+        positionRatio: t.RiskBanner?.positionRatio || 'Position Ratio',
+        unrealizedPnL: t.RiskBanner?.unrealizedPnL || 'Unrealized P&L',
+        winRate: t.RiskBanner?.winRate || 'Win Rate',
+        profitFactor: t.RiskBanner?.profitFactor || 'Profit Factor',
+        maxDrawdown: t.RiskBanner?.maxDrawdown || 'Max Drawdown',
+        totalRealizedPnl: t.RiskBanner?.totalRealizedPnl || 'Total Realized P&L',
     };
 
     return {

@@ -1,17 +1,17 @@
 /* ═══════════════════════════════════════════════════════════
  * PRICE CHART - PUBLIC API
  * ═══════════════════════════════════════════════════════════
- * TradingView-style candlestick/line chart with indicators.
+ * Lightweight SVG-based chart for reliable rendering.
  * 
- *   // Option 1: Full component (contains chart refs)
- *   import { Chart } from '@/components-refactored/Chart';
- *   
- *   // Option 2: Hook only (for custom chart implementations)
- *   import { useChart } from '@/components-refactored/Chart';
+ * The SimpleChart is exported as Chart by default for stability.
+ * FullChart (using lightweight-charts) is available for advanced use.
  */
 
-// Full component (includes chart initialization)
-export { Chart } from './Chart';
+// Default: Lightweight SVG chart (stable, no heavy dependencies)
+export { Chart, SimpleChart } from './SimpleChart';
+
+// Full TradingView-style chart (may have performance issues)
+export { Chart as FullChart } from './Chart';
 export type { ChartType, TimeRange, Indicator } from './Chart';
 
 // Business logic hook (data fetching, calculations)
@@ -23,3 +23,4 @@ export type {
     PriceInfo,
     PriceLine,
 } from './useChart';
+

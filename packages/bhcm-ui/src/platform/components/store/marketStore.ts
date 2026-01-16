@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { DataConfidenceLevel, Level2BookData, MarketMetrics, Trade } from '../../../types/market';
 import type { NetworkEvent } from '../../../types/market';
+import { generateUUID } from '../utils/uuid';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -98,8 +99,10 @@ const buildBook = (mid: number, levels = 20) => {
 	return { bids, asks };
 };
 
+
+
 const nowTrade = (symbol: string, mid: number): Trade => ({
-	id: crypto.randomUUID(),
+	id: generateUUID(),
 	price: randomAround(mid, 5).toFixed(2),
 	quantity: (0.001 + Math.random() * 0.05).toFixed(4),
 	time: Date.now(),
@@ -332,14 +335,10 @@ export const selectRecentPositions = (state: MarketState) => state.RecentPositio
 export const selectTrades = selectRecentPositions;
 export const selectNetworkHealth = (state: MarketState) => state.networkHealth;
 
-export const selectBestBid = (state: MarketState) => ({ price: state.metrics?.bid || '0' });
-export const selectBestAsk = (state: MarketState) => ({ price: state.metrics?.ask || '0' });
+export const selectBestBid = (state: MarketState) => state.metrics?.bid || '0';
+export const selectBestAsk = (state: MarketState) => state.metrics?.ask || '0';
 
-export const selectDataConfidence = (state: MarketState) => ({
-	level: state.dataConfidence.level,
-	reason: state.dataConfidence.reason || '',
-	details: state.dataConfidence.details,
-});
+export const selectDataConfidence = (state: MarketState) => state.dataConfidence;
 
 export const selectLogs = (state: MarketState) => state.logs;
 

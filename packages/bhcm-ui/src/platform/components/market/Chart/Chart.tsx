@@ -89,7 +89,8 @@ const Chart = () => {
 
   const selectedSymbol = useWatchlistStore(selectSelectedSymbol);
   const triggers = useAutomationStore((state) => state.triggers);
-  const CurrentOrders = useTradingStore((state) => state.orders.filter(o => o.status === 'open'));
+  const orders = useTradingStore((state) => state.orders);
+  const CurrentOrders = useMemo(() => orders.filter(o => o.status === 'open'), [orders]);
 
   const [chartType, setChartType] = useState<ChartType>('candlestick');
   const [timeRange, setTimeRange] = useState<TimeRange>('15m');
@@ -106,11 +107,22 @@ const Chart = () => {
   const CACHE_TTL = 60000;
 
   const fetchKlines = useCallback(async (symbol: string, interval: string, retryCount = 0) => {
+    console.log('[Chart] fetchKlines called with', symbol, interval, retryCount);
     const cacheKey = `${symbol}-${interval}`;
     const cached = klinesCacheRef.current.get(cacheKey);
     const now = Date.now();
-    if (cached && now - cached.timestamp < CACHE_TTL) { setKlines(cached.data); setLoading(false); setError(null); return; }
-    if (klines.length === 0) setLoading(true);
+    
+    // Use cached data if fresh
+    if (cached && now - cached.timestamp < CACHE_TTL) { 
+      setKlines(cached.data); 
+      setLoading(false); 
+      setError(null); 
+      return; 
+    }
+    
+    // Only set loading if we don't have cached data (avoids flashing on refresh)
+    if (!cached) setLoading(true);
+    
     try {
       const url = `/binance-api/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=500`;
       const response = await fetch(url);
@@ -125,9 +137,9 @@ const Chart = () => {
       if (retryCount < 3) { setTimeout(() => fetchKlines(symbol, interval, retryCount + 1), 2000 * (retryCount + 1)); return; }
       setError(appError.message); setLoading(false);
     }
-  }, [klines.length]);
+  }, []);
 
-  useEffect(() => { if (selectedSymbol) fetchKlines(selectedSymbol, INTERVAL_MAP[timeRange]); }, [selectedSymbol, timeRange, fetchKlines]);
+  useEffect(() => { if (selectedSymbol) { console.log('[Chart] Fetching klines for', selectedSymbol, INTERVAL_MAP[timeRange]); fetchKlines(selectedSymbol, INTERVAL_MAP[timeRange]); } else { console.log('[Chart] No selectedSymbol, skipping fetch'); } }, [selectedSymbol, timeRange, fetchKlines]);
   useEffect(() => { if (!selectedSymbol) return; const i = setInterval(() => fetchKlines(selectedSymbol, INTERVAL_MAP[timeRange]), 60000); return () => clearInterval(i); }, [selectedSymbol, timeRange, fetchKlines]);
 
   const formatTime = useCallback((timestamp: number) => new Date(timestamp * 1000).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }), []);

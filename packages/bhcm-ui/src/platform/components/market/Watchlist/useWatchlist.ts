@@ -126,13 +126,20 @@ const useWatchlist = (
     const toggleCategoryAction = useWatchlistStore(state => state.toggleCategory);
     const setActiveTabAction = useWatchlistStore(state => state.setActiveTab);
 
+    // Create a stable key for symbols to prevent re-fetching when only prices change
+    const symbolListStr = useMemo(() => 
+        symbols.map(s => s.symbol).sort().join(','), 
+    [symbols]);
+
     // Price fetching effect (mock for now, will use real API)
     useEffect(() => {
         const fetchPrices = async () => {
             try {
-                if (symbols.length === 0) return;
-                const symbolList = symbols.map(s => s.symbol).join(',');
-                const response = await fetch(`/binance-api/api/v3/ticker/24hr?symbols=[${symbolList.split(',').map(s => `"${s}"`).join(',')}]`);
+                if (!symbolListStr) return;
+                // Parse symbols from the stable string to ensure we use current list
+                const currentSymbols = symbolListStr.split(',');
+                const queryParam = `[${currentSymbols.map(s => `"${s}"`).join(',')}]`;
+                const response = await fetch(`/binance-api/api/v3/ticker/24hr?symbols=${queryParam}`);
 
                 if (!response.ok) {
                     console.warn('Watchlist fetch failed:', response.status);
@@ -159,15 +166,20 @@ const useWatchlist = (
             clearTimeout(initialDelay);
             clearInterval(interval);
         };
-    }, [symbols, updateSymbolPrice]);
+    }, [symbolListStr, updateSymbolPrice]);
 
     // Position lookup
     const getPosition = useCallback((symbol: string): WatchlistPosition | undefined => {
         if (positions instanceof Map) {
-            return positions.get(symbol);
+            const pos = positions.get(symbol);
+            if (!pos) return undefined;
+            // The store position doesn't have unrealizedPnl, so we add a default
+            return { ...pos, unrealizedPnl: '0.00' };
         }
         if (typeof positions === 'object' && positions !== null) {
-            return (positions as Record<string, WatchlistPosition>)[symbol];
+            const pos = (positions as Record<string, any>)[symbol];
+            if (!pos) return undefined;
+            return { ...pos, unrealizedPnl: pos.unrealizedPnl || '0.00' };
         }
         return undefined;
     }, [positions]);

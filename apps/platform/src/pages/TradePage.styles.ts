@@ -81,6 +81,7 @@ export const SidebarContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 20px;
   height: 100%;
   overflow: hidden;
 

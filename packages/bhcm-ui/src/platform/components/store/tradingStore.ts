@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import Decimal from 'decimal.js';
 import type { PaperOrder, OrderSide, OrderType } from '../../../types/trading';
+import { generateUUID } from '../utils/uuid';
 
 export type PositionSide = 'long' | 'short';
 
@@ -38,7 +39,7 @@ interface TradingState {
 }
 
 const makePaperOrder = (partial: { symbol: string; side: OrderSide; type: OrderType; quantity: string; price?: string }): PaperOrder => ({
-	clientOrderId: crypto.randomUUID(),
+	clientOrderId: generateUUID(),
 	symbol: partial.symbol,
 	side: partial.side,
 	type: partial.type,

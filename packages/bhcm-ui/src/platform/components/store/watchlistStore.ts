@@ -68,9 +68,9 @@ const defaultSymbols: SymbolInfo[] = [
     { symbol: 'BNBUSDT', baseAsset: 'BNB', quoteAsset: 'USDT', price: '425.50', priceChange24h: 0.85, bidPrice: '425.40', askPrice: '425.60', sparklineData: generateSparkline(425, 0.5) },
     { symbol: 'SOLUSDT', baseAsset: 'SOL', quoteAsset: 'USDT', price: '105.35', priceChange24h: 5.2, bidPrice: '105.30', askPrice: '105.40', sparklineData: generateSparkline(105, 1) },
     { symbol: 'XRPUSDT', baseAsset: 'XRP', quoteAsset: 'USDT', price: '0.5234', priceChange24h: -0.5, bidPrice: '0.5233', askPrice: '0.5235', sparklineData: generateSparkline(0.52, -0.3) },
-    { symbol: 'EURUSD', baseAsset: 'EUR', quoteAsset: 'USD', price: '1.1636', priceChange24h: -0.06, bidPrice: '1.16363', askPrice: '1.16365', sparklineData: generateSparkline(1.16, -0.2) },
-    { symbol: 'GBPUSD', baseAsset: 'GBP', quoteAsset: 'USD', price: '1.3426', priceChange24h: -0.07, bidPrice: '1.34262', askPrice: '1.34263', sparklineData: generateSparkline(1.34, -0.3) },
-    { symbol: 'XAUUSD', baseAsset: 'XAU', quoteAsset: 'USD', price: '4589.37', priceChange24h: -0.80, bidPrice: '4589.37', askPrice: '4589.61', sparklineData: generateSparkline(4589, -0.5) },
+    { symbol: 'ADAUSDT', baseAsset: 'ADA', quoteAsset: 'USDT', price: '0.3934', priceChange24h: -0.06, bidPrice: '0.3933', askPrice: '0.3935', sparklineData: generateSparkline(0.39, -0.2) },
+    { symbol: 'DOGEUSDT', baseAsset: 'DOGE', quoteAsset: 'USDT', price: '0.1402', priceChange24h: -0.07, bidPrice: '0.1401', askPrice: '0.1403', sparklineData: generateSparkline(0.14, -0.3) },
+    { symbol: 'AVAXUSDT', baseAsset: 'AVAX', quoteAsset: 'USDT', price: '13.80', priceChange24h: -0.80, bidPrice: '13.79', askPrice: '13.81', sparklineData: generateSparkline(13.8, -0.5) },
 ];
 
 const defaultCategories: WatchlistCategory[] = [
@@ -82,12 +82,12 @@ const defaultCategories: WatchlistCategory[] = [
     {
         id: 'forex',
         label: 'Forex',
-        symbols: defaultSymbols.filter(s => ['EURUSD', 'GBPUSD'].includes(s.symbol)),
+        symbols: [], // Removed - Binance doesn't support Forex
     },
     {
         id: 'metals',
         label: 'Metals',
-        symbols: defaultSymbols.filter(s => ['XAUUSD'].includes(s.symbol)),
+        symbols: [], // Removed - Binance doesn't support Gold/USD
     },
     {
         id: 'crypto',

@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AdaptiveLayout } from '@repo/bhcm-ui/layout';
-import { TradePage } from './pages-modified/TradePage';
-import { MarketsPage } from './pages-modified/MarketsPage';
-import { WalletPage } from './pages-modified/WalletPage';
-import { AssetDetailPage } from './pages-modified/AssetDetailPage';
-import { OrdersPage } from './pages-modified/OrdersPage';
-import { SettingsPage } from './pages-modified/SettingsPage';
+import { TradePage } from './pages/TradePage';
+import { MarketsPage } from './pages/MarketsPage';
+import { WalletPage } from './pages/WalletPage';
+import { AssetDetailPage } from './pages/AssetDetailPage';
+import { OrdersPage } from './pages/OrdersPage';
+import { SettingsPage } from './pages/SettingsPage';
 // import { AuthOverlay } from './components/AuthOverlay';
 
 /**

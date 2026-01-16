@@ -1,11 +1,10 @@
-// @ts-nocheck
 import { useState, useEffect } from 'react';
-import { useAuthStore } from '../store/authStore';
-import { useI18n } from '../i18n';
-import { Icons } from '../components-refactored/Icons';
-import { Avatar } from '../components-refactored/Avatar';
+import { useAuthStore } from '@repo/bhcm-ui/store';
+import { useI18n } from '@repo/bhcm-ui/i18n';
+import { Icons } from '@repo/bhcm-ui/core';
+import { Avatar } from '@repo/bhcm-ui/account';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { MobileAccountPage } from '../pages/mobile';
+import { MobileAccountPage } from './mobile';
 import {
   Container,
   Sidebar,
@@ -41,7 +40,7 @@ import {
 
 type SettingsSection = 'profile' | 'security' | 'preferences';
 
-export const LegacySettingsPage = () => {
+export const SettingsPage = () => {
   const isMobile = useIsMobile();
   const { t, locale, setLocale } = useI18n();
   const { user, preferences, updateProfile, updateAvatar, updatePreferences, changePassword } = useAuthStore();
@@ -384,5 +383,3 @@ export const LegacySettingsPage = () => {
     </Container>
   );
 }
-
-export { SettingsPage } from '../pages-modified/SettingsPage';

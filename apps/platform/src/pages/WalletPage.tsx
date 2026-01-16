@@ -1,10 +1,9 @@
-// @ts-nocheck
 import { useState } from 'react';
-import { useWalletStore } from '../store/walletStore';
-import { useI18n } from '../i18n';
-import { Icons } from '../components-refactored/Icons';
+import { useWalletStore } from '@repo/bhcm-ui/store';
+import { useI18n } from '@repo/bhcm-ui/i18n';
+import { Icons } from '@repo/bhcm-ui/core';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { MobileWalletPage } from '../pages/mobile';
+import { MobileWalletPage } from './mobile';
 import {
     AccountOverviewCard,
     AssetBalancesPanel,
@@ -13,7 +12,7 @@ import {
     DepositDrawer,
     WithdrawDrawer,
     OnboardingGuide,
-} from '../components-refactored/Wallet';
+} from '@repo/bhcm-ui/account';
 import {
     Container,
     Header,
@@ -35,7 +34,7 @@ import {
 
 type WalletTab = 'overview' | 'spot' | 'funding' | 'history';
 
-export const LegacyWalletPage = () => {
+export const WalletPage = () => {
     const isMobile = useIsMobile();
     const { t } = useI18n();
     const stage = useWalletStore((state) => state.getOnboardingStage());
@@ -175,5 +174,3 @@ export const LegacyWalletPage = () => {
         </Container>
     );
 }
-
-export { WalletPage } from '../pages-modified/WalletPage';

@@ -1,12 +1,11 @@
-// @ts-nocheck
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useI18n } from '../i18n';
-import { LineChart } from '../components-refactored/LineChart';
-import { Icons, IconsName } from '../components-refactored/Icons';
-import { useWatchlistStore } from '../store/watchlistStore';
+import { useI18n } from '@repo/bhcm-ui/i18n';
+import { LineChart } from '@repo/bhcm-ui/market';
+import { Icons, IconsName } from '@repo/bhcm-ui/core';
+import { useWatchlistStore } from '@repo/bhcm-ui/store';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { MobileMarketsPage } from '../pages/mobile';
+import { MobileMarketsPage } from './mobile';
 import {
     fetchAllTickers,
     fetchLineChart,
@@ -87,7 +86,7 @@ interface MarketData {
     indicators: MarketIndicators | null;
 }
 
-export const LegacyMarketsPage = () => {
+export const MarketsPage = () => {
     const isMobile = useIsMobile();
 
     // Render mobile layout
@@ -508,5 +507,3 @@ export const LegacyMarketsPage = () => {
         </Container>
     );
 }
-
-export { MarketsPage } from '../pages-modified/MarketsPage';
