@@ -61,6 +61,8 @@ export const RightPanel = styled.div`
 export const CenterPanel = styled.div`
   display: flex !important;
   flex-direction: column !important;
+  height: 100%;
+  overflow: hidden;
 `;
 
 export const CenterPanelGroup = styled.div`
@@ -71,6 +73,8 @@ export const CenterPanelGroup = styled.div`
 export const ChartPanel = styled.div`
   display: flex !important;
   flex-direction: column !important;
+  height: 100%;
+  overflow: hidden;
 `;
 
 /* ═══════════════════════════════════════════════════════════
@@ -80,20 +84,24 @@ export const ChartPanel = styled.div`
 export const SidebarContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 20px;
+  gap: 4px;
+  padding: 4px;
   height: 100%;
+  min-height: 100%;
   overflow: hidden;
 
+  /* Watchlist: Fills remaining space */
   & > :first-child {
-    flex: 0 0 auto;
-    max-height: 50%;
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
   }
 
+  /* Level2Book: Fits content height */
   & > :last-child {
-    flex: 1 1 auto;
-    min-height: 11.25rem;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
     overflow: hidden;
   }
 `;

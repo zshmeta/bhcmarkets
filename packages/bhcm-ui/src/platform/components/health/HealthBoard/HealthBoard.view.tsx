@@ -168,11 +168,11 @@ const HealthBoardView = ({
     // Full panel
     return (
         <Container className="card" $degraded={!canTrustMetrics}>
-            <div className="card-header">
+            <div className="card-header" style={{ padding: '0.25rem 0.5rem', minHeight: '32px', fontSize: '12px' }}>
                 <span>{t.title}</span>
                 {!canTrustMetrics && (
-                    <ConfidenceBadge $level={confidenceLevel} title={confidenceReason}>
-                        <Icons name={confidenceLevel === 'stale' ? 'pause' : 'zap'} size="sm" />
+                    <ConfidenceBadge $level={confidenceLevel} title={confidenceReason} style={{ width: 16, height: 16, marginLeft: 8 }}>
+                        <Icons name={confidenceLevel === 'stale' ? 'pause' : 'zap'} size="xs" />
                     </ConfidenceBadge>
                 )}
             </div>

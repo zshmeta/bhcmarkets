@@ -149,8 +149,15 @@ export function Level2BookView({
     if (!bids || !asks) {
         return (
             <Container className="card">
-                <div className="card-header">
-                    <span className="card-title">{t.title}</span>
+                <div className="card-header" style={{ padding: '4px 6px' }}>
+                    <span className="card-title" style={{ 
+                        color: 'var(--accent, #3B82F6)', 
+                        fontWeight: 500,
+                        fontSize: '11px',
+                        letterSpacing: '0.02em'
+                    }}>
+                        {t.title}
+                    </span>
                 </div>
                 <Loading className="card-body">
                     <Spinner>
@@ -235,13 +242,24 @@ export function Level2BookView({
     return (
         <Container className="card" $compact={compact} $level={level as ConfidenceLevel}>
             {!compact && (
-                <div className="card-header">
-                    <span className="card-title">{t.title}</span>
+                <div className="card-header" style={{ padding: '4px 6px' }}>
+                    <span className="card-title" style={{ 
+                        color: 'var(--accent, #3B82F6)', 
+                        fontWeight: 500,
+                        fontSize: '11px',
+                        letterSpacing: '0.02em',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                    }}>
+                        <Icons name="book-open" size="xs" />
+                        {t.title}
+                    </span>
                     {level !== 'live' && (
                         <ConfidenceIcons title={reason}>
-                            {isResyncing && <Spinner><Icons name="refresh-cw" size="sm" /></Spinner>}
-                            {isStale && <Icons name="wifi-off" size="sm" />}
-                            {level === 'degraded' && <Icons name="alert-triangle" size="sm" />}
+                            {isResyncing && <Spinner><Icons name="refresh-cw" size="xs" /></Spinner>}
+                            {isStale && <Icons name="wifi-off" size="xs" />}
+                            {level === 'degraded' && <Icons name="alert-triangle" size="xs" />}
                         </ConfidenceIcons>
                     )}
                 </div>
@@ -256,7 +274,7 @@ export function Level2BookView({
                 {/* Asks (reversed so lowest ask is at bottom) */}
                 <AsksSection>
                     <ScrollContent>
-                        {asks.slice(compact ? -10 : undefined).reverse().map((lvl, i) => (
+                        {asks.slice(-3).reverse().map((lvl, i) => (
                             <PriceLevel
                                 key={`ask-${lvl.price}`}
                                 level={lvl}
@@ -288,7 +306,7 @@ export function Level2BookView({
                 {/* Bids */}
                 <BidsSection>
                     <ScrollContent>
-                        {bids.slice(0, compact ? 10 : undefined).map((lvl, i) => (
+                        {bids.slice(0, 3).map((lvl, i) => (
                             <PriceLevel
                                 key={`bid-${lvl.price}`}
                                 level={lvl}

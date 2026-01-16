@@ -73,58 +73,61 @@ const defaultSymbols: SymbolInfo[] = [
     { symbol: 'AVAXUSDT', baseAsset: 'AVAX', quoteAsset: 'USDT', price: '13.80', priceChange24h: -0.80, bidPrice: '13.79', askPrice: '13.81', sparklineData: generateSparkline(13.8, -0.5) },
 ];
 
+const stockSymbols: SymbolInfo[] = [
+    // US Stocks
+    { symbol: 'AAPL', baseAsset: 'AAPL', quoteAsset: 'USD', price: '178.50', priceChange24h: 1.25, bidPrice: '178.48', askPrice: '178.52', sparklineData: generateSparkline(178.5, 0.5) },
+    { symbol: 'MSFT', baseAsset: 'MSFT', quoteAsset: 'USD', price: '425.30', priceChange24h: 0.85, bidPrice: '425.28', askPrice: '425.32', sparklineData: generateSparkline(425, 0.2) },
+    { symbol: 'GOOGL', baseAsset: 'GOOGL', quoteAsset: 'USD', price: '140.20', priceChange24h: -0.42, bidPrice: '140.18', askPrice: '140.22', sparklineData: generateSparkline(140, -0.1) },
+    { symbol: 'AMZN', baseAsset: 'AMZN', quoteAsset: 'USD', price: '185.60', priceChange24h: 2.10, bidPrice: '185.58', askPrice: '185.62', sparklineData: generateSparkline(185, 0.8) },
+    { symbol: 'NVDA', baseAsset: 'NVDA', quoteAsset: 'USD', price: '875.40', priceChange24h: 3.45, bidPrice: '875.35', askPrice: '875.45', sparklineData: generateSparkline(875, 1.5) },
+    { symbol: 'TSLA', baseAsset: 'TSLA', quoteAsset: 'USD', price: '245.80', priceChange24h: -1.80, bidPrice: '245.75', askPrice: '245.85', sparklineData: generateSparkline(245, -0.5) },
+    // EU Stocks
+    { symbol: 'ASML', baseAsset: 'ASML', quoteAsset: 'EUR', price: '920.50', priceChange24h: 1.95, bidPrice: '920.40', askPrice: '920.60', sparklineData: generateSparkline(920, 0.6) },
+    { symbol: 'SAP', baseAsset: 'SAP', quoteAsset: 'EUR', price: '178.20', priceChange24h: 0.65, bidPrice: '178.15', askPrice: '178.25', sparklineData: generateSparkline(178, 0.3) },
+    { symbol: 'LVMH', baseAsset: 'LVMH', quoteAsset: 'EUR', price: '845.30', priceChange24h: -0.35, bidPrice: '845.20', askPrice: '845.40', sparklineData: generateSparkline(845, -0.2) },
+    { symbol: 'NESN', baseAsset: 'NESN', quoteAsset: 'CHF', price: '98.50', priceChange24h: 0.25, bidPrice: '98.45', askPrice: '98.55', sparklineData: generateSparkline(98.5, 0.1) },
+    { symbol: 'SIE', baseAsset: 'SIE', quoteAsset: 'EUR', price: '178.40', priceChange24h: 1.15, bidPrice: '178.35', askPrice: '178.45', sparklineData: generateSparkline(178, 0.4) },
+    { symbol: 'BMW', baseAsset: 'BMW', quoteAsset: 'EUR', price: '105.80', priceChange24h: -0.55, bidPrice: '105.75', askPrice: '105.85', sparklineData: generateSparkline(105, -0.3) },
+];
+
 const defaultCategories: WatchlistCategory[] = [
     {
-        id: 'popular',
-        label: 'Popular Markets',
-        symbols: defaultSymbols.slice(0, 4),
+        id: 'crypto',
+        label: 'Cryptocurrency',
+        symbols: defaultSymbols,
+    },
+    {
+        id: 'stocks',
+        label: 'Stocks',
+        symbols: stockSymbols,
     },
     {
         id: 'forex',
         label: 'Forex',
-        symbols: [], // Removed - Binance doesn't support Forex
-    },
-    {
-        id: 'metals',
-        label: 'Metals',
-        symbols: [], // Removed - Binance doesn't support Gold/USD
-    },
-    {
-        id: 'crypto',
-        label: 'Cryptocurrency',
-        symbols: defaultSymbols.filter(s => s.quoteAsset === 'USDT'),
+        symbols: [],
     },
     {
         id: 'indices',
         label: 'Indices',
         symbols: [],
-        children: [
-            { id: 'us-indices', label: 'US Indices', symbols: [] },
-            { id: 'eu-indices', label: 'EU Indices', symbols: [] },
-        ],
     },
     {
-        id: 'shares',
-        label: 'EU Shares',
+        id: 'commodities',
+        label: 'Commodities',
         symbols: [],
-        children: [
-            { id: 'germany', label: 'Germany', symbols: [] },
-            { id: 'switzerland', label: 'Switzerland', symbols: [] },
-            { id: 'france', label: 'France', symbols: [] },
-        ],
     },
 ];
 
 /* ─── Store ─── */
 export const useWatchlistStore = create<WatchlistState & WatchlistActions>((set) => ({
-    symbols: defaultSymbols,
+    symbols: [...defaultSymbols, ...stockSymbols],
     categories: defaultCategories,
     selectedSymbol: 'BTCUSDT',
-    favorites: ['BTCUSDT', 'ETHUSDT'],
+    favorites: ['BTCUSDT', 'ETHUSDT', 'AAPL', 'NVDA'],
     pinned: ['BTCUSDT'],
     searchQuery: '',
     showFavoritesOnly: false,
-    expandedCategories: new Set(['popular']),
+    expandedCategories: new Set(['crypto']),
     activeTab: 'all',
 
     setSelectedSymbol: (symbol) => set({ selectedSymbol: symbol }),
@@ -146,15 +149,14 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>((set)
     }),
 
     toggleCategory: (categoryId) => set((state) => {
-        const newExpanded = new Set(state.expandedCategories);
-        if (newExpanded.has(categoryId)) {
-            newExpanded.delete(categoryId);
-        } else {
+        const wasExpanded = state.expandedCategories.has(categoryId);
+        const newExpanded = new Set<string>();
+        if (!wasExpanded) {
             newExpanded.add(categoryId);
         }
         return { expandedCategories: newExpanded };
     }),
-
+    
     setActiveTab: (tab) => set({ activeTab: tab }),
 
     updateSymbolPrice: (symbol, price, change24h) => set((state) => ({

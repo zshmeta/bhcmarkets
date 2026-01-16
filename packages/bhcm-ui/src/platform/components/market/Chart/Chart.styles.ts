@@ -21,10 +21,11 @@ export const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
   background: var(--bg-secondary, #161B22);
-  border-radius: 0.375rem;
+  border-radius: 0;
   overflow: hidden;
   height: 100%;
-  min-height: 350px;
+  min-height: 0;
+  border: 1px solid var(--border-subtle, #262C36);
 
   @media (max-height: 900px) { min-height: 280px; }
   @media (max-width: 768px) { min-height: 150px; }
@@ -42,9 +43,10 @@ export const Toolbar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
+  padding: 0 0.5rem;
+  height: 36px;
   background: var(--bg-tertiary, #1C2128);
-  border-bottom: 1px solid var(--border-subtle, #262C36);
+  border-bottom: 1px solid var(--border, #30363D);
   gap: 0.5rem;
   flex-wrap: wrap;
   flex-shrink: 0;
@@ -142,7 +144,7 @@ export const ChartTypeBtn = styled.button<ActiveButtonProps>`
   border: none;
   color: var(--text-tertiary, #6E7681);
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: 0;
   transition: all 0.1s ease-out;
 
   &:hover { color: var(--text-secondary, #9AA5B1); background: var(--surface-hover, #262C36); }
@@ -167,7 +169,7 @@ export const TimeRangeBtn = styled.button<ActiveButtonProps>`
   font-weight: 500;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 0.25rem;
+  border-radius: 0;
   color: var(--text-tertiary, #6E7681);
   cursor: pointer;
   transition: all 0.1s ease-out;
@@ -190,8 +192,9 @@ export const ToolBtn = styled.button`
   justify-content: center;
   width: 28px; height: 28px;
   background: transparent;
-  border: 1px solid var(--border-subtle, #262C36);
-  border-radius: 0.25rem;
+  border: none;
+  border-left: 1px solid var(--border-subtle, #262C36);
+  border-radius: 0;
   color: var(--text-tertiary, #6E7681);
   cursor: pointer;
   transition: all 0.1s ease-out;
@@ -206,9 +209,10 @@ export const OhlcBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-  background: var(--bg-tertiary, #1C2128);
+  padding: 0 0.5rem;
+  background: var(--bg-secondary, #161B22);
   border-bottom: 1px solid var(--border-subtle, #262C36);
+  height: 32px;
   gap: 0.75rem;
   flex-wrap: wrap;
   min-height: 36px;

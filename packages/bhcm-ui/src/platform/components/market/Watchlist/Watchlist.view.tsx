@@ -1,6 +1,6 @@
 import { useMemo, memo } from 'react';
 import { Icons } from '../Icons';
-import {LineChart} from '../LineChart';
+import { LineChart } from '../LineChart/LineChart';
 import type { SymbolInfo, WatchlistCategory } from '../../store/watchlistStore';
 import type { WatchlistPosition, WatchlistTranslations } from './useWatchlist';
 import {
@@ -18,6 +18,7 @@ import {
     CategoryHeader,
     CategoryActions,
     CategoryBtn,
+    CategoryContent,
     SymbolRow,
     SymbolCell,
     FavoriteIcon,
@@ -96,14 +97,15 @@ const SymbolRowItem = memo(({
 
     return (
         <SymbolRow $selected={isSelected} onClick={onSelect}>
+            <FavoriteIcon
+                $active={isFavorite}
+                onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+                title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+                <StarIcon filled={isFavorite} />
+            </FavoriteIcon>
+
             <SymbolCell>
-                <FavoriteIcon
-                    $active={isFavorite}
-                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
-                    title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                >
-                    <StarIcon filled={isFavorite} />
-                </FavoriteIcon>
                 {isInWatchlist && (
                     <InWatchlistIcon title="In watchlist">
                         <CheckIcon />
@@ -145,7 +147,6 @@ SymbolRowItem.displayName = 'SymbolRowItem';
 interface CategorySectionProps {
     category: WatchlistCategory;
     isExpanded: boolean;
-    expandedCategories: Set<string>;
     selectedSymbol: string;
     favorites: string[];
     onToggleCategory: (id: string) => void;
@@ -157,7 +158,6 @@ interface CategorySectionProps {
 const CategorySection = memo(({
     category,
     isExpanded,
-    expandedCategories,
     selectedSymbol,
     favorites,
     onToggleCategory,
@@ -166,7 +166,6 @@ const CategorySection = memo(({
     nested = false,
 }: CategorySectionProps) => {
     const hasSymbols = category.symbols.length > 0;
-    const hasChildren = category.children && category.children.length > 0;
 
     return (
         <div>
@@ -178,20 +177,15 @@ const CategorySection = memo(({
                 <Icons name="play" size="xs" />
                 <span>{category.label}</span>
                 <CategoryActions onClick={(e) => e.stopPropagation()}>
-                    <CategoryBtn title="Options">
-                        <Icons name="layout-list" size="xs" />
+                    <CategoryBtn title="Add symbol">
+                        <Icons name="plus" size="xs" />
                     </CategoryBtn>
-                    {!nested && (
-                        <CategoryBtn title="Add symbol">
-                            <Icons name="plus" size="xs" />
-                        </CategoryBtn>
-                    )}
                 </CategoryActions>
             </CategoryHeader>
 
-            {isExpanded && (
-                <>
-                    {hasSymbols && category.symbols.map((symbol) => (
+            {isExpanded && hasSymbols && (
+                <CategoryContent>
+                    {category.symbols.map((symbol) => (
                         <SymbolRowItem
                             key={symbol.symbol}
                             symbol={symbol}
@@ -201,22 +195,7 @@ const CategorySection = memo(({
                             onToggleFavorite={() => onToggleFavorite(symbol.symbol)}
                         />
                     ))}
-
-                    {hasChildren && category.children!.map((child) => (
-                        <CategorySection
-                            key={child.id}
-                            category={child}
-                            isExpanded={expandedCategories.has(child.id)}
-                            expandedCategories={expandedCategories}
-                            selectedSymbol={selectedSymbol}
-                            favorites={favorites}
-                            onToggleCategory={onToggleCategory}
-                            onSymbolSelect={onSymbolSelect}
-                            onToggleFavorite={onToggleFavorite}
-                            nested
-                        />
-                    ))}
-                </>
+                </CategoryContent>
             )}
         </div>
     );
@@ -337,8 +316,8 @@ const WatchlistView = ({
     return (
         <Container className="card">
             {/* Header with title */}
-            <div className="card-header" style={{ padding: '0.625rem 0.75rem' }}>
-                <span className="card-title" style={{ color: 'var(--buy, #3FB950)', fontWeight: 600 }}>
+            <div className="card-header" style={{ padding: '0.25rem 0.25rem' }}>
+                <span className="card-title" style={{ color: 'var(--buy, #3FB950)', fontWeight: 400 }}>
                     <Icons name="bar-chart-3" size="sm" style={{ marginRight: '0.5rem' }} />
                     {t.title || 'Trade'}
                 </span>
@@ -395,7 +374,6 @@ const WatchlistView = ({
                             key={category.id}
                             category={category}
                             isExpanded={expandedCategories.has(category.id)}
-                            expandedCategories={expandedCategories}
                             selectedSymbol={selectedSymbol}
                             favorites={favorites}
                             onToggleCategory={onToggleCategory}

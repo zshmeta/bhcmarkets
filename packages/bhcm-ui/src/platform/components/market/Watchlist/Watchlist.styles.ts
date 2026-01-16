@@ -339,7 +339,7 @@ interface PriceChangeProps {
 }
 
 export const PriceChange = styled.span<PriceChangeProps>`
-  font-size: 10px;
+  font-size: 7px;
   font-weight: 600;
   line-height: 1;
 
@@ -435,8 +435,8 @@ interface TabProps {
 
 export const Tab = styled.button<TabProps>`
   flex: 1;
-  padding: 0.625rem 1rem;
-  font-size: 0.75rem;
+  padding: 4px 8px;
+  font-size: 10px;
   font-weight: 500;
   color: var(--text-tertiary, #6E7681);
   background: transparent;
@@ -444,6 +444,8 @@ export const Tab = styled.button<TabProps>`
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 
   &:hover {
     color: var(--text-secondary, #9AA5B1);
@@ -539,10 +541,10 @@ export const CategoryBtn = styled.button`
  */
 export const SymbolRow = styled.div<{ $selected?: boolean }>`
   display: grid;
-  grid-template-columns: auto 1fr 60px 50px 50px;
+  grid-template-columns: 14px minmax(50px, 1fr) 44px 50px 36px 36px;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
+  gap: 6px;
+  padding: 1px 6px;
   cursor: pointer;
   transition: background 0.1s;
   border-bottom: 1px solid var(--border-light, #21262D);
@@ -566,8 +568,31 @@ export const SymbolRow = styled.div<{ $selected?: boolean }>`
 export const SymbolCell = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 4px;
   min-width: 0;
+`;
+
+export const CategoryContent = styled.div`
+  max-height: 180px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
 `;
 
 export const FavoriteIcon = styled.button<{ $active?: boolean }>`
@@ -643,14 +668,14 @@ export const BidAskCell = styled.span<{ $type?: 'bid' | 'ask' }>`
  */
 export const TableHeader = styled.div`
   display: grid;
-  grid-template-columns: auto 1fr 60px 50px 50px;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.625rem;
+  grid-template-columns: 14px minmax(50px, 1fr) 44px 50px 36px 36px;
+  gap: 6px;
+  padding: 3px 6px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--text-tertiary, #6E7681);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border, #30363D);
   background: var(--surface, #1C2128);
 

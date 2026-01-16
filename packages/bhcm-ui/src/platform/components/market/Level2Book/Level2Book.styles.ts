@@ -56,35 +56,17 @@ interface ContainerProps {
 export const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
-  height: 100%;
   min-height: 0;
   overflow: hidden;
-  border: none !important;
+  border: 1px solid var(--border-subtle, #21262D);
+  border-radius: 0;
   background: var(--bg-secondary, #161B22);
-
-  ${({ $level }) =>
-    $level === 'degraded' &&
-    css`
-      border-color: var(--color-warning, #D29922);
-    `}
-
-  ${({ $level }) =>
-    $level === 'resyncing' &&
-    css`
-      border-color: #f97316;
-      position: relative;
-    `}
-
-  ${({ $level }) =>
-    $level === 'stale' &&
-    css`
-      border-color: var(--color-error, #F85149);
-    `}
 
   ${({ $compact }) =>
     $compact &&
     css`
       background: var(--bg-primary, #0D1117);
+      border: none;
     `}
 `;
 
@@ -106,12 +88,15 @@ export const Body = styled.div<{ $isStale?: boolean }>`
 export const Header = styled.div<{ $compact?: boolean }>`
   display: flex;
   justify-content: space-between;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.625rem; /* 10px */
-  color: var(--text-tertiary, #6E7681);
+  padding: 3px 6px;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-tertiary, #484F58);
   text-transform: uppercase;
+  font-family: monospace;
+  color: #0000CD;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border-subtle, #262C36);
+  border-bottom: 1px solid var(--border-subtle, #21262D);
   flex-shrink: 0;
 
   ${({ $compact }) =>
@@ -126,16 +111,12 @@ export const Header = styled.div<{ $compact?: boolean }>`
  * ═══════════════════════════════════════════════════════════
  */
 export const AsksSection = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   overflow: hidden;
-  justify-content: flex-end;
 `;
 
 export const BidsSection = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -143,9 +124,8 @@ export const BidsSection = styled.div`
 `;
 
 export const ScrollContent = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  scrollbar-width: thin;
+  overflow-y: hidden;
+  scrollbar-width: none;
   scrollbar-color: rgba(255, 255, 255, 0.06) transparent;
 
   &::-webkit-scrollbar {
@@ -178,25 +158,25 @@ export const Level = styled.div<LevelProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.1875rem 0.5rem; /* 3px */
+  padding: 1px 6px;
   position: relative;
-  height: 1.375rem; /* 22px */
+  height: 18px;
   cursor: pointer;
-  transition: background-color 0.1s ease-out;
+  transition: background-color 0.06s;
 
   &:hover {
-    background: var(--bg-hover, #262C36);
+    background: var(--bg-hover, #1C2128);
   }
 
   &:active {
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(59, 130, 246, 0.08);
   }
 
   ${({ $compact }) =>
     $compact &&
     css`
-      height: 1.25rem; /* 20px */
-      padding: 0.125rem 0.75rem;
+      height: 16px;
+      padding: 0 6px;
     `}
 `;
 
@@ -214,8 +194,8 @@ export const DepthBar = styled.div<DepthBarProps>`
   top: 0;
   bottom: 0;
   right: 0;
-  opacity: 0.25;
-  transition: width 0.3s ease-out;
+  opacity: 0.15;
+  transition: width 0.2s ease-out;
   width: ${({ $width }) => $width}%;
   background: ${({ $side }) =>
     $side === 'bid'
@@ -233,10 +213,11 @@ interface PriceProps {
 }
 
 export const Price = styled.span<PriceProps>`
-  font-size: 0.75rem;
+  font-size: 11px;
   font-weight: 500;
   z-index: 1;
   font-variant-numeric: tabular-nums;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   color: ${({ $side }) =>
     $side === 'bid'
       ? 'var(--color-price-up, #3FB950)'
@@ -245,20 +226,21 @@ export const Price = styled.span<PriceProps>`
   ${({ $compact }) =>
     $compact &&
     css`
-      font-size: 0.6875rem;
+      font-size: 10px;
     `}
 `;
 
 export const Quantity = styled.span<{ $compact?: boolean }>`
-  font-size: 0.75rem;
-  color: var(--text-secondary, #9AA5B1);
+  font-size: 11px;
+  color: var(--text-secondary, #8B949E);
   z-index: 1;
   font-variant-numeric: tabular-nums;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 
   ${({ $compact }) =>
     $compact &&
     css`
-      font-size: 0.6875rem;
+      font-size: 10px;
     `}
 `;
 
@@ -270,48 +252,48 @@ export const SpreadSection = styled.div<{ $compact?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--bg-tertiary, #1C2128);
-  border-top: 1px solid var(--border-subtle, #262C36);
-  border-bottom: 1px solid var(--border-subtle, #262C36);
+  gap: 1px;
+  padding: 0.5px 1px;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 
   ${({ $compact }) =>
     $compact &&
     css`
-      padding: 0.25rem 0.75rem;
-      background: var(--bg-secondary, #161B22);
+      padding: 1px 6px;
     `}
 `;
 
 export const SpreadLabel = styled.span`
-  font-size: 0.6875rem;
-  color: var(--text-tertiary, #6E7681);
+  font-size: 5px;
+  color: var(--text-tertiary, #484F58);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
 
 export const SpreadValue = styled.div<{ $compact?: boolean }>`
-  font-size: 0.75rem;
+  font-size: 7px;
   color: var(--text-primary, #E6EDF3);
-  font-weight: 500;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 
   ${({ $compact }) =>
     $compact &&
     css`
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-size: 11px;
     `}
 `;
 
 export const SpreadBps = styled.span<{ $compact?: boolean }>`
-  font-size: 0.6875rem;
-  color: var(--text-tertiary, #6E7681);
+  font-size: 5px;
+  color: var(--text-tertiary, #484F58);
+  margin-left: 4px;
 
   ${({ $compact }) =>
     $compact &&
     css`
-      font-size: 10px;
+      font-size: 9px;
     `}
 `;
 
@@ -344,21 +326,21 @@ export const ConfidenceBadge = styled.div<ConfidenceBadgeProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  border-radius: 0.25rem;
+  padding: 2px;
+  border-radius: 2px;
 
   ${({ $level }) =>
     $level === 'degraded' &&
     css`
       color: var(--color-warning, #D29922);
-      background: rgba(210, 153, 34, 0.15);
+      background: rgba(210, 153, 34, 0.12);
     `}
 
   ${({ $level }) =>
     $level === 'resyncing' &&
     css`
       color: #f97316;
-      background: rgba(249, 115, 22, 0.15);
+      background: rgba(249, 115, 22, 0.12);
 
       svg {
         animation: ${spin} 1s linear infinite;
@@ -369,7 +351,7 @@ export const ConfidenceBadge = styled.div<ConfidenceBadgeProps>`
     $level === 'stale' &&
     css`
       color: var(--color-error, #F85149);
-      background: rgba(248, 81, 73, 0.15);
+      background: rgba(248, 81, 73, 0.12);
       animation: ${pulse} 1s ease-in-out infinite;
     `}
 `;
@@ -429,14 +411,15 @@ export const EmbeddedColumn = styled.div`
 export const EmbeddedHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.625rem;
-  color: var(--text-tertiary, #6E7681);
+  padding: 3px 6px;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-tertiary, #484F58);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border-subtle, #262C36);
+  border-bottom: 1px solid var(--border-subtle, #21262D);
   flex-shrink: 0;
-  gap: 0.5rem;
+  gap: 4px;
 
   span:first-child {
     font-weight: 600;
@@ -472,19 +455,20 @@ export const EmbeddedSpread = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  padding: 0.5rem;
+  gap: 2px;
+  padding: 4px;
   background: var(--bg-tertiary, #1C2128);
-  border-left: 1px solid var(--border-subtle, #262C36);
-  border-right: 1px solid var(--border-subtle, #262C36);
-  min-width: 6.25rem; /* 100px */
+  border-left: 1px solid var(--border-subtle, #21262D);
+  border-right: 1px solid var(--border-subtle, #21262D);
+  min-width: 80px;
 `;
 
 export const EmbeddedSpreadValue = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 `;
 
 export const ConfidenceIcons = styled.div`
@@ -494,6 +478,6 @@ export const ConfidenceIcons = styled.div`
 `;
 
 export const EmbeddedLevel = styled(Level)`
-  height: 1.25rem; /* 20px */
-  padding: 0.125rem 0.5rem;
+  height: 16px;
+  padding: 0 6px;
 `;

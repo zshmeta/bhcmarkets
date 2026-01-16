@@ -48,10 +48,11 @@ export const Grid = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0;
+  padding: 0;
   overflow-x: auto;
   scrollbar-width: none;
+  min-height: 48px;
 
   &::-webkit-scrollbar {
     display: none;
@@ -77,6 +78,8 @@ export const MetricItem = styled.div<MetricItemProps>`
   border-right: 1px solid var(--border-subtle, #262C36);
   align-items: center;
   text-align: center;
+  justify-content: center;
+  height: 48px;
 
   &:last-child {
     border-right: none;
@@ -97,7 +100,7 @@ export const LabelRow = styled.div`
 
 export const Label = styled.span`
   font-size: 10px;
-  color: var(--text-tertiary, #6E7681);
+  color: var(--text-tertiary, #0000DD);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
@@ -200,7 +203,8 @@ export const DepthInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0 0.5rem;
+  height: 24px;
   border-top: 1px solid var(--border-subtle, #262C36);
   background: var(--bg-tertiary, #1C2128);
   font-size: 10px;

@@ -112,7 +112,7 @@ export const TradePage = () => {
                             </CatchError>
                             {!isSidebarCollapsed && (
                                 <CatchError name="RecentPositions" fallback={<PanelFallback name="TRADES" />}>
-                                    <RecentPositions onPriceClick={(price: string) => handlePriceClick(price)} />
+                                    <Level2Book onPriceClick={(price: string) => handlePriceClick(price)} />
                                 </CatchError>
                             )}
                         </SidebarContent>

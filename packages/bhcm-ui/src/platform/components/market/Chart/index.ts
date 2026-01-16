@@ -7,12 +7,12 @@
  * FullChart (using lightweight-charts) is available for advanced use.
  */
 
-// Default: Lightweight SVG chart (stable, no heavy dependencies)
-export { Chart, SimpleChart } from './SimpleChart';
-
-// Full TradingView-style chart (may have performance issues)
-export { Chart as FullChart } from './Chart';
+// Default: Full TradingView-style chart
+export { Chart } from './Chart';
 export type { ChartType, TimeRange, Indicator } from './Chart';
+
+// Lightweight SVG chart (stable, no heavy dependencies)
+export { SimpleChart } from './SimpleChart';
 
 // Business logic hook (data fetching, calculations)
 export { useChart } from './useChart';
