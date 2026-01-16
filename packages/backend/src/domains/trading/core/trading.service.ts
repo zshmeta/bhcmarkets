@@ -1,7 +1,7 @@
 
 import { AccountServiceInterface, CurrencyCode } from '../../account/core/account.types.js';
 import { EngineClient, PlaceOrderInput, EnginePlaceOrderResponse } from './engine.client.js';
-import { getSymbolDef } from '@repo/types/symbols';
+import { getSymbolDef } from '@repo/market-data/config/symbols.js';
 
 // Helper for safe decimal multiplication
 // TODO: Replace with BigInt/Decimal library for production precision

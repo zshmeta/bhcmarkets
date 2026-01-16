@@ -2,7 +2,7 @@
 import { TradingService } from './trading.service.js';
 import { AccountServiceInterface } from '../../account/core/account.types.js';
 import { EngineClient } from './engine.client.js';
-import { getSymbolDef } from '../../../../../market-data/src/config/symbols.js';
+import { getSymbolDef } from '@repo/market-data/config/symbols.js';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock dependencies
