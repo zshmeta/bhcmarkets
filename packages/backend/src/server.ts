@@ -30,6 +30,9 @@ import {
   createAccountRepository,
 } from "./domains/account/index.js";
 
+// Trading domain
+import { createTradingService } from "./domains/trading/index.js";
+
 // Risk domain - the house cannot fail!
 import {
   createRiskService,
@@ -77,6 +80,12 @@ const services = await (async () => {
   // --- Account Domain Setup (factory pattern) ---
   const accountRepository = createAccountRepository(pool);
   const accountService = createAccountService({ repository: accountRepository });
+
+  // --- Trading Domain Setup ---
+  const tradingService = createTradingService({
+    accountService,
+    engineBaseUrl: config.orderEngineUrl,
+  });
 
   // --- Risk Domain Setup ---
   // Risk service needs callbacks into Account and Position to check balances/positions.
@@ -151,6 +160,7 @@ const services = await (async () => {
   return {
     auth,
     account: accountService,
+    trading: tradingService,
     risk: riskService,
     tokenManager,
     sessionRepository,
