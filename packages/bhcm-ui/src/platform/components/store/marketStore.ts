@@ -74,6 +74,8 @@ interface MarketState {
 	networkHealth: NetworkHealthState | null;
 	logs: MarketLogEntry[];
 	clearLogs: () => void;
+	isLiveMode: boolean;
+	setLiveMode: (isLive: boolean) => void;
 
 	subscribe: (symbol: string) => void;
 	unsubscribe: () => void;
@@ -81,6 +83,7 @@ interface MarketState {
 
 let intervalId: number | null = null;
 let connectTimeoutId: number | null = null;
+let socket: WebSocket | null = null;
 
 const randomAround = (mid: number, widthBps: number) => {
 	const maxDelta = mid * (widthBps / 10000);
@@ -144,6 +147,8 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 		},
 	],
 	clearLogs: () => set({ logs: [] }),
+	isLiveMode: false,
+	setLiveMode: (isLive) => set({ isLiveMode: isLive }),
 	networkHealth: {
 		score: 45,
 		trend: 'stable',
@@ -162,10 +167,115 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 	},
 
 	subscribe: (symbol) => {
-		// Simulated feed: generate ticks locally so UI has behavior without backend.
-		if (intervalId) window.clearInterval(intervalId);
-		if (connectTimeoutId) window.clearTimeout(connectTimeoutId);
+		const currentState = get();
 
+		if (intervalId) {
+			window.clearInterval(intervalId);
+			intervalId = null;
+		}
+		if (connectTimeoutId) {
+			window.clearTimeout(connectTimeoutId);
+			connectTimeoutId = null;
+		}
+
+		// Close existing socket if new subscription requested or switching modes
+		if (socket) {
+			socket.close();
+			socket = null;
+		}
+
+		if (currentState.isLiveMode) {
+			set((state) => ({
+				connectionStatus: { ...state.connectionStatus, state: 'connecting', error: undefined },
+				dataConfidence: {
+					...state.dataConfidence,
+					level: 'resyncing',
+					reason: 'Connecting (live)',
+					details: { ...state.dataConfidence.details, wsConnected: false },
+				},
+				logs: [
+					...state.logs,
+					{
+						level: 'info',
+						category: 'market',
+						event: 'subscribe',
+						data: { symbol, mode: 'live' },
+						timestamp: Date.now(),
+					},
+				].slice(-200),
+			}));
+
+			try {
+				socket = new WebSocket('ws://localhost:3001/ws');
+
+				socket.addEventListener('open', () => {
+					if (socket?.readyState === WebSocket.OPEN) {
+						socket.send(JSON.stringify({ type: 'subscribe', symbols: [symbol] }));
+						set((state) => ({
+							connectionStatus: { ...state.connectionStatus, state: 'connected', lastMessageTime: Date.now() },
+							dataConfidence: {
+								...state.dataConfidence,
+								level: 'live',
+								reason: 'Live feed connected',
+								details: { ...state.dataConfidence.details, wsConnected: true, updateFrequencyOk: true },
+							},
+						}));
+					}
+				});
+
+				socket.addEventListener('message', (event) => {
+					try {
+						const msg = JSON.parse(event.data);
+						// For now, assume message structure matches store needs or needs mapping
+						// Based on requirements, handle Level2BookData and MarketMetrics
+						// If message type is not specified in requirements, assuming standard mapping.
+						
+						// Basic payload handler (to be refined)
+						if (msg.type === 'marketData' || msg.data) { // Example check
+							const data = msg.data || msg;
+							set((prev) => ({
+								// Update relevant fields
+								Level2Book: data.level2 || prev.Level2Book,
+								metrics: data.metrics ? { ...prev.metrics, ...data.metrics } : prev.metrics,
+								ticker: data.ticker || prev.ticker,
+								connectionStatus: {
+									...prev.connectionStatus,
+									lastMessageTime: Date.now(),
+									messageRate: (prev.connectionStatus.messageRate + 1) / 2, // Simple moving avg
+								}
+							}));
+						}
+					} catch (e) {
+						console.error('Failed to parse WS message', e);
+					}
+				});
+
+				socket.addEventListener('close', () => {
+					set((state) => ({
+						connectionStatus: { ...state.connectionStatus, state: 'disconnected' },
+						dataConfidence: {
+							...state.dataConfidence,
+							level: 'stale',
+							reason: 'Disconnected (live)',
+							details: { ...state.dataConfidence.details, wsConnected: false },
+						}
+					}));
+				});
+                
+                socket.addEventListener('error', () => {
+                    set((state) => ({
+                         connectionStatus: { ...state.connectionStatus, state: 'error', error: 'Connection failed' }
+                    }));
+                });
+
+			} catch (err) {
+				console.error('WS Connection error', err);
+			}
+
+			return;
+		}
+
+		// Simulated feed: generate ticks locally so UI has behavior without backend.
 		const start = Date.now();
 		set((state) => ({
 			connectionStatus: { ...state.connectionStatus, state: 'connecting', error: undefined },
@@ -304,6 +414,12 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 			window.clearTimeout(connectTimeoutId);
 			connectTimeoutId = null;
 		}
+		
+		if (socket) {
+			socket.close();
+			socket = null;
+		}
+
 		set((state) => ({
 			connectionStatus: { ...state.connectionStatus, state: 'disconnected', messageRate: 0 },
 			dataConfidence: {

@@ -32,4 +32,7 @@ export * from './health';
 // Automation and triggers
 export * from './automation';
 
+// API Client
+export * from './api';
+
 // Note: Help UI is exported via the layout/settings domains (e.g. HelpFAQ).
