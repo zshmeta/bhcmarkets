@@ -9,6 +9,7 @@ import type { Router } from "./types.js";
 import type { TokenManager, UserSessionRepository, AuthService } from "../domains/auth/index.js";
 import type { AccountServiceInterface } from "../domains/account/index.js";
 import type { RiskService } from "../domains/risk/index.js";
+import type { TradingService } from "../domains/trading/index.js";
 import { registerAuthRoutes } from "../domains/auth/index.js";
 import { registerAccountRoutes } from "../domains/account/index.js";
 import { registerAdminApiRoutes } from "../domains/admin/index.js";
@@ -21,6 +22,7 @@ export type ApiServices = {
 	tokenManager: TokenManager;
 	sessionRepository: UserSessionRepository;
 	account: AccountServiceInterface;
+	trading: TradingService;
 	risk: RiskService;
 	db: NodePgDatabase<Record<string, unknown>>;
 	dbHealth: DbHealth;
@@ -70,6 +72,7 @@ export function registerApiRoutes(router: Router, services: ApiServices, logger:
 	registerTradingRoutes(router, {
 		db: services.db,
 		tokenManager: services.tokenManager,
+		tradingService: services.trading,
 	}, logger);
 }
 

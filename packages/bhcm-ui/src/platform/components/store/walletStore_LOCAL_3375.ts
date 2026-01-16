@@ -56,13 +56,6 @@ export interface LedgerEntry {
 	createdAt: number;
 }
 
-export interface PerformanceMetrics {
-	winRate: number;
-	profitFactor: number;
-	maxDrawdown: number;
-	totalRealizedPnl: string;
-}
-
 export interface WalletAccount {
 	id: string;
 	createdAt: number;
@@ -89,7 +82,6 @@ interface WalletActions {
 	getOnboardingStage: () => OnboardingStage;
 	getTotalEquity: (prices: Record<string, string | number>) => string;
 	getFilteredLedger: (filter: LedgerFilter) => LedgerEntry[];
-	updatePerformanceMetrics: (prices: Record<string, string>) => void;
 
 	addPaymentMethod: (bankName: string, lastFour: string, alias?: string) => void;
 	removePaymentMethod: (id: string) => void;
@@ -132,6 +124,7 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 		winRate: 0,
 		profitFactor: 0,
 		maxDrawdown: 0,
+		totalRealizedPnl: '0',
 	},
 
 	createAccount: () => {
@@ -186,12 +179,6 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 		};
 
 		return ledger.filter((e) => by[filter](e.type));
-	},
-
-	updatePerformanceMetrics: (_prices) => {
-		// This store currently models a simulated wallet.
-		// Keep metrics stable unless/until real trade settlement is wired.
-		set((state) => ({ performanceMetrics: state.performanceMetrics }));
 	},
 
 	addPaymentMethod: (bankName, lastFour, alias) => {

@@ -1,7 +1,7 @@
 
 import { AccountServiceInterface, CurrencyCode } from '../../account/core/account.types.js';
 import { EngineClient, PlaceOrderInput, EnginePlaceOrderResponse } from './engine.client.js';
-import { getSymbolDef } from '@repo/types/symbols';
+import { getSymbolDef } from '@repo/market-data/config/symbols.js';
 
 // Helper for safe decimal multiplication
 // TODO: Replace with BigInt/Decimal library for production precision
@@ -54,11 +54,11 @@ export class TradingService {
     }
   }
 
-  async placeOrder(input: PlaceOrderInput): Promise<EnginePlaceOrderResponse> {
+  async placeOrder(userId: string, input: PlaceOrderInput): Promise<EnginePlaceOrderResponse> {
     const lock = this.calculateLockAmount(input);
 
-    // Note: input.accountId is treated as userId here to find the correct currency account
-    const account = await this.accountService.getAccount(input.accountId, lock.currency as CurrencyCode);
+    // Note: We use the userId to find the correct currency account dynamically
+    const account = await this.accountService.getAccount(userId, lock.currency as CurrencyCode);
 
     await this.accountService.lockFunds({
       accountId: account.id,
@@ -66,7 +66,10 @@ export class TradingService {
     });
 
     try {
-      const response = await this.engineClient.placeOrder(input);
+      const response = await this.engineClient.placeOrder({
+        ...input,
+        accountId: account.id,
+      });
 
       if (!response.success) {
         // Rollback lock if engine rejected

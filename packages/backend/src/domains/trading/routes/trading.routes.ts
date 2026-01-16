@@ -16,6 +16,7 @@ import type { TokenManager } from "../../auth/tokens/tokens.js";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { sql } from "drizzle-orm";
 import { extractBearerToken, verifyAccessToken } from "../../../api/middleware.js";
+import type { TradingService } from "../core/trading.service.js";
 
 // =============================================================================
 // TYPES
@@ -24,6 +25,7 @@ import { extractBearerToken, verifyAccessToken } from "../../../api/middleware.j
 export interface TradingRouteDependencies {
   db: NodePgDatabase<Record<string, unknown>>;
   tokenManager: TokenManager;
+  tradingService: TradingService;
 }
 
 interface Logger {
@@ -126,7 +128,56 @@ export function registerTradingRoutes(
   deps: TradingRouteDependencies,
   logger: Logger
 ): void {
-  const { db, tokenManager } = deps;
+  const { db, tokenManager, tradingService } = deps;
+
+  // ---------------------------------------------------------------------------
+  // POST /orders - Place a new order
+  // ---------------------------------------------------------------------------
+  router.route("POST", "/orders", async (ctx) => {
+    try {
+      const userId = await authenticateRequest(ctx, tokenManager);
+      const body = ctx.body as any; // Validation delegated to service mostly, but we check account
+
+      // Basic structure check
+      if (!body || typeof body !== 'object') {
+        return { status: 400, body: { error: "Invalid request body" } };
+      }
+      
+      const { accountId } = body;
+      if (!accountId) {
+        return { status: 400, body: { error: "accountId is required" } };
+      }
+
+      // Verify user owns the account
+      const accountResult = await db.execute(
+        sql`SELECT user_id FROM accounts WHERE id = ${accountId} LIMIT 1`
+      );
+      const account = accountResult.rows[0] as { user_id: string } | undefined;
+
+      if (!account || account.user_id !== userId) {
+        return { status: 403, body: { error: "Access denied to this account" } };
+      }
+
+      // Call trading service
+      // Note: service.placeOrder expects userId then PlaceOrderInput
+      const result = await tradingService.placeOrder(userId, body);
+
+      logger.info("order_placed", { userId, orderId: result.orderId });
+
+      return { status: 201, body: result };
+    } catch (error) {
+      if (typeof error === 'object' && error !== null && 'status' in error) {
+        return error as { status: number; body: unknown };
+      }
+      
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error("order_place_error", { error: errorMessage });
+      
+      // Assume service errors are validation/business logic errors (400)
+      // Internal errors should be caught differently ideally, but for now 400/500 distinction is loose
+      return { status: 400, body: { error: errorMessage } };
+    }
+  });
 
   // ---------------------------------------------------------------------------
   // GET /orders - List user's orders

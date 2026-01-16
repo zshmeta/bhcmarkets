@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import Decimal from 'decimal.js';
 import type { ChainType, LedgerFilter, LedgerType, OnboardingStage } from '../types/wallet';
-import { generateUUID } from '../utils/uuid';
 
 export interface WalletBalance {
 	asset: string;
@@ -56,13 +55,6 @@ export interface LedgerEntry {
 	createdAt: number;
 }
 
-export interface PerformanceMetrics {
-	winRate: number;
-	profitFactor: number;
-	maxDrawdown: number;
-	totalRealizedPnl: string;
-}
-
 export interface WalletAccount {
 	id: string;
 	createdAt: number;
@@ -76,12 +68,6 @@ interface WalletState {
 	deposits: DepositRecord[];
 	withdraws: WithdrawRecord[];
 	ledger: LedgerEntry[];
-	performanceMetrics: {
-		winRate: number;
-		profitFactor: number;
-		maxDrawdown: number;
-		totalRealizedPnl: string;
-	};
 }
 
 interface WalletActions {
@@ -89,7 +75,6 @@ interface WalletActions {
 	getOnboardingStage: () => OnboardingStage;
 	getTotalEquity: (prices: Record<string, string | number>) => string;
 	getFilteredLedger: (filter: LedgerFilter) => LedgerEntry[];
-	updatePerformanceMetrics: (prices: Record<string, string>) => void;
 
 	addPaymentMethod: (bankName: string, lastFour: string, alias?: string) => void;
 	removePaymentMethod: (id: string) => void;
@@ -100,8 +85,6 @@ interface WalletActions {
 	confirmDeposit: (depositId: string) => void;
 
 	createWithdraw: (asset: string, amount: string, destinationType: 'bank' | 'crypto', destinationId: string) => WithdrawRecord | null;
-
-	updatePerformanceMetrics: (prices: Record<string, string>) => void;
 }
 
 const ensureBalance = (balances: WalletBalance[], asset: string): WalletBalance => {
@@ -113,7 +96,7 @@ const ensureBalance = (balances: WalletBalance[], asset: string): WalletBalance 
 };
 
 const addLedger = (ledger: LedgerEntry[], entry: Omit<LedgerEntry, 'entryId'>) => {
-	ledger.unshift({ ...entry, entryId: generateUUID() });
+	ledger.unshift({ ...entry, entryId: crypto.randomUUID() });
 };
 
 export const useWalletStore = create<WalletState & WalletActions>((set, get) => ({
@@ -128,11 +111,6 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 	deposits: [],
 	withdraws: [],
 	ledger: [],
-	performanceMetrics: {
-		winRate: 0,
-		profitFactor: 0,
-		maxDrawdown: 0,
-	},
 
 	createAccount: () => {
 		set((state) => {
@@ -188,17 +166,11 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 		return ledger.filter((e) => by[filter](e.type));
 	},
 
-	updatePerformanceMetrics: (_prices) => {
-		// This store currently models a simulated wallet.
-		// Keep metrics stable unless/until real trade settlement is wired.
-		set((state) => ({ performanceMetrics: state.performanceMetrics }));
-	},
-
 	addPaymentMethod: (bankName, lastFour, alias) => {
 		set((state) => ({
 			paymentMethods: [
 				...state.paymentMethods,
-				{ id: generateUUID(), bankName, lastFour, alias },
+				{ id: crypto.randomUUID(), bankName, lastFour, alias },
 			],
 		}));
 	},
@@ -209,7 +181,7 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 		set((state) => ({
 			cryptoAddresses: [
 				...state.cryptoAddresses,
-				{ id: generateUUID(), chain, address, alias },
+				{ id: crypto.randomUUID(), chain, address, alias },
 			],
 		}));
 	},
@@ -219,7 +191,7 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 
 	createDeposit: (asset, amount, sourceType, sourceId) => {
 		const deposit: DepositRecord = {
-			depositId: generateUUID(),
+			depositId: crypto.randomUUID(),
 			asset,
 			amount,
 			sourceType,
@@ -289,7 +261,7 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 			bal.total = new Decimal(bal.total).minus(fee).toString();
 
 			const withdraw: WithdrawRecord = {
-				withdrawId: generateUUID(),
+				withdrawId: crypto.randomUUID(),
 				asset,
 				amount: amt.toString(),
 				destinationType,
@@ -349,19 +321,6 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 		}
 
 		return result;
-	},
-
-	updatePerformanceMetrics: (prices) => {
-		// Mock implementation for demo purposes
-		// In a real app, this would calculate stats from the ledger/trade history
-		set({
-			performanceMetrics: {
-				winRate: 65,
-				profitFactor: 1.5,
-				maxDrawdown: 12,
-				totalRealizedPnl: '450.00',
-			},
-		});
 	},
 }));
 

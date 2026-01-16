@@ -2,7 +2,7 @@
 import { TradingService } from './trading.service.js';
 import { AccountServiceInterface } from '../../account/core/account.types.js';
 import { EngineClient } from './engine.client.js';
-import { getSymbolDef } from '../../../../../market-data/src/config/symbols.js';
+import { getSymbolDef } from '@repo/market-data/config/symbols.js';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock dependencies
@@ -109,7 +109,7 @@ describe('TradingService', () => {
 
   describe('placeOrder', () => {
     const orderInput = {
-      accountId: 'u1',
+      accountId: 'provided-acc-id',
       symbol: 'BTC/USD',
       side: 'buy' as const,
       type: 'limit' as const,
@@ -133,7 +133,7 @@ describe('TradingService', () => {
     });
 
     it('should successfully place an order', async () => {
-      const result = await service.placeOrder(orderInput);
+      const result = await service.placeOrder('u1', orderInput);
 
       // 1. Calculate lock amount: 1 * 50000 = 50000 USD
       // 2. Get account
@@ -146,7 +146,10 @@ describe('TradingService', () => {
       });
 
       // 4. Call engine
-      expect(mockEngineClient.placeOrder).toHaveBeenCalledWith(orderInput);
+      expect(mockEngineClient.placeOrder).toHaveBeenCalledWith({
+        ...orderInput,
+        accountId: 'acc-usd-1',
+      });
 
       // 5. Return success
       expect(result).toEqual({ success: true, orderId: 'eng-1' });
@@ -156,7 +159,7 @@ describe('TradingService', () => {
       // Setup engine failure
       mockEngineClient.placeOrder.mockResolvedValue({ success: false, error: 'Engine error' });
 
-      const result = await service.placeOrder(orderInput);
+      const result = await service.placeOrder('u1', orderInput);
 
       // Verify lock happened
       expect(mockAccountService.lockFunds).toHaveBeenCalled();
@@ -174,7 +177,7 @@ describe('TradingService', () => {
     it('should throw if account fetch fails', async () => {
       mockAccountService.getAccount.mockRejectedValue(new Error('Account not found'));
 
-      await expect(service.placeOrder(orderInput)).rejects.toThrow('Account not found');
+      await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Account not found');
       
       // Verify no lock or engine call
       expect(mockAccountService.lockFunds).not.toHaveBeenCalled();
@@ -184,7 +187,7 @@ describe('TradingService', () => {
     it('should throw if lock funds fails', async () => {
       mockAccountService.lockFunds.mockRejectedValue(new Error('Insufficient balance'));
 
-      await expect(service.placeOrder(orderInput)).rejects.toThrow('Insufficient balance');
+      await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Insufficient balance');
 
       // Verify no engine call
       expect(mockEngineClient.placeOrder).not.toHaveBeenCalled();
@@ -195,7 +198,7 @@ describe('TradingService', () => {
       const networkError = new Error('Network timeout');
       mockEngineClient.placeOrder.mockRejectedValue(networkError);
 
-      await expect(service.placeOrder(orderInput)).rejects.toThrow('Network timeout');
+      await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Network timeout');
 
       // Verify lock happened
       expect(mockAccountService.lockFunds).toHaveBeenCalled();

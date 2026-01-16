@@ -76,12 +76,16 @@ interface WalletState {
 	deposits: DepositRecord[];
 	withdraws: WithdrawRecord[];
 	ledger: LedgerEntry[];
+<<<<<<< HEAD
 	performanceMetrics: {
 		winRate: number;
 		profitFactor: number;
 		maxDrawdown: number;
 		totalRealizedPnl: string;
 	};
+=======
+	performanceMetrics: PerformanceMetrics;
+>>>>>>> a7f459e7aee32731646702796565e339698b100a
 }
 
 interface WalletActions {
@@ -132,6 +136,11 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 		winRate: 0,
 		profitFactor: 0,
 		maxDrawdown: 0,
+<<<<<<< HEAD
+		totalRealizedPnl: '0',
+=======
+		totalRealizedPnl: '0.00',
+>>>>>>> a7f459e7aee32731646702796565e339698b100a
 	},
 
 	createAccount: () => {
