@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { useAuthStore } from '../../store/authStore';
-import { useWalletStore } from '../../store/walletStore';
-import { useMarketStore, selectMetrics } from '../../store/marketStore';
+import { useAuthStore } from '@repo/sdk';
+import { useWalletStore } from '@repo/sdk';
+import { useMarketStore, selectMetrics } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import Decimal from 'decimal.js';
 

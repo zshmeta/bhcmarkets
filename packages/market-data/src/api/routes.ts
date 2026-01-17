@@ -41,6 +41,9 @@ import { handleOnDemandRequest } from './ondemand.routes.js';
 
 const log = logger.child({ component: 'api' });
 
+// Track symbols currently being backfilled to prevent duplicate loops
+const activeBackfills = new Set<string>();
+
 /**
  * Dependencies for the API.
  */
@@ -162,17 +165,48 @@ export function createApiServer(deps: ApiDependencies): http.Server {
 
         const { timeframe, limit, to: toParam, from: fromParam } = queryResult.data;
 
-        // Time range defaults to last N candles if not specified
-        const to = toParam ?? Date.now();
-        const from = fromParam ?? (to - limit * TIMEFRAME_MS[timeframe]);
+        let candles;
 
-        const candles = await historicalService.getCandles({
-          symbol,
-          timeframe,
-          from,
-          to,
-          limit,
-        });
+        // If no explicit time range, use getRecentCandles which ignores time range
+        // and just returns the most recent N candles from the database
+        if (!fromParam && !toParam) {
+          candles = await historicalService.getRecentCandles(symbol, timeframe, limit);
+
+          // ON-DEMAND BACKFILL: If we don't have enough candles, trigger background backfill
+          // Return immediately with available data - don't block the response
+          if (candles.length < 500 && !activeBackfills.has(symbol)) {
+            log.info({ symbol, existingCount: candles.length }, 'Triggering background backfill');
+            activeBackfills.add(symbol);
+            // Run backfill in background (non-blocking)
+            setImmediate(async () => {
+              try {
+                // Loop up to 100 times to get 2-3 months of historical data
+                for (let i = 0; i < 100; i++) {
+                  const added = await historicalService.backfillSymbol(symbol, 1000, 50);
+                  if (added === 0) break;
+                  if (i % 10 === 9) log.info({ symbol, loop: i + 1 }, 'Backfill progress');
+                }
+                log.info({ symbol }, 'Background backfill complete');
+              } catch (err) {
+                log.error({ error: err, symbol }, 'Background backfill failed');
+              } finally {
+                activeBackfills.delete(symbol);
+              }
+            });
+          }
+        } else {
+          // Explicit time range - use time-based query
+          const to = toParam ?? Date.now();
+          const from = fromParam ?? (to - limit * TIMEFRAME_MS[timeframe]);
+
+          candles = await historicalService.getCandles({
+            symbol,
+            timeframe,
+            from,
+            to,
+            limit,
+          });
+        }
 
         // Also include current in-progress candle
         const currentCandle = historicalService.getCurrentCandle(symbol);

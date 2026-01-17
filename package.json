@@ -3,10 +3,13 @@
   "private": true,
   "packageManager": "bun@1.3.5",
   "scripts": {
-    "dev": "bun run dev:services & bun run dev:apps",
-    "dev:services": "bun run db:push && bun run --filter=@repo/backend dev",
+    "dev": "bun run dev:all",
+    "dev:all": "bun run --filter=@repo/market-data dev & sleep 5 && bun run --filter=@repo/backend dev & bun run dev:apps",
+    "dev:fresh": "bun run db:push && bun run dev:all",
+    "dev:services": "(bun run --filter=@repo/backend dev & bun run --filter=@repo/market-data dev)",
     "dev:apps": "bun run --filter='./apps/*' dev",
     "dev:backend": "bun run --filter=@repo/backend dev",
+    "dev:market-data": "bun run --filter=@repo/market-data dev",
     "dev:web": "bun run --filter=web dev",
     "dev:auth": "bun run --filter=auth dev",
     "dev:admin": "bun run --filter=admin dev",
@@ -26,7 +29,11 @@
     "db:generate": "bun run --filter=@repo/database db:generate",
     "db:migrate": "bun run --filter=@repo/database db:migrate",
     "db:push": "bun run --filter=@repo/database db:push",
-    "db:seed": "bun run --filter=@repo/backend db:seed"
+    "db:seed": "bun run --filter=@repo/backend db:seed",
+    "backfill": "bun run --filter=@repo/market-data backfill",
+    "backfill:crypto": "bun run --filter=@repo/market-data backfill crypto",
+    "backfill:forex": "bun run --filter=@repo/market-data backfill forex",
+    "backfill:stocks": "bun run --filter=@repo/market-data backfill stocks"
   },
   "workspaces": {
     "packages": [

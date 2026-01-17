@@ -30,15 +30,19 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@repo/sdk": "*",
     "@repo/types": "*",
     "decimal.js": "catalog:",
     "lightweight-charts": "^5.1.0",
     "lucide-react": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
     "styled-components": "catalog:",
     "uuid": "catalog:",
     "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router-dom": "catalog:"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "catalog:",
@@ -53,7 +57,11 @@
     "@types/react-dom": "catalog:",
     "@types/styled-components": "catalog:",
     "@types/uuid": "catalog:",
+
     "@vitejs/plugin-react-swc": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router-dom": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",
     "eslint-plugin-react-refresh": "catalog:",

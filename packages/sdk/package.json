@@ -1,0 +1,35 @@
+{
+  "name": "@repo/sdk",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . && bun run typecheck"
+  },
+  "dependencies": {
+    "@repo/types": "*",
+    "uuid": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  },
+  "devDependencies": {
+    "react": "catalog:",
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "@types/uuid": "catalog:",
+    "globals": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vite": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "vitest": "catalog:"
+  }
+}

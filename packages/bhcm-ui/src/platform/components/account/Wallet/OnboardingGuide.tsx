@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useWalletStore } from '../../store/walletStore';
-import { useAuthStore } from '../../store/authStore';
+import { useWalletStore } from '@repo/sdk';
+import { useAuthStore } from '@repo/sdk';
 import { useI18n, formatMessage } from '../../i18n';
 import { Icons } from '../Icons';
 import type { OnboardingStage } from '../../types/wallet';

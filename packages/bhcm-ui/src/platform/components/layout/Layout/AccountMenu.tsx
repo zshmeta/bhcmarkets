@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
 import {

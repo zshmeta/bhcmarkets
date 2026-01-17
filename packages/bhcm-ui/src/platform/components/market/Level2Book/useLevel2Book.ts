@@ -1,5 +1,5 @@
 import { useRef, useEffect, useMemo } from 'react';
-import { useMarketStore, selectLevel2Book, selectMetrics, selectDataConfidence } from '../../store/marketStore';
+import { useMarketStore, selectLevel2Book, selectMetrics, selectDataConfidence } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import type { Level2BookLevel } from '../../types/market';
 import type { ConfidenceLevel } from './Level2Book.styles';

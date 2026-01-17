@@ -2,16 +2,14 @@ import { useEffect, useState, useCallback } from 'react';
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { Level2Book } from '@repo/bhcm-ui/market';
 import { HealthBoard } from '@repo/bhcm-ui/health';
-import { RecentPositions } from '@repo/bhcm-ui/positions';
-import { OrderForm } from '@repo/bhcm-ui/trading';
-import { RiskBanner } from '@repo/bhcm-ui/account';
+import { OrderForm, WorkPanel } from '@repo/bhcm-ui/trading';
 import { Chart } from '@repo/bhcm-ui/market';
 import { Watchlist } from '@repo/bhcm-ui/market';
 import { Tabs } from '@repo/bhcm-ui/layout';
 import { CatchError } from '@repo/bhcm-ui/core';
-import { useMarketStore, selectLevel2Book } from '@repo/bhcm-ui/store';
-import { useTradingStore } from '@repo/bhcm-ui/store';
-import { useWatchlistStore, selectSelectedSymbol } from '@repo/bhcm-ui/store';
+import { useMarketStore, selectLevel2Book } from '@repo/sdk';
+import { useTradingStore } from '@repo/sdk';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import {
     Container,
@@ -111,7 +109,7 @@ export const TradePage = () => {
                                 <Watchlist onSymbolChange={handleSymbolChange} isCollapsed={isSidebarCollapsed} />
                             </CatchError>
                             {!isSidebarCollapsed && (
-                                <CatchError name="RecentPositions" fallback={<PanelFallback name="TRADES" />}>
+                                <CatchError name="OrderBook" fallback={<PanelFallback name="ORDER_BOOK" />}>
                                     <Level2Book onPriceClick={(price: string) => handlePriceClick(price)} />
                                 </CatchError>
                             )}
@@ -133,9 +131,6 @@ export const TradePage = () => {
                                                 <Chart />
                                             </CatchError>
                                         </ChartContainer>
-                                        <CatchError name="Metrics" fallback={<PanelFallback name="METRICS" />}>
-                                            <HealthBoard />
-                                        </CatchError>
                                     </ChartArea>
                                 </ChartPanel>
                             </Panel>
@@ -157,9 +152,9 @@ export const TradePage = () => {
                 <Panel defaultSize={18} minSize={12}>
                     <RightPanel>
                         <RightContent>
-                            <CatchError name="Risk" fallback={<PanelFallback name="RISK" />}>
-                                <RiskBanner />
-                            </CatchError>
+                            {/* <CatchError name="HealthBoard" fallback={<PanelFallback name="HEALTH_BOARD" />}>
+                                <HealthBoard />
+                            </CatchError> */}
                             <OrderFormWrapper>
                                 <CatchError name="OrderForm" fallback={<PanelFallback name="ORDER_ENTRY" />}>
                                     <OrderForm
@@ -171,7 +166,7 @@ export const TradePage = () => {
                             </OrderFormWrapper>
                             <Level2BookWrapper>
                                 <CatchError name="Level2Book" fallback={<PanelFallback name="Level2Book" />}>
-                                    <Level2Book onPriceClick={handlePriceClick} />
+                                    <WorkPanel />
                                 </CatchError>
                             </Level2BookWrapper>
                         </RightContent>

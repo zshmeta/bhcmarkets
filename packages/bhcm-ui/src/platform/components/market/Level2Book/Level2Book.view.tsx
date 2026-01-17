@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Icons } from '../../core/Icons';
-import { formatPrice, formatQuantity } from '../../utils';
+import { formatPrice, formatQuantity } from '../../../../../../sdk/utils';
 import type { Level2BookLevel } from '../../types/market';
 import type { Level2BookMetrics, DataConfidenceState } from './useLevel2Book';
 import {
@@ -150,8 +150,8 @@ export function Level2BookView({
         return (
             <Container className="card">
                 <div className="card-header" style={{ padding: '4px 6px' }}>
-                    <span className="card-title" style={{ 
-                        color: 'var(--accent, #3B82F6)', 
+                    <span className="card-title" style={{
+                        color: 'var(--accent, #3B82F6)',
                         fontWeight: 500,
                         fontSize: '11px',
                         letterSpacing: '0.02em'
@@ -243,8 +243,8 @@ export function Level2BookView({
         <Container className="card" $compact={compact} $level={level as ConfidenceLevel}>
             {!compact && (
                 <div className="card-header" style={{ padding: '4px 6px' }}>
-                    <span className="card-title" style={{ 
-                        color: 'var(--accent, #3B82F6)', 
+                    <span className="card-title" style={{
+                        color: 'var(--accent, #3B82F6)',
                         fontWeight: 500,
                         fontSize: '11px',
                         letterSpacing: '0.02em',
@@ -274,7 +274,7 @@ export function Level2BookView({
                 {/* Asks (reversed so lowest ask is at bottom) */}
                 <AsksSection>
                     <ScrollContent>
-                        {asks.slice(-3).reverse().map((lvl, i) => (
+                        {asks.slice(-5).reverse().map((lvl, i) => (
                             <PriceLevel
                                 key={`ask-${lvl.price}`}
                                 level={lvl}
@@ -306,7 +306,7 @@ export function Level2BookView({
                 {/* Bids */}
                 <BidsSection>
                     <ScrollContent>
-                        {bids.slice(0, 3).map((lvl, i) => (
+                        {bids.slice(0, 5).map((lvl, i) => (
                             <PriceLevel
                                 key={`bid-${lvl.price}`}
                                 level={lvl}

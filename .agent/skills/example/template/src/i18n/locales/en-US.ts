@@ -1,4 +1,4 @@
-import { Locale } from './zh-CN';
+import { Locale } from './en-US';
 
 export const enUS: Locale = {
   // Common
@@ -239,7 +239,7 @@ export const enUS: Locale = {
     vwap: 'VWAP',
     liquidityScore: 'Liquidity Score',
     slippageEst: 'Slippage Est.',
-    
+
     midPriceDesc: 'Middle price between best bid and ask',
     spreadDesc: 'Bid-ask spread (absolute/bps)',
     imbalanceDesc: 'Buy/sell pressure ratio (-1 to 1)',
@@ -794,7 +794,7 @@ export const enUS: Locale = {
     activeTriggers: 'Active',
     history: 'History',
     logs: 'Logs',
-    
+
     // Trigger types
     type: {
       conditional: 'Conditional',
@@ -802,7 +802,7 @@ export const enUS: Locale = {
       stopLoss: 'Stop Loss',
       alert: 'Alert',
     },
-    
+
     // Status
     status: {
       armed: 'Armed',
@@ -814,7 +814,7 @@ export const enUS: Locale = {
       cancelled: 'Cancelled',
       expired: 'Expired',
     },
-    
+
     // Form
     form: {
       symbol: 'Symbol',
@@ -838,7 +838,7 @@ export const enUS: Locale = {
       create: 'Create Strategy',
       cancel: 'Cancel',
     },
-    
+
     // Logs
     logDetails: {
       time: 'Time',
@@ -855,7 +855,7 @@ export const enUS: Locale = {
       RATE_LIMITED: 'Rate Limited',
       UNKNOWN_ERROR: 'Unknown Error',
     },
-    
+
     // Hints
     hints: {
       dataUnreliable: 'Data unreliable, execution paused.',

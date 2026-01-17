@@ -36,6 +36,7 @@ export interface Ticker {
 
 export interface Trade {
     id: string;
+    symbol?: string;
     price: string;
     quantity: string;
     time: number;

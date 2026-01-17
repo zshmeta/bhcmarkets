@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { zhCN, type Locale } from './locales/zh-CN';
+import { zhCN, type Locale } from './locales/en-US';
 import { enUS } from './locales/en-US';
 
-export type LocaleKey = 'zh-CN' | 'en-US';
+export type LocaleKey = 'en-US' | 'en-US';
 
 const locales: Record<LocaleKey, Locale> = {
-  'zh-CN': zhCN,
+  'en-US': zhCN,
   'en-US': enUS,
 };
 
@@ -19,7 +19,7 @@ interface I18nState {
 export const useI18n = create<I18nState>()(
   persist(
     (set) => ({
-      locale: 'zh-CN',
+      locale: 'en-US',
       setLocale: (locale: LocaleKey) => {
         set({ locale, t: locales[locale] });
       },
@@ -45,20 +45,20 @@ export function formatMessage(template: string, params: Record<string, string | 
 export function formatRelativeTime(timestamp: number, t: Locale['time']): string {
   const now = Date.now();
   const diff = now - timestamp;
-  
+
   if (diff < 5000) return t.justNow;
   if (diff < 60000) return t.secondsAgo.replace('{n}', String(Math.floor(diff / 1000)));
   if (diff < 3600000) return t.minutesAgo.replace('{n}', String(Math.floor(diff / 60000)));
   if (diff < 86400000) return t.hoursAgo.replace('{n}', String(Math.floor(diff / 3600000)));
-  
+
   const date = new Date(timestamp);
   const today = new Date();
   if (date.toDateString() === today.toDateString()) return t.today;
-  
+
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   if (date.toDateString() === yesterday.toDateString()) return t.yesterday;
-  
+
   return date.toLocaleDateString();
 }
 

@@ -1,6 +1,6 @@
 import { useMemo, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWalletStore } from '../../store/walletStore';
+import { useWalletStore } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
 import {

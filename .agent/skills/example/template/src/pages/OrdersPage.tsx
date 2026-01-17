@@ -13,7 +13,7 @@ type TabType = 'open' | 'history' | 'trades' | 'automation' | 'analytics';
 type TimeFilter = 'all' | '1d' | '7d' | '30d';
 
 // 格式化时间 - 使用传入的 locale 进行国际化
-function formatTime(timestamp: number, compact = false, locale = 'zh-CN'): string {
+function formatTime(timestamp: number, compact = false, locale = 'en-US'): string {
   if (compact) {
     return new Date(timestamp).toLocaleString(locale, {
       month: '2-digit',
@@ -80,7 +80,7 @@ function MiniSparkline({ data, color }: { data: number[]; color: 'green' | 'red'
   const range = max - min || 1;
   const width = 60;
   const height = 20;
-  
+
   const points = data.map((v, i) => {
     const x = (i / (data.length - 1)) * width;
     const y = height - ((v - min) / range) * height;
@@ -108,18 +108,18 @@ function MiniSparkline({ data, color }: { data: number[]; color: 'green' | 'red'
 }
 
 // 统计卡片组件
-function StatCard({ 
-  label, 
-  value, 
-  subValue, 
-  trend, 
-  icon, 
+function StatCard({
+  label,
+  value,
+  subValue,
+  trend,
+  icon,
   sparkData,
   sparkColor,
-  highlight 
-}: { 
-  label: string; 
-  value: string | number; 
+  highlight
+}: {
+  label: string;
+  value: string | number;
   subValue?: string;
   trend?: 'up' | 'down' | 'neutral';
   icon: IconName;
@@ -147,29 +147,29 @@ function StatCard({
 }
 
 // 订单表格行组件
-function OrderTableRow({ 
-  order, 
-  onCancel, 
+function OrderTableRow({
+  order,
+  onCancel,
   onViewDetails,
   compact: _compact = false,
-  locale = 'zh-CN',
-}: { 
-  order: PaperOrder; 
-  onCancel?: (id: string) => void; 
-  onViewDetails?: (order: PaperOrder) => void; 
+  locale = 'en-US',
+}: {
+  order: PaperOrder;
+  onCancel?: (id: string) => void;
+  onViewDetails?: (order: PaperOrder) => void;
   compact?: boolean;
   locale?: string;
 }) {
   const status = getStatusConfig(order.status);
   const canCancel = ['pending', 'open', 'partial'].includes(order.status);
   const isBuy = order.side === 'buy';
-  
+
   const filledValue = order.fills.reduce((sum, fill) => {
     return sum + parseFloat(fill.price) * parseFloat(fill.quantity);
   }, 0);
-  
-  const fillPercent = parseFloat(order.quantity) > 0 
-    ? (parseFloat(order.filledQty) / parseFloat(order.quantity)) * 100 
+
+  const fillPercent = parseFloat(order.quantity) > 0
+    ? (parseFloat(order.filledQty) / parseFloat(order.quantity)) * 100
     : 0;
 
   return (
@@ -204,7 +204,7 @@ function OrderTableRow({
         </div>
         {order.status === 'partial' && (
           <div className={styles.fillProgress}>
-            <div 
+            <div
               className={`${styles.fillProgressBar} ${isBuy ? styles.buy : styles.sell}`}
               style={{ width: `${fillPercent}%` }}
             />
@@ -225,7 +225,7 @@ function OrderTableRow({
       </td>
       <td className={styles.actionsCell}>
         {canCancel && onCancel && (
-          <button 
+          <button
             className={styles.cancelBtn}
             onClick={() => onCancel(order.clientOrderId)}
             title="Cancel Order"
@@ -234,7 +234,7 @@ function OrderTableRow({
           </button>
         )}
         {onViewDetails && (
-          <button 
+          <button
             className={styles.detailsBtn}
             onClick={() => onViewDetails(order)}
             title="View Details"
@@ -248,18 +248,18 @@ function OrderTableRow({
 }
 
 // 成交记录表格行
-function TradeTableRow({ 
-  fill, 
+function TradeTableRow({
+  fill,
   order,
-  locale = 'zh-CN',
-}: { 
-  fill: PaperOrder['fills'][0]; 
+  locale = 'en-US',
+}: {
+  fill: PaperOrder['fills'][0];
   order: PaperOrder;
   locale?: string;
 }) {
   const isBuy = order.side === 'buy';
   const value = parseFloat(fill.price) * parseFloat(fill.quantity);
-  
+
   return (
     <tr className={styles.tradeRow}>
       <td className={styles.timeCell}>
@@ -293,20 +293,20 @@ function TradeTableRow({
 }
 
 // 订单详情抽屉
-function OrderDetailDrawer({ 
-  order, 
+function OrderDetailDrawer({
+  order,
   onClose,
-  locale = 'zh-CN',
-}: { 
-  order: PaperOrder | null; 
+  locale = 'en-US',
+}: {
+  order: PaperOrder | null;
   onClose: () => void;
   locale?: string;
 }) {
   if (!order) return null;
-  
+
   const status = getStatusConfig(order.status);
   const isBuy = order.side === 'buy';
-  const filledValue = order.fills.reduce((sum, fill) => 
+  const filledValue = order.fills.reduce((sum, fill) =>
     sum + parseFloat(fill.price) * parseFloat(fill.quantity), 0);
   const totalFee = order.fills.reduce((sum, fill) => sum + parseFloat(fill.fee), 0);
 
@@ -319,7 +319,7 @@ function OrderDetailDrawer({
             <Icon name="x" size="sm" />
           </button>
         </div>
-        
+
         <div className={styles.drawerBody}>
           {/* Order Summary */}
           <div className={styles.detailSection}>
@@ -433,7 +433,7 @@ function OrderDetailDrawer({
 function AnalyticsPanel({ orders, trades }: { orders: PaperOrder[]; trades: { fill: PaperOrder['fills'][0]; order: PaperOrder }[] }) {
   // 计算各种统计数据
   const filledOrders = orders.filter(o => o.status === 'filled');
-  
+
   // 按交易对分组
   const bySymbol = useMemo(() => {
     const map = new Map<string, { volume: number; trades: number; fees: number }>();
@@ -460,11 +460,11 @@ function AnalyticsPanel({ orders, trades }: { orders: PaperOrder[]; trades: { fi
     return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0])).slice(-7);
   }, [trades]);
 
-  const totalVolume = trades.reduce((sum, { fill }) => 
+  const totalVolume = trades.reduce((sum, { fill }) =>
     sum + parseFloat(fill.price) * parseFloat(fill.quantity), 0);
   const totalFees = trades.reduce((sum, { fill }) => sum + parseFloat(fill.fee), 0);
   const avgOrderSize = trades.length > 0 ? totalVolume / trades.length : 0;
-  
+
   // 买卖比例
   const buyVolume = trades
     .filter(({ order }) => order.side === 'buy')
@@ -544,7 +544,7 @@ function AnalyticsPanel({ orders, trades }: { orders: PaperOrder[]; trades: { fi
               const height = maxVol > 0 ? (data.volume / maxVol) * 100 : 0;
               return (
                 <div key={date} className={styles.barWrapper}>
-                  <div 
+                  <div
                     className={styles.bar}
                     style={{ height: `${Math.max(height, 4)}%` }}
                     title={`${date}: ${formatUSD(data.volume)}`}
@@ -610,7 +610,7 @@ export function OrdersPage() {
   }
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<PaperOrder | null>(null);
-  
+
   const orders = useTradingStore((state) => state.orders);
   const cancelOrder = useTradingStore((state) => state.cancelOrder);
   const triggers = useAutomationStore((state) => state.triggers);
@@ -624,30 +624,30 @@ export function OrdersPage() {
   }, [timeFilter]);
 
   // 分类订单
-  const openOrders = useMemo(() => 
-    orders.filter(o => 
+  const openOrders = useMemo(() =>
+    orders.filter(o =>
       ['pending', 'submitted', 'open', 'partial'].includes(o.status) &&
       filterByTime(o.createdAt) &&
       (symbolFilter === 'all' || o.symbol === symbolFilter) &&
       (sideFilter === 'all' || o.side === sideFilter) &&
       (searchQuery === '' || o.symbol.toLowerCase().includes(searchQuery.toLowerCase()))
     ).sort((a, b) => b.createdAt - a.createdAt)
-  , [orders, filterByTime, symbolFilter, sideFilter, searchQuery]);
-  
-  const historyOrders = useMemo(() => 
-    orders.filter(o => 
+    , [orders, filterByTime, symbolFilter, sideFilter, searchQuery]);
+
+  const historyOrders = useMemo(() =>
+    orders.filter(o =>
       ['filled', 'cancelled', 'rejected'].includes(o.status) &&
       filterByTime(o.updatedAt) &&
       (symbolFilter === 'all' || o.symbol === symbolFilter) &&
       (sideFilter === 'all' || o.side === sideFilter) &&
       (searchQuery === '' || o.symbol.toLowerCase().includes(searchQuery.toLowerCase()))
     ).sort((a, b) => b.updatedAt - a.updatedAt)
-  , [orders, filterByTime, symbolFilter, sideFilter, searchQuery]);
-  
+    , [orders, filterByTime, symbolFilter, sideFilter, searchQuery]);
+
   // 所有成交记录
-  const allTrades = useMemo(() => 
+  const allTrades = useMemo(() =>
     orders
-      .filter(o => 
+      .filter(o =>
         o.fills.length > 0 &&
         (symbolFilter === 'all' || o.symbol === symbolFilter) &&
         (sideFilter === 'all' || o.side === sideFilter) &&
@@ -655,30 +655,30 @@ export function OrdersPage() {
       )
       .flatMap(order => order.fills.filter(fill => filterByTime(fill.time)).map(fill => ({ fill, order })))
       .sort((a, b) => b.fill.time - a.fill.time)
-  , [orders, filterByTime, symbolFilter, sideFilter, searchQuery]);
+    , [orders, filterByTime, symbolFilter, sideFilter, searchQuery]);
 
   // 唯一交易对列表
-  const uniqueSymbols = useMemo(() => 
+  const uniqueSymbols = useMemo(() =>
     [...new Set(orders.map(o => o.symbol))].sort()
-  , [orders]);
+    , [orders]);
 
   // 统计数据
   const stats = useMemo(() => {
     const filled = orders.filter(o => o.status === 'filled').length;
     const totalTrades = allTrades.length;
-    const totalVolume = allTrades.reduce((sum, { fill }) => 
+    const totalVolume = allTrades.reduce((sum, { fill }) =>
       sum + parseFloat(fill.price) * parseFloat(fill.quantity), 0);
     const totalFees = allTrades.reduce((sum, { fill }) => sum + parseFloat(fill.fee), 0);
-    const avgFillPrice = totalTrades > 0 
-      ? allTrades.reduce((sum, { fill }) => sum + parseFloat(fill.price), 0) / totalTrades 
+    const avgFillPrice = totalTrades > 0
+      ? allTrades.reduce((sum, { fill }) => sum + parseFloat(fill.price), 0) / totalTrades
       : 0;
-    
+
     // 最近一小时交易量
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
     const recentTrades = allTrades.filter(({ fill }) => fill.time > oneHourAgo);
-    const recentVolume = recentTrades.reduce((sum, { fill }) => 
+    const recentVolume = recentTrades.reduce((sum, { fill }) =>
       sum + parseFloat(fill.price) * parseFloat(fill.quantity), 0);
-    
+
     // 每日交易量趋势
     const dailyVolumes: number[] = [];
     for (let i = 6; i >= 0; i--) {
@@ -687,7 +687,7 @@ export function OrdersPage() {
       dayStart.setHours(0, 0, 0, 0);
       const dayEnd = new Date(dayStart);
       dayEnd.setDate(dayEnd.getDate() + 1);
-      
+
       const dayVolume = allTrades
         .filter(({ fill }) => fill.time >= dayStart.getTime() && fill.time < dayEnd.getTime())
         .reduce((sum, { fill }) => sum + parseFloat(fill.price) * parseFloat(fill.quantity), 0);
@@ -706,7 +706,7 @@ export function OrdersPage() {
       triggerCount: triggers.filter(t => t.enabled).length,
     };
   }, [orders, allTrades, openOrders.length, triggers]);
-  
+
   const handleCancel = (clientOrderId: string) => {
     cancelOrder(clientOrderId);
   };
@@ -730,45 +730,45 @@ export function OrdersPage() {
             </button>
           </div>
         </div>
-        
+
         {/* Stats Dashboard */}
         <div className={styles.statsGrid}>
-          <StatCard 
-            label="Open Orders" 
-            value={stats.openCount} 
+          <StatCard
+            label="Open Orders"
+            value={stats.openCount}
             icon="list"
             highlight={stats.openCount > 0}
           />
-          <StatCard 
-            label="Filled Orders" 
-            value={stats.filled} 
+          <StatCard
+            label="Filled Orders"
+            value={stats.filled}
             icon="check-circle"
           />
-          <StatCard 
-            label="Total Trades" 
-            value={stats.totalTrades} 
+          <StatCard
+            label="Total Trades"
+            value={stats.totalTrades}
             icon="activity"
           />
-          <StatCard 
-            label="Total Volume" 
-            value={formatUSD(stats.totalVolume)} 
+          <StatCard
+            label="Total Volume"
+            value={formatUSD(stats.totalVolume)}
             icon="bar-chart-2"
             sparkData={stats.dailyVolumes}
             sparkColor="blue"
           />
-          <StatCard 
-            label="1H Volume" 
-            value={formatUSD(stats.recentVolume)} 
+          <StatCard
+            label="1H Volume"
+            value={formatUSD(stats.recentVolume)}
             icon="clock"
           />
-          <StatCard 
-            label="Total Fees" 
-            value={`$${stats.totalFees.toFixed(2)}`} 
+          <StatCard
+            label="Total Fees"
+            value={`$${stats.totalFees.toFixed(2)}`}
             icon="percent"
           />
-          <StatCard 
-            label="Active Triggers" 
-            value={stats.triggerCount} 
+          <StatCard
+            label="Active Triggers"
+            value={stats.triggerCount}
             icon="zap"
             highlight={stats.triggerCount > 0}
           />
@@ -778,7 +778,7 @@ export function OrdersPage() {
       {/* Tabs & Filters */}
       <div className={styles.toolbar}>
         <div className={styles.tabs}>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'open' ? styles.active : ''}`}
             onClick={() => setActiveTab('open')}
           >
@@ -786,21 +786,21 @@ export function OrdersPage() {
             Open Orders
             {stats.openCount > 0 && <span className={styles.badge}>{stats.openCount}</span>}
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'history' ? styles.active : ''}`}
             onClick={() => setActiveTab('history')}
           >
             <Icon name="history" size="xs" />
             Order History
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'trades' ? styles.active : ''}`}
             onClick={() => setActiveTab('trades')}
           >
             <Icon name="repeat" size="xs" />
             Trade History
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'automation' ? styles.active : ''}`}
             onClick={() => setActiveTab('automation')}
           >
@@ -808,7 +808,7 @@ export function OrdersPage() {
             Automation
             {stats.triggerCount > 0 && <span className={styles.badge}>{stats.triggerCount}</span>}
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'analytics' ? styles.active : ''}`}
             onClick={() => setActiveTab('analytics')}
           >
@@ -822,7 +822,7 @@ export function OrdersPage() {
           <div className={styles.filters}>
             <div className={styles.searchWrapper}>
               <Icon name="search" size="xs" className={styles.searchIcon} />
-              <input 
+              <input
                 type="text"
                 className={styles.searchInput}
                 placeholder="Search symbol..."
@@ -830,8 +830,8 @@ export function OrdersPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
-            <select 
+
+            <select
               className={styles.filterSelect}
               value={symbolFilter}
               onChange={(e) => setSymbolFilter(e.target.value)}
@@ -842,7 +842,7 @@ export function OrdersPage() {
               ))}
             </select>
 
-            <select 
+            <select
               className={styles.filterSelect}
               value={sideFilter}
               onChange={(e) => setSideFilter(e.target.value as any)}
@@ -854,7 +854,7 @@ export function OrdersPage() {
 
             <div className={styles.timeFilters}>
               {(['all', '1d', '7d', '30d'] as TimeFilter[]).map(tf => (
-                <button 
+                <button
                   key={tf}
                   className={`${styles.timeFilter} ${timeFilter === tf ? styles.active : ''}`}
                   onClick={() => setTimeFilter(tf)}
@@ -895,8 +895,8 @@ export function OrdersPage() {
                 </thead>
                 <tbody>
                   {openOrders.map(order => (
-                    <OrderTableRow 
-                      key={order.clientOrderId} 
+                    <OrderTableRow
+                      key={order.clientOrderId}
                       order={order}
                       onCancel={handleCancel}
                       onViewDetails={setSelectedOrder}
@@ -935,8 +935,8 @@ export function OrdersPage() {
                 </thead>
                 <tbody>
                   {historyOrders.map(order => (
-                    <OrderTableRow 
-                      key={order.clientOrderId} 
+                    <OrderTableRow
+                      key={order.clientOrderId}
                       order={order}
                       onViewDetails={setSelectedOrder}
                       locale={locale}
@@ -971,7 +971,7 @@ export function OrdersPage() {
                 </thead>
                 <tbody>
                   {allTrades.map(({ fill, order }, index) => (
-                    <TradeTableRow 
+                    <TradeTableRow
                       key={`${order.clientOrderId}-${fill.time}-${index}`}
                       fill={fill}
                       order={order}
@@ -1018,8 +1018,8 @@ export function OrdersPage() {
       </div>
 
       {/* Order Detail Drawer */}
-      <OrderDetailDrawer 
-        order={selectedOrder} 
+      <OrderDetailDrawer
+        order={selectedOrder}
         onClose={() => setSelectedOrder(null)}
         locale={locale}
       />

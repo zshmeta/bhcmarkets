@@ -12,8 +12,9 @@ import {
     selectActiveTab,
     type SymbolInfo,
     type WatchlistCategory
-} from '../../store/watchlistStore';
-import { useTradingStore, selectPositions } from '../../store/tradingStore';
+} from '@repo/sdk';
+import { useTradingStore, selectPositions } from '@repo/sdk';
+import { useMarketStore } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 
 /* ═══════════════════════════════════════════════════════════
@@ -126,47 +127,81 @@ const useWatchlist = (
     const toggleCategoryAction = useWatchlistStore(state => state.toggleCategory);
     const setActiveTabAction = useWatchlistStore(state => state.setActiveTab);
 
-    // Create a stable key for symbols to prevent re-fetching when only prices change
-    const symbolListStr = useMemo(() => 
-        symbols.map(s => s.symbol).sort().join(','), 
-    [symbols]);
+    // Get marketStore subscribe function for syncing
+    const subscribeMarket = useMarketStore(state => state.subscribe);
 
-    // Price fetching effect (mock for now, will use real API)
+    // Sync marketStore with selectedSymbol (for Level2Book, OrderForm, HealthBar, etc.)
     useEffect(() => {
-        const fetchPrices = async () => {
-            try {
-                if (!symbolListStr) return;
-                // Parse symbols from the stable string to ensure we use current list
-                const currentSymbols = symbolListStr.split(',');
-                const queryParam = `[${currentSymbols.map(s => `"${s}"`).join(',')}]`;
-                const response = await fetch(`/binance-api/api/v3/ticker/24hr?symbols=${queryParam}`);
+        if (selectedSymbol) {
+            console.log('[Watchlist] Syncing marketStore with symbol:', selectedSymbol);
+            subscribeMarket(selectedSymbol);
+        }
+    }, [selectedSymbol, subscribeMarket]);
 
-                if (!response.ok) {
-                    console.warn('Watchlist fetch failed:', response.status);
-                    return;
-                }
+
+    // Get marketStore subscribe function handling both regular and list modes
+    const subscribeWatchlist = useMarketStore(state => state.subscribeWatchlist);
+
+    // Initial load of symbols and live subscription
+    useEffect(() => {
+        const loadSymbols = async () => {
+            try {
+                const response = await fetch('/market/symbols');
+                if (!response.ok) return;
 
                 const data = await response.json();
-                for (const ticker of data) {
-                    updateSymbolPrice(
-                        ticker.symbol,
-                        ticker.lastPrice,
-                        parseFloat(ticker.priceChangePercent)
-                    );
-                }
+                if (!data.symbols || !Array.isArray(data.symbols)) return;
+
+                // Sync store with API symbols
+                const existingSymbols = useWatchlistStore.getState().symbols;
+                const existingPriceMap = new Map(existingSymbols.map(s => [s.symbol, s]));
+
+                const symbolInfos: SymbolInfo[] = data.symbols.map((s: any) => ({
+                    symbol: s.symbol,
+                    baseAsset: s.base || s.symbol,
+                    quoteAsset: s.quote || 'USD',
+                    price: existingPriceMap.get(s.symbol)?.price || '0.00',
+                    priceChange24h: existingPriceMap.get(s.symbol)?.priceChange24h || 0,
+                    bidPrice: existingPriceMap.get(s.symbol)?.bidPrice || '0.00',
+                    askPrice: existingPriceMap.get(s.symbol)?.askPrice || '0.00',
+                    sparklineData: existingPriceMap.get(s.symbol)?.sparklineData,
+                }));
+
+                // Update store
+                const setSymbols = useWatchlistStore.getState().setSymbols;
+                setSymbols(symbolInfos);
+
+                // TRIGGER LIVE SUBSCRIPTION
+                const symbolsList = symbolInfos.map(s => s.symbol);
+                console.log('[Watchlist] Subscribing to live updates for', symbolsList.length, 'symbols');
+                subscribeWatchlist(symbolsList);
+
             } catch (err) {
-                console.error('Failed to fetch prices:', err);
+                console.error('[Watchlist] Failed to load symbols:', err);
             }
         };
 
-        const initialDelay = setTimeout(fetchPrices, 500);
-        const interval = setInterval(fetchPrices, 60000);
+        loadSymbols();
+    }, [subscribeWatchlist]);
 
-        return () => {
-            clearTimeout(initialDelay);
-            clearInterval(interval);
+    // Initial fetch of snapshot prices (for immediate display before WebSocket connects)
+    useEffect(() => {
+        const fetchOnce = async () => {
+            try {
+                const response = await fetch('/market/prices');
+                if (response.ok) {
+                    const data = await response.json();
+                    const prices = data.prices || {};
+                    for (const [symbol, priceData] of Object.entries(prices)) {
+                        const p = priceData as any;
+                        if (p.last) updateSymbolPrice(symbol, String(p.last), p.changePercent || 0);
+                    }
+                }
+            } catch (e) { /* ignore */ }
         };
-    }, [symbolListStr, updateSymbolPrice]);
+        fetchOnce();
+    }, [updateSymbolPrice]);
+
 
     // Position lookup
     const getPosition = useCallback((symbol: string): WatchlistPosition | undefined => {

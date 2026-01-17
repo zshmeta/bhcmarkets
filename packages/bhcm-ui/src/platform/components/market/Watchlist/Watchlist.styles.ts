@@ -178,11 +178,11 @@ export const Item = styled.div<ItemProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.25rem;
   cursor: pointer;
   transition: background 0.1s;
   border-bottom: 1px solid var(--border-light, #21262D);
-  min-height: 42px;
+  min-height: 22px;
 
   &:hover {
     background: var(--surface-hover, #262C36);
@@ -270,7 +270,7 @@ export const SymbolHeader = styled.div`
 
 export const SymbolName = styled.span`
   font-weight: 600;
-  font-size: 12px;
+  font-size: 7px;
   color: var(--text-primary, #E6EDF3);
   display: flex;
   align-items: center;
@@ -281,7 +281,7 @@ export const SymbolName = styled.span`
 `;
 
 export const SymbolQuote = styled.span`
-  font-size: 10px;
+  font-size: 7px;
   color: var(--text-tertiary, #6E7681);
   white-space: nowrap;
 `;
@@ -612,15 +612,15 @@ export const FavoriteIcon = styled.button<{ $active?: boolean }>`
   }
 `;
 
-export const InWatchlistIcon = styled.span`
-  color: var(--buy, #3FB950);
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-`;
+// export const InWatchlistIcon = styled.span`
+//   color: var(--buy, #3FB950);
+//   display: flex;
+//   align-items: center;
+//   flex-shrink: 0;
+// `;
 
 export const SymbolLabel = styled.span`
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-primary, #E6EDF3);
   white-space: nowrap;
@@ -629,7 +629,7 @@ export const SymbolLabel = styled.span`
 `;
 
 export const ChangeCell = styled.span<{ $positive?: boolean; $negative?: boolean }>`
-  font-size: 0.6875rem;
+  font-size: 0.6rem;
   font-weight: 500;
   text-align: right;
   white-space: nowrap;
@@ -654,7 +654,7 @@ export const SparklineCell = styled.div`
 `;
 
 export const BidAskCell = styled.span<{ $type?: 'bid' | 'ask' }>`
-  font-size: 0.6875rem;
+  font-size: 0.6rem;
   font-weight: 500;
   text-align: right;
   font-variant-numeric: tabular-nums;
@@ -669,8 +669,9 @@ export const BidAskCell = styled.span<{ $type?: 'bid' | 'ask' }>`
 export const TableHeader = styled.div`
   display: grid;
   grid-template-columns: 14px minmax(50px, 1fr) 44px 50px 36px 36px;
-  gap: 6px;
-  padding: 3px 6px;
+  gap: 3px;
+  text-align: right;
+  padding: 3px 3px;
   font-size: 9px;
   font-weight: 500;
   color: var(--text-tertiary, #6E7681);

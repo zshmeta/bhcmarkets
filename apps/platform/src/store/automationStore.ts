@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import type { Trigger, TriggerStatus } from '../types/automation';
+import type { Trigger, TriggerStatus } from '../../../../packages/bhcm-ui/src/types/automation';
+import type { ExecutionLog } from '@repo/types/triggers';
+import { generateUUID } from '../../../../packages/sdk/utils/uuid';
 
 /* ═══════════════════════════════════════════════════════════
  * AUTOMATION STORE
@@ -11,13 +13,7 @@ export interface AutomationState {
     /** All triggers */
     triggers: Trigger[];
     /** Execution history/logs */
-    executionLogs: Array<{
-        id: string;
-        triggerId: string;
-        executedAt: number;
-        result: 'success' | 'failed' | 'partial';
-        message?: string;
-    }>;
+    executionLogs: ExecutionLog[];
     /** Loading state */
     isLoading: boolean;
 }
@@ -37,7 +33,7 @@ export interface AutomationActions {
     clearLogs: () => void;
 }
 
-export const useAutomationStore = create<AutomationState & AutomationActions>((set, get) => ({
+export const useAutomationStore = create<AutomationState & AutomationActions>((set) => ({
     // State
     triggers: [],
     executionLogs: [],
@@ -47,7 +43,7 @@ export const useAutomationStore = create<AutomationState & AutomationActions>((s
     addTrigger: (triggerData) => {
         const newTrigger: Trigger = {
             ...triggerData,
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             createdAt: Date.now(),
         } as Trigger;
         set((state) => ({ triggers: [...state.triggers, newTrigger] }));

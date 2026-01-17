@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { createChart, IChartApi, ColorType, UTCTimestamp, LineSeries, CandlestickSeries, HistogramSeries, CrosshairMode } from 'lightweight-charts';
-import { handleApiError, logError } from '../../utils/errorHandler';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
-import { useAutomationStore } from '../../store/automationStore';
-import { useTradingStore } from '../../store/tradingStore';
+import { handleApiError, logError } from '../../../../../../sdk/utils/errorHandler';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
+import { useAutomationStore } from '@repo/sdk';
+import { useTradingStore } from '@repo/sdk';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
@@ -105,44 +105,100 @@ const Chart = () => {
   const toggleIndicator = useCallback((indicator: Indicator) => setActiveIndicators(prev => { const s = new Set(prev); s.has(indicator) ? s.delete(indicator) : s.add(indicator); return s; }), []);
   const klinesCacheRef = useRef<Map<string, { data: KlineData[]; timestamp: number }>>(new Map());
   const CACHE_TTL = 60000;
+  const MIN_CANDLES = 50; // Minimum candles required to render chart
 
   const fetchKlines = useCallback(async (symbol: string, interval: string, retryCount = 0) => {
     console.log('[Chart] fetchKlines called with', symbol, interval, retryCount);
     const cacheKey = `${symbol}-${interval}`;
     const cached = klinesCacheRef.current.get(cacheKey);
     const now = Date.now();
-    
-    // Use cached data if fresh
-    if (cached && now - cached.timestamp < CACHE_TTL) { 
-      setKlines(cached.data); 
-      setLoading(false); 
-      setError(null); 
-      return; 
+
+    // Use cached data if fresh AND has enough candles
+    if (cached && now - cached.timestamp < CACHE_TTL && cached.data.length >= MIN_CANDLES) {
+      setKlines(cached.data);
+      setLoading(false);
+      setError(null);
+      return;
     }
-    
-    // Only set loading if we don't have cached data (avoids flashing on refresh)
+
+    // Only set loading if we don't have cached data
     if (!cached) setLoading(true);
-    
+
+    // Encode symbol for URL (handles / in symbols like BTC/USD)
+    const encodedSymbol = encodeURIComponent(symbol);
+
     try {
-      const url = `/binance-api/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=500`;
-      const response = await fetch(url);
-      if (!response.ok) throw response;
+      // Use market-data service for ALL symbols - it handles routing to Binance/YFinance internally
+      const marketDataUrl = `/market/candles/${encodedSymbol}?timeframe=${interval}&limit=500`;
+      console.log('[Chart] Fetching from market-data service:', marketDataUrl);
+
+      const response = await fetch(marketDataUrl);
+
+      if (!response.ok) {
+        throw new Error(`Market data service returned ${response.status}`);
+      }
+
       const data = await response.json();
-      const formattedData: KlineData[] = data.map((k: (string | number)[]) => ({ time: Math.floor(Number(k[0]) / 1000) as UTCTimestamp, open: parseFloat(k[1] as string), high: parseFloat(k[2] as string), low: parseFloat(k[3] as string), close: parseFloat(k[4] as string), volume: parseFloat(k[5] as string) }));
+
+      if (!data.candles || data.candles.length === 0) {
+        throw new Error(`No candle data available for ${symbol}`);
+      }
+
+      const formattedData: KlineData[] = data.candles.map((c: any) => ({
+        time: Math.floor(c.timestamp / 1000) as UTCTimestamp,
+        open: c.open,
+        high: c.high,
+        low: c.low,
+        close: c.close,
+        volume: c.volume || 0,
+      }));
+
+      // Check if we have enough candles - if not, wait for backfill and retry
+      if (formattedData.length < MIN_CANDLES && retryCount < 5) {
+        console.log(`[Chart] Only ${formattedData.length} candles, waiting for backfill (attempt ${retryCount + 1}/5)`);
+        // Store what we have temporarily
+        if (formattedData.length > 0) {
+          klinesCacheRef.current.set(cacheKey, { data: formattedData, timestamp: now });
+          setKlines(formattedData); // Show partial data while waiting
+        }
+        // Retry after delay to allow backfill to complete
+        setTimeout(() => fetchKlines(symbol, interval, retryCount + 1), 3000 * (retryCount + 1));
+        return;
+      }
+
       klinesCacheRef.current.set(cacheKey, { data: formattedData, timestamp: now });
-      setKlines(formattedData); setError(null); setLoading(false);
+      setKlines(formattedData);
+      setError(null);
+      setLoading(false);
+      console.log('[Chart] Market-data returned', formattedData.length, 'candles');
+
     } catch (err) {
-      const appError = handleApiError(err); logError(appError);
-      if (cached) { setKlines(cached.data); setError(null); setLoading(false); return; }
-      if (retryCount < 3) { setTimeout(() => fetchKlines(symbol, interval, retryCount + 1), 2000 * (retryCount + 1)); return; }
-      setError(appError.message); setLoading(false);
+      console.error('[Chart] Fetch error:', err);
+
+      // Use cached data if available
+      if (cached) {
+        setKlines(cached.data);
+        setError(null);
+        setLoading(false);
+        return;
+      }
+
+      // Retry up to 3 times
+      if (retryCount < 3) {
+        setTimeout(() => fetchKlines(symbol, interval, retryCount + 1), 2000 * (retryCount + 1));
+        return;
+      }
+
+      setError(err instanceof Error ? err.message : 'Failed to load chart data');
+      setLoading(false);
     }
   }, []);
+
 
   useEffect(() => { if (selectedSymbol) { console.log('[Chart] Fetching klines for', selectedSymbol, INTERVAL_MAP[timeRange]); fetchKlines(selectedSymbol, INTERVAL_MAP[timeRange]); } else { console.log('[Chart] No selectedSymbol, skipping fetch'); } }, [selectedSymbol, timeRange, fetchKlines]);
   useEffect(() => { if (!selectedSymbol) return; const i = setInterval(() => fetchKlines(selectedSymbol, INTERVAL_MAP[timeRange]), 60000); return () => clearInterval(i); }, [selectedSymbol, timeRange, fetchKlines]);
 
-  const formatTime = useCallback((timestamp: number) => new Date(timestamp * 1000).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }), []);
+  const formatTime = useCallback((timestamp: number) => new Date(timestamp * 1000).toLocaleString('en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }), []);
 
   useEffect(() => {
     if (!mainChartRef.current) return;

@@ -1,4 +1,4 @@
-import { formatPrice, formatQuantity, clamp } from '../../utils';
+import { formatPrice, formatQuantity, clamp } from '../../../../../../sdk/utils';
 import type { DepthLevel, TradeIndicator } from './useDepthChart';
 import {
     Container,

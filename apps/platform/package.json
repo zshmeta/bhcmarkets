@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@repo/bhcm-ui": "*",
+    "@repo/sdk": "*",
     "decimal.js": "catalog:",
     "lucide-react": "catalog:",
     "react": "catalog:",

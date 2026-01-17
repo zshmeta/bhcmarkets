@@ -1,8 +1,8 @@
 import { useI18n } from '../../i18n';
-import { useAutomationStore } from '../../store/automationStore';
+import { useAutomationStore } from '@repo/sdk';
 import { Icons } from '../Icons';
 import { Trigger, TriggerStatus } from '@repo/types/triggers';
-import { formatTime } from '../../utils';
+import { formatTime } from '../../../../../../sdk/utils';
 import {
   Container, TriggerItem, Header, SymbolType, Symbol, Type, Status, StatusDot,
   Content, Condition, Action, BuyText, SellText, Footer, Time, Actions, ActionBtn,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuthStore } from '@repo/bhcm-ui/store';
+import { useAuthStore } from '@repo/sdk';
 import { useI18n } from '@repo/bhcm-ui/i18n';
 import { Icons } from '@repo/bhcm-ui/core';
 import { Avatar } from '@repo/bhcm-ui/account';
@@ -112,8 +112,8 @@ export const SettingsPage = () => {
     } else {
       setPasswordError(
         result.error === 'incorrectPassword'
-          ? (locale === 'zh-CN' ? '当前密码错误' : 'Current password is incorrect')
-          : (locale === 'zh-CN' ? '修改失败' : 'Failed to change password')
+          ? (locale === 'en-US' ? '当前密码错误' : 'Current password is incorrect')
+          : (locale === 'en-US' ? '修改失败' : 'Failed to change password')
       );
     }
   };
@@ -131,7 +131,7 @@ export const SettingsPage = () => {
     localStorage.setItem('theme', theme);
   };
 
-  const handleLanguageChange = (lang: 'zh-CN' | 'en-US') => {
+  const handleLanguageChange = (lang: 'en-US' | 'en-US') => {
     setLocale(lang);
     updatePreferences({ language: lang });
   };
@@ -146,7 +146,7 @@ export const SettingsPage = () => {
       <Container>
         <NotLoggedIn>
           <Icons name="user" size="xl" />
-          <p>{locale === 'zh-CN' ? '请先登录' : 'Please sign in first'}</p>
+          <p>{locale === 'en-US' ? '请先登录' : 'Please sign in first'}</p>
         </NotLoggedIn>
       </Container>
     );
@@ -169,7 +169,7 @@ export const SettingsPage = () => {
           </NavItem>
           <NavItem $active={activeSection === 'preferences'} onClick={() => setActiveSection('preferences')}>
             <Icons name="sliders" size="sm" />
-            <span>{locale === 'zh-CN' ? '偏好设置' : 'Preferences'}</span>
+            <span>{locale === 'en-US' ? '偏好设置' : 'Preferences'}</span>
           </NavItem>
         </Nav>
       </Sidebar>
@@ -196,25 +196,25 @@ export const SettingsPage = () => {
               <FormGroup>
                 <FieldLabel>{t.settings?.profile?.username || 'Username'}</FieldLabel>
                 <Input type="text" value={user.username} disabled />
-                <FieldHint>{locale === 'zh-CN' ? '用户名不可修改' : 'Username cannot be changed'}</FieldHint>
+                <FieldHint>{locale === 'en-US' ? '用户名不可修改' : 'Username cannot be changed'}</FieldHint>
               </FormGroup>
 
               <FormGroup>
-                <FieldLabel>{locale === 'zh-CN' ? '显示名称' : 'Display Name'}</FieldLabel>
+                <FieldLabel>{locale === 'en-US' ? '显示名称' : 'Display Name'}</FieldLabel>
                 <Input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder={locale === 'zh-CN' ? '输入昵称' : 'Enter display name'}
+                  placeholder={locale === 'en-US' ? '输入昵称' : 'Enter display name'}
                 />
               </FormGroup>
 
               <FormGroup>
-                <FieldLabel>{locale === 'zh-CN' ? '个人简介' : 'Bio'}</FieldLabel>
+                <FieldLabel>{locale === 'en-US' ? '个人简介' : 'Bio'}</FieldLabel>
                 <Textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder={locale === 'zh-CN' ? '介绍一下自己...' : 'Tell us about yourself...'}
+                  placeholder={locale === 'en-US' ? '介绍一下自己...' : 'Tell us about yourself...'}
                   rows={3}
                 />
               </FormGroup>
@@ -264,7 +264,7 @@ export const SettingsPage = () => {
               <CardTitle>{t.settings?.security?.changePassword || 'Change Password'}</CardTitle>
 
               <FormGroup>
-                <FieldLabel>{locale === 'zh-CN' ? '当前密码' : 'Current Password'}</FieldLabel>
+                <FieldLabel>{locale === 'en-US' ? '当前密码' : 'Current Password'}</FieldLabel>
                 <Input
                   type="password"
                   value={oldPassword}
@@ -274,7 +274,7 @@ export const SettingsPage = () => {
               </FormGroup>
 
               <FormGroup>
-                <FieldLabel>{locale === 'zh-CN' ? '新密码' : 'New Password'}</FieldLabel>
+                <FieldLabel>{locale === 'en-US' ? '新密码' : 'New Password'}</FieldLabel>
                 <Input
                   type="password"
                   value={newPassword}
@@ -303,7 +303,7 @@ export const SettingsPage = () => {
               {passwordSuccess && (
                 <SuccessMessage>
                   <Icons name="check-circle" size="sm" />
-                  <span>{locale === 'zh-CN' ? '密码修改成功' : 'Password changed successfully'}</span>
+                  <span>{locale === 'en-US' ? '密码修改成功' : 'Password changed successfully'}</span>
                 </SuccessMessage>
               )}
 
@@ -315,7 +315,7 @@ export const SettingsPage = () => {
             </Card>
 
             <Card>
-              <CardTitle>{locale === 'zh-CN' ? '账户信息' : 'Account Information'}</CardTitle>
+              <CardTitle>{locale === 'en-US' ? '账户信息' : 'Account Information'}</CardTitle>
               <InfoRow>
                 <InfoLabel>{t.settings?.profile?.accountCreated || 'Account Created'}</InfoLabel>
                 <InfoValue>{new Date(user.createdAt).toLocaleDateString()}</InfoValue>
@@ -332,8 +332,8 @@ export const SettingsPage = () => {
         {activeSection === 'preferences' && (
           <Section>
             <SectionHeader>
-              <SectionTitle>{locale === 'zh-CN' ? '偏好设置' : 'Preferences'}</SectionTitle>
-              <SectionDesc>{locale === 'zh-CN' ? '自定义您的界面和交易体验' : 'Customize your interface and trading experience'}</SectionDesc>
+              <SectionTitle>{locale === 'en-US' ? '偏好设置' : 'Preferences'}</SectionTitle>
+              <SectionDesc>{locale === 'en-US' ? '自定义您的界面和交易体验' : 'Customize your interface and trading experience'}</SectionDesc>
             </SectionHeader>
 
             <Card>
@@ -357,7 +357,7 @@ export const SettingsPage = () => {
             <Card>
               <CardTitle>{t.settings?.display?.language || 'Language'}</CardTitle>
               <OptionGroup>
-                <OptionBtn $selected={locale === 'zh-CN'} onClick={() => handleLanguageChange('zh-CN')}>
+                <OptionBtn $selected={locale === 'en-US'} onClick={() => handleLanguageChange('en-US')}>
                   <span>{t.language?.zh || '中文'}</span>
                 </OptionBtn>
                 <OptionBtn $selected={locale === 'en-US'} onClick={() => handleLanguageChange('en-US')}>
@@ -367,7 +367,7 @@ export const SettingsPage = () => {
             </Card>
 
             <Card>
-              <CardTitle>{locale === 'zh-CN' ? '默认报价币种' : 'Default Quote Asset'}</CardTitle>
+              <CardTitle>{locale === 'en-US' ? '默认报价币种' : 'Default Quote Asset'}</CardTitle>
               <OptionGroup>
                 <OptionBtn $selected={quoteAsset === 'USDT'} onClick={() => handleQuoteAssetChange('USDT')}>
                   <span>USDT</span>

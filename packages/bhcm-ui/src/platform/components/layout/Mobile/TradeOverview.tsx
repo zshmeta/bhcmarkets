@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useMarketStore, selectMetrics, selectDataConfidence } from '../../store/marketStore';
-import { useTradingStore } from '../../store/tradingStore';
-import { useWalletStore } from '../../store/walletStore';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
+import { useMarketStore, selectMetrics, selectDataConfidence } from '@repo/sdk';
+import { useTradingStore } from '@repo/sdk';
+import { useWalletStore } from '@repo/sdk';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
 import { RiskBanner } from '../RiskBanner';

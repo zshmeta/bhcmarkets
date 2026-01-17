@@ -1,8 +1,8 @@
 import { useMemo, useEffect } from 'react';
-import { useTradingStore } from '../../store/tradingStore';
-import { useWalletStore, selectBalances } from '../../store/walletStore';
-import { useMarketStore, selectMetrics, selectLevel2Book } from '../../store/marketStore';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
+import { useTradingStore } from '@repo/sdk';
+import { useWalletStore, selectBalances } from '@repo/sdk';
+import { useMarketStore, selectMetrics, selectLevel2Book } from '@repo/sdk';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 
 /* ═══════════════════════════════════════════════════════════

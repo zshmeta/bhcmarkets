@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useTradingStore } from '@repo/bhcm-ui/store';
-import { useAutomationStore } from '@repo/bhcm-ui/store';
+import { useTradingStore } from '@repo/sdk';
+import { useAutomationStore } from '@repo/sdk';
 import { useI18n } from '@repo/bhcm-ui/i18n';
 import { Icons, IconsName } from '@repo/bhcm-ui/core';
 import { useIsMobile } from '../hooks/useMediaQuery';
@@ -117,7 +117,7 @@ import {
 type TabType = 'open' | 'history' | 'trades' | 'automation' | 'analytics';
 type TimeFilterType = 'all' | '1d' | '7d' | '30d';
 
-function formatTime(timestamp: number, compact = false, locale = 'zh-CN'): string {
+function formatTime(timestamp: number, compact = false, locale = 'en-US'): string {
   if (compact) {
     return new Date(timestamp).toLocaleString(locale, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
   }

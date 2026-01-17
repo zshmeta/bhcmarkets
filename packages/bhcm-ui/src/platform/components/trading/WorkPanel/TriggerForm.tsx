@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useI18n } from '../../i18n';
-import { useAutomationStore } from '../../store/automationStore';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
+import { useAutomationStore } from '@repo/sdk';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import { toast } from '../Toast';
 import { TriggerType, TriggerOperator, CrossDirection, QuantityMode, TriggerCondition, TriggerAction } from '@repo/types/triggers';
 import { OrderSide, OrderType } from '@repo/types/trading';

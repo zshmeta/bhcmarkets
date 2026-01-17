@@ -67,22 +67,6 @@ Create a wrapper around `fetch` that:
 
 ---
 
-### Task 4: UI Integration (The Toggle)
-
-**Files:**
-- Modify: `apps/platform/src/pages/TradePage.tsx`
-- Modify: `apps/platform/src/components/Header.tsx` (or wherever the header is, likely `packages/bhcm-ui/.../Header.tsx` if it exists, otherwise check `apps/platform/src/App.tsx`).
-
-**Step 1: Add Toggle Button**
-- Add a visible switch "Paper / Live" in the header.
-- Bind it to `tradingStore.toggleTradingMode`.
-
-**Step 2: visual Indicators**
-- When in "Paper" mode, show a yellow badge "DEMO".
-- When in "Live" mode, show a green badge "LIVE".
-
----
-
 ### Task 5: Market Data Connection (Bonus/Hybrid)
 
 **Files:**

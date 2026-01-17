@@ -19,7 +19,7 @@ export type { HealthBoardViewProps } from './HealthBoard.view';
 
 // Business logic hook
 export { useHealthBoard } from './useHealthBoard';
-export { formatPrice, formatVolume } from '../../utils';
+export { formatPrice, formatVolume } from '../../../../../../sdk/utils';
 export type {
   UseHealthBoardReturn,
   MetricItem,

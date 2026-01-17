@@ -26,7 +26,7 @@ export interface User {
 }
 
 export interface UserPreferences {
-  language: 'zh-CN' | 'en-US';
+  language: 'en-US' | 'en-US';
   theme: 'light' | 'dark' | 'system';
   quoteAsset: 'USDT' | 'BTC';
   notifications: {
@@ -50,7 +50,7 @@ interface AuthState {
   isInitialized: boolean;
   isLoading: boolean;
   registeredUsers: RegisteredUsers;
-  
+
   // Actions
   register: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
@@ -63,7 +63,7 @@ interface AuthState {
 }
 
 const defaultPreferences: UserPreferences = {
-  language: 'zh-CN',
+  language: 'en-US',
   theme: 'dark',
   quoteAsset: 'USDT',
   notifications: {
@@ -84,22 +84,22 @@ export const useAuthStore = create<AuthState>()(
 
       register: async (username: string, password: string) => {
         set({ isLoading: true });
-        
+
         // Simulate network delay
         await new Promise((resolve) => setTimeout(resolve, 800));
-        
+
         const state = get();
-        
+
         // Check if username already exists
         if (state.registeredUsers[username.toLowerCase()]) {
           set({ isLoading: false });
           return { success: false, error: 'userExists' };
         }
-        
+
         const passwordHash = simpleHash(password);
         const userId = Math.random().toString(36).substring(2, 9);
         const now = Date.now();
-        
+
         const user: User = {
           id: userId,
           username,
@@ -126,34 +126,34 @@ export const useAuthStore = create<AuthState>()(
             },
           },
         }));
-        
+
         return { success: true };
       },
 
       login: async (username: string, password: string) => {
         set({ isLoading: true });
-        
+
         // Simulate network delay
         await new Promise((resolve) => setTimeout(resolve, 800));
-        
+
         const state = get();
         const registeredUser = state.registeredUsers[username.toLowerCase()];
-        
+
         if (!registeredUser) {
           set({ isLoading: false });
           return { success: false, error: 'invalidCredentials' };
         }
-        
+
         const passwordHash = simpleHash(password);
         if (registeredUser.passwordHash !== passwordHash) {
           set({ isLoading: false });
           return { success: false, error: 'invalidCredentials' };
         }
-        
+
         // Restore user data if available, or create minimal user object
         const existingUser = state.user?.id === registeredUser.userId ? state.user : null;
         const now = Date.now();
-        
+
         const user: User = existingUser ? {
           ...existingUser,
           lastLogin: now,
@@ -175,7 +175,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
           isLoading: false,
         });
-        
+
         return { success: true };
       },
 
@@ -188,9 +188,9 @@ export const useAuthStore = create<AuthState>()(
         import('./tradingStore').then(({ useTradingStore }) => {
           useTradingStore.getState().resetAccount();
         });
-        
-        set({ 
-          user: null, 
+
+        set({
+          user: null,
           isAuthenticated: false,
           isInitialized: false,
           // Keep preferences and registered users for next login
@@ -239,20 +239,20 @@ export const useAuthStore = create<AuthState>()(
         if (!state.user) {
           return { success: false, error: 'notLoggedIn' };
         }
-        
+
         const oldHash = simpleHash(oldPass);
         if (state.user.passwordHash !== oldHash) {
           return { success: false, error: 'incorrectPassword' };
         }
-        
+
         const newHash = simpleHash(newPass);
-        
+
         set((s) => {
           if (!s.user) return {};
           const usernameKey = s.user.username.toLowerCase();
           const registeredUser = s.registeredUsers[usernameKey];
           if (!registeredUser) return {};
-          
+
           return {
             user: { ...s.user, passwordHash: newHash },
             registeredUsers: {
@@ -264,7 +264,7 @@ export const useAuthStore = create<AuthState>()(
             },
           };
         });
-        
+
         return { success: true };
       },
 

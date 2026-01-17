@@ -1,8 +1,8 @@
 import { useI18n } from '../../i18n';
-import { useAutomationStore } from '../../store/automationStore';
+import { useAutomationStore } from '@repo/sdk';
 import { Icons } from '../Icons';
 import type { ExecutionLog } from '@repo/types/triggers';
-import { formatTime } from '../../utils';
+import { formatTime } from '../../../../../../sdk/utils';
 import { Container, LogItem, Header, Time, Result, Reason, Details, DetailItem, DetailLabel, OrderLink, ErrorMessage, EmptyState } from './ExecutionLogList.styles';
 
 /**

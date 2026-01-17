@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 
-export type LocaleKey = 'en-US' | 'zh-CN';
+export type LocaleKey = 'en-US' | 'en-US';
 export type Locale = LocaleKey;
 
 // Default translations - English
@@ -310,7 +310,7 @@ export const formatMessage = (template: string, params: Record<string, string | 
 const getInitialLocale = (): LocaleKey => {
     if (typeof window === 'undefined') return 'en-US';
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'en-US' || stored === 'zh-CN') return stored;
+    if (stored === 'en-US' || stored === 'en-US') return stored;
     return 'en-US';
 };
 

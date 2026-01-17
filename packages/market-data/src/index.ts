@@ -127,6 +127,11 @@ class MarketDataService {
       // Print summary
       this.printStartupSummary();
 
+      // NOTE: Automatic backfill disabled for fast startup.
+      // Historical data accumulates from live stream.
+      // Chart component has Binance fallback for crypto historical data.
+      // To manually trigger backfill, call: GET /api/backfill (to be implemented)
+
     } catch (error) {
       log.error({ error }, '❌ Failed to start service');
       await this.stop();
@@ -187,7 +192,7 @@ class MarketDataService {
 
     // 1. Database connection
     log.info('Connecting to database...');
-    await getDbClient({ connectionString : env.DATABASE_URL });
+    await getDbClient({ connectionString: env.DATABASE_URL });
     log.info('Database connected');
 
     // 1b. Redis connection (required for cache + pub/sub)

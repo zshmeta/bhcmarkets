@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useWalletStore, selectAccount, selectBalances } from '../../store/walletStore';
-import { useWatchlistStore, selectSymbols } from '../../store/watchlistStore';
+import { useWalletStore, selectAccount, selectBalances } from '@repo/sdk';
+import { useWatchlistStore, selectSymbols } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
 import Decimal from 'decimal.js';

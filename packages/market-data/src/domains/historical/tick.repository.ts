@@ -97,6 +97,17 @@ export class TickRepository {
     }
 
     try {
+      const metadata = {
+        type: 'candle',
+        timeframe: candle.timeframe,
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+        volume: candle.volume,
+        tickCount: candle.tickCount,
+      };
+
       await this.client`
         INSERT INTO market_prices (symbol, price, currency, source, timestamp, metadata)
         VALUES (
@@ -105,17 +116,9 @@ export class TickRepository {
           'USD',
           'aggregator',
           ${new Date(candle.timestamp)},
-          ${JSON.stringify({
-            type: 'candle',
-            timeframe: candle.timeframe,
-            open: candle.open,
-            high: candle.high,
-            low: candle.low,
-            close: candle.close,
-            volume: candle.volume,
-            tickCount: candle.tickCount,
-          })}
+          ${metadata}
         )
+        ON CONFLICT (symbol, timestamp) DO NOTHING
       `;
 
       log.debug({
@@ -140,7 +143,8 @@ export class TickRepository {
         currency: 'USD',
         source: 'aggregator',
         timestamp: new Date(candle.timestamp),
-        metadata: JSON.stringify({
+        // Store as object, not string - postgres driver will handle JSONB conversion
+        metadata: {
           type: 'candle',
           timeframe: candle.timeframe,
           open: candle.open,
@@ -149,19 +153,16 @@ export class TickRepository {
           close: candle.close,
           volume: candle.volume,
           tickCount: candle.tickCount,
-        }),
+        },
       }));
 
       // Use a transaction for batch insert
-      await this.client.begin(async (tx) => {
-        const sql = tx as unknown as PostgresClient;
-        for (const v of values) {
-          await sql`
-            INSERT INTO market_prices (symbol, price, currency, source, timestamp, metadata)
-            VALUES (${v.symbol}, ${v.price}, ${v.currency}, ${v.source}, ${v.timestamp}, ${v.metadata})
-          `;
+      // Optimized bulk insert using postgres.js helper for better performance
+      await this.client`
+        INSERT INTO market_prices ${this.client(values, 'symbol', 'price', 'currency', 'source', 'timestamp', 'metadata')
         }
-      });
+        ON CONFLICT (symbol, timestamp) DO NOTHING
+      `;
 
       log.info({ count: candles.length }, 'Candle batch saved');
     } catch (error) {

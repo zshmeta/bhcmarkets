@@ -17,7 +17,7 @@ export const AuthPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { login, register, isAuthenticated, isLoading, isInitialized, markAsInitialized } = useAuthStore();
   const { grantInitialFunds, hasReceivedInitialGrant } = useWalletStore();
-  
+
   const [mode, setMode] = useState<AuthMode>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -57,37 +57,37 @@ export const AuthPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     setError(null);
-    
+
     if (!username.trim()) {
       setError(t.auth?.usernameRequired || 'Username is required');
       return false;
     }
-    
+
     if (!password) {
       setError(t.auth?.passwordRequired || 'Password is required');
       return false;
     }
-    
+
     if (password.length < 6) {
       setError(t.auth?.passwordTooShort || 'Password must be at least 6 characters');
       return false;
     }
-    
+
     if (mode === 'register' && password !== confirmPassword) {
       setError(t.auth?.passwordMismatch || 'Passwords do not match');
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setError(null);
-    
+
     if (mode === 'register') {
       const result = await register(username.trim(), password);
       if (!result.success) {
@@ -113,7 +113,7 @@ export const AuthPage: React.FC = () => {
         <div className={styles.grid} />
       </div>
       <div className={styles.overlay} />
-      
+
       {/* Quick Settings Bar - Desktop Only */}
       {!isMobile && (
         <div className={styles.settingsBar}>
@@ -139,9 +139,9 @@ export const AuthPage: React.FC = () => {
           </h3>
           <div className={styles.welcomeContent}>
             <p className={styles.welcomeParagraph}>
-              {isMobile 
-                ? t.auth?.welcomeMessageMobile 
-                : (locale === 'zh-CN' ? t.auth?.welcomeMessageZh : t.auth?.welcomeMessageEn)}
+              {isMobile
+                ? t.auth?.welcomeMessageMobile
+                : (locale === 'en-US' ? t.auth?.welcomeMessageZh : t.auth?.welcomeMessageEn)}
             </p>
           </div>
         </div>
@@ -151,8 +151,8 @@ export const AuthPage: React.FC = () => {
             <label className={styles.label}>{t.common?.username || 'Username'}</label>
             <div className={styles.inputWrapper}>
               <Icon name="user" size="sm" className={styles.inputIcon} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={styles.input}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -167,8 +167,8 @@ export const AuthPage: React.FC = () => {
             <label className={styles.label}>{t.common?.password || 'Password'}</label>
             <div className={styles.inputWrapper}>
               <Icon name="lock" size="sm" className={styles.inputIcon} />
-              <input 
-                type="password" 
+              <input
+                type="password"
                 className={styles.input}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -184,8 +184,8 @@ export const AuthPage: React.FC = () => {
               <label className={styles.label}>{t.auth?.confirmPassword || 'Confirm Password'}</label>
               <div className={styles.inputWrapper}>
                 <Icon name="lock" size="sm" className={styles.inputIcon} />
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   className={styles.input}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -204,15 +204,15 @@ export const AuthPage: React.FC = () => {
             </div>
           )}
 
-          <button 
-            type="submit" 
-            className={styles.submitBtn} 
+          <button
+            type="submit"
+            className={styles.submitBtn}
             disabled={isLoading}
           >
             {isLoading ? (
               <Icon name="loader" className={styles.spinner} />
             ) : (
-              mode === 'register' 
+              mode === 'register'
                 ? (t.auth?.createAccount || 'Get Started')
                 : (t.auth?.signIn || 'Login Now')
             )}
@@ -220,17 +220,17 @@ export const AuthPage: React.FC = () => {
 
           <div className={styles.modeSwitch}>
             <span className={styles.modeSwitchText}>
-              {mode === 'login' 
+              {mode === 'login'
                 ? (t.auth?.noAccount || "New to TBT?")
                 : (t.auth?.haveAccount || 'Already a member?')
               }
             </span>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={styles.modeSwitchBtn}
               onClick={toggleMode}
             >
-              {mode === 'login' 
+              {mode === 'login'
                 ? (t.auth?.switchToRegister || 'Create Account')
                 : (t.auth?.switchToLogin || 'Sign In')
               }
@@ -251,7 +251,7 @@ export const AuthPage: React.FC = () => {
                 <span>2FA READY</span>
               </div>
             </div>
-            
+
             <div className={styles.systemStatus}>
               <div className={styles.statusHeader}>
                 <Icon name="activity" size="xs" />

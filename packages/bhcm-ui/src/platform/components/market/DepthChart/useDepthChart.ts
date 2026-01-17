@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useMarketStore, selectLevel2Book, selectMetrics, selectRecentPositions } from '../../store/marketStore';
+import { useMarketStore, selectLevel2Book, selectMetrics, selectRecentPositions } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 
 /* ═══════════════════════════════════════════════════════════

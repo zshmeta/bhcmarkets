@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useI18n } from '../../i18n';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import { Icons } from '../Icons';
-import {TriggerForm} from './TriggerForm';
-import {TriggerList} from './TriggerList';
-import {ExecutionLogList} from './ExecutionLogList';
+import { TriggerForm } from './TriggerForm';
+import { TriggerList } from './TriggerList';
+import { ExecutionLogList } from './ExecutionLogList';
 import { Container, Header, Title, HeaderIcons, Content, Tabs, Tab, ScrollArea } from './WorkPanel.styles';
 
 /**

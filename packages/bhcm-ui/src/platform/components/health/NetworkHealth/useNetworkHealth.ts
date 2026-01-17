@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useMarketStore, selectConnectionStatus, selectDataConfidence, selectNetworkHealth } from '../../store/marketStore';
+import { useMarketStore, selectConnectionStatus, selectDataConfidence, selectNetworkHealth } from '@repo/sdk';
 import { useI18n, type Locale } from '../../i18n';
 import type { NetworkEvent, NetworkEventType } from '../../types/market';
 

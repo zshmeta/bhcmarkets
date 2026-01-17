@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuthStore } from '@repo/bhcm-ui/store';
+import { useAuthStore } from '@repo/sdk';
 import { Icons } from '@repo/bhcm-ui/core';
 
 const Overlay = styled.div`

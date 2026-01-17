@@ -40,7 +40,7 @@ export function MobileAccountPage() {
     setShowThemeSheet(false);
   };
 
-  const changeLang = (lang: 'zh-CN' | 'en-US') => {
+  const changeLang = (lang: 'en-US' | 'en-US') => {
     trigger('selection');
     setLocale(lang);
     updatePreferences({ language: lang });
@@ -51,8 +51,8 @@ export function MobileAccountPage() {
 
   return (
     <div className={styles.container}>
-      <MobileHeader 
-        title={t.nav?.account || 'Account'} 
+      <MobileHeader
+        title={t.nav?.account || 'Account'}
         showActions={false}
         rightAction={
           <button className={styles.headerBtn} onClick={() => { trigger('light'); setShowSettingsDrawer(true); }}>
@@ -98,7 +98,7 @@ export function MobileAccountPage() {
                 <span>{t.language?.label || 'Language'}</span>
               </div>
               <div className={styles.itemRight}>
-                <span className={styles.itemValue}>{locale === 'zh-CN' ? '简体中文' : 'English'}</span>
+                <span className={styles.itemValue}>{locale === 'en-US' ? '简体中文' : 'English'}</span>
                 <Icon name="chevron-right" size="xs" />
               </div>
             </button>
@@ -109,9 +109,9 @@ export function MobileAccountPage() {
               </div>
               <div className={styles.itemRight}>
                 <span className={styles.itemValue}>
-                  {preferences.theme === 'system' 
+                  {preferences.theme === 'system'
                     ? (t.settings?.display?.system || 'System')
-                    : preferences.theme === 'dark' 
+                    : preferences.theme === 'dark'
                       ? (t.settings?.display?.dark || 'Dark')
                       : (t.settings?.display?.light || 'Light')}
                 </span>
@@ -151,7 +151,7 @@ export function MobileAccountPage() {
             </button>
           </div>
 
-          <button 
+          <button
             className={styles.logoutBtn}
             onClick={() => setShowLogoutConfirm(true)}
           >
@@ -177,7 +177,7 @@ export function MobileAccountPage() {
         onClose={() => setShowLangSheet(false)}
         title={t.account?.selectLanguage || 'Select Language'}
         actions={[
-          { id: 'zh-CN', label: '简体中文' },
+          { id: 'en-US', label: '简体中文' },
           { id: 'en-US', label: 'English' }
         ]}
         onAction={(id) => changeLang(id as any)}
@@ -210,7 +210,7 @@ export function MobileAccountPage() {
                 <span>{t.language?.label || 'Language'}</span>
               </div>
               <div className={styles.itemRight}>
-                <span className={styles.itemValue}>{locale === 'zh-CN' ? '简体中文' : 'English'}</span>
+                <span className={styles.itemValue}>{locale === 'en-US' ? '简体中文' : 'English'}</span>
                 <Icon name="chevron-right" size="xs" />
               </div>
             </button>
@@ -221,9 +221,9 @@ export function MobileAccountPage() {
               </div>
               <div className={styles.itemRight}>
                 <span className={styles.itemValue}>
-                  {preferences.theme === 'system' 
+                  {preferences.theme === 'system'
                     ? (t.settings?.display?.system || 'System')
-                    : preferences.theme === 'dark' 
+                    : preferences.theme === 'dark'
                       ? (t.settings?.display?.dark || 'Dark')
                       : (t.settings?.display?.light || 'Light')}
                 </span>

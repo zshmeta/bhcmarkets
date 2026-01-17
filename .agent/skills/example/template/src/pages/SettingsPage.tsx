@@ -13,7 +13,7 @@ export function SettingsPage() {
   const isMobile = useIsMobile();
   const { t, locale, setLocale } = useI18n();
   const { user, preferences, updateProfile, updateAvatar, updatePreferences, changePassword } = useAuthStore();
-  
+
   const [activeSection, setActiveSection] = useState<SettingsSection>('profile');
 
   // Render mobile layout
@@ -21,20 +21,20 @@ export function SettingsPage() {
     return <MobileAccountPage />;
   }
 
-  
+
   // Profile form state
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [timezone, setTimezone] = useState(user?.timezone || 'UTC');
   const [profileSaved, setProfileSaved] = useState(false);
-  
+
   // Password form state
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState(false);
-  
+
   // Preferences state
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark' | 'system'>(preferences.theme);
   const [quoteAsset, setQuoteAsset] = useState<'USDT' | 'BTC'>(preferences.quoteAsset);
@@ -61,17 +61,17 @@ export function SettingsPage() {
   const handleChangePassword = () => {
     setPasswordError(null);
     setPasswordSuccess(false);
-    
+
     if (newPassword.length < 6) {
       setPasswordError(t.auth?.passwordTooShort || 'Password must be at least 6 characters');
       return;
     }
-    
+
     if (newPassword !== confirmNewPassword) {
       setPasswordError(t.auth?.passwordMismatch || 'Passwords do not match');
       return;
     }
-    
+
     const result = changePassword(oldPassword, newPassword);
     if (result.success) {
       setPasswordSuccess(true);
@@ -81,9 +81,9 @@ export function SettingsPage() {
       setTimeout(() => setPasswordSuccess(false), 3000);
     } else {
       setPasswordError(
-        result.error === 'incorrectPassword' 
-          ? (locale === 'zh-CN' ? '当前密码错误' : 'Current password is incorrect')
-          : (locale === 'zh-CN' ? '修改失败' : 'Failed to change password')
+        result.error === 'incorrectPassword'
+          ? (locale === 'en-US' ? '当前密码错误' : 'Current password is incorrect')
+          : (locale === 'en-US' ? '修改失败' : 'Failed to change password')
       );
     }
   };
@@ -91,7 +91,7 @@ export function SettingsPage() {
   const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
     setCurrentTheme(theme);
     updatePreferences({ theme });
-    
+
     // Apply theme immediately
     if (theme === 'system') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -102,7 +102,7 @@ export function SettingsPage() {
     localStorage.setItem('theme', theme);
   };
 
-  const handleLanguageChange = (lang: 'zh-CN' | 'en-US') => {
+  const handleLanguageChange = (lang: 'en-US' | 'en-US') => {
     setLocale(lang);
     updatePreferences({ language: lang });
   };
@@ -117,7 +117,7 @@ export function SettingsPage() {
       <div className={styles.container}>
         <div className={styles.notLoggedIn}>
           <Icon name="user" size="xl" />
-          <p>{locale === 'zh-CN' ? '请先登录' : 'Please sign in first'}</p>
+          <p>{locale === 'en-US' ? '请先登录' : 'Please sign in first'}</p>
         </div>
       </div>
     );
@@ -149,7 +149,7 @@ export function SettingsPage() {
             onClick={() => setActiveSection('preferences')}
           >
             <Icon name="sliders" size="sm" />
-            <span>{locale === 'zh-CN' ? '偏好设置' : 'Preferences'}</span>
+            <span>{locale === 'en-US' ? '偏好设置' : 'Preferences'}</span>
           </button>
         </nav>
       </div>
@@ -182,32 +182,32 @@ export function SettingsPage() {
                   disabled
                 />
                 <span className={styles.fieldHint}>
-                  {locale === 'zh-CN' ? '用户名不可修改' : 'Username cannot be changed'}
+                  {locale === 'en-US' ? '用户名不可修改' : 'Username cannot be changed'}
                 </span>
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.fieldLabel}>
-                  {locale === 'zh-CN' ? '显示名称' : 'Display Name'}
+                  {locale === 'en-US' ? '显示名称' : 'Display Name'}
                 </label>
                 <input
                   type="text"
                   className={styles.input}
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder={locale === 'zh-CN' ? '输入昵称' : 'Enter display name'}
+                  placeholder={locale === 'en-US' ? '输入昵称' : 'Enter display name'}
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.fieldLabel}>
-                  {locale === 'zh-CN' ? '个人简介' : 'Bio'}
+                  {locale === 'en-US' ? '个人简介' : 'Bio'}
                 </label>
                 <textarea
                   className={styles.textarea}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder={locale === 'zh-CN' ? '介绍一下自己...' : 'Tell us about yourself...'}
+                  placeholder={locale === 'en-US' ? '介绍一下自己...' : 'Tell us about yourself...'}
                   rows={3}
                 />
               </div>
@@ -264,10 +264,10 @@ export function SettingsPage() {
 
             <div className={styles.card}>
               <h4 className={styles.cardTitle}>{t.settings?.security?.changePassword || 'Change Password'}</h4>
-              
+
               <div className={styles.formGroup}>
                 <label className={styles.fieldLabel}>
-                  {locale === 'zh-CN' ? '当前密码' : 'Current Password'}
+                  {locale === 'en-US' ? '当前密码' : 'Current Password'}
                 </label>
                 <input
                   type="password"
@@ -280,7 +280,7 @@ export function SettingsPage() {
 
               <div className={styles.formGroup}>
                 <label className={styles.fieldLabel}>
-                  {locale === 'zh-CN' ? '新密码' : 'New Password'}
+                  {locale === 'en-US' ? '新密码' : 'New Password'}
                 </label>
                 <input
                   type="password"
@@ -312,7 +312,7 @@ export function SettingsPage() {
               {passwordSuccess && (
                 <div className={styles.successMessage}>
                   <Icon name="check-circle" size="sm" />
-                  <span>{locale === 'zh-CN' ? '密码修改成功' : 'Password changed successfully'}</span>
+                  <span>{locale === 'en-US' ? '密码修改成功' : 'Password changed successfully'}</span>
                 </div>
               )}
 
@@ -325,7 +325,7 @@ export function SettingsPage() {
 
             <div className={styles.card}>
               <h4 className={styles.cardTitle}>
-                {locale === 'zh-CN' ? '账户信息' : 'Account Information'}
+                {locale === 'en-US' ? '账户信息' : 'Account Information'}
               </h4>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>{t.settings?.profile?.accountCreated || 'Account Created'}</span>
@@ -344,10 +344,10 @@ export function SettingsPage() {
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>
-                {locale === 'zh-CN' ? '偏好设置' : 'Preferences'}
+                {locale === 'en-US' ? '偏好设置' : 'Preferences'}
               </h3>
               <p className={styles.sectionDesc}>
-                {locale === 'zh-CN' ? '自定义您的界面和交易体验' : 'Customize your interface and trading experience'}
+                {locale === 'en-US' ? '自定义您的界面和交易体验' : 'Customize your interface and trading experience'}
               </p>
             </div>
 
@@ -382,8 +382,8 @@ export function SettingsPage() {
               <h4 className={styles.cardTitle}>{t.settings?.display?.language || 'Language'}</h4>
               <div className={styles.optionGroup}>
                 <button
-                  className={`${styles.optionBtn} ${locale === 'zh-CN' ? styles.selected : ''}`}
-                  onClick={() => handleLanguageChange('zh-CN')}
+                  className={`${styles.optionBtn} ${locale === 'en-US' ? styles.selected : ''}`}
+                  onClick={() => handleLanguageChange('en-US')}
                 >
                   <span>{t.language?.zh || '中文'}</span>
                 </button>
@@ -398,7 +398,7 @@ export function SettingsPage() {
 
             <div className={styles.card}>
               <h4 className={styles.cardTitle}>
-                {locale === 'zh-CN' ? '默认报价币种' : 'Default Quote Asset'}
+                {locale === 'en-US' ? '默认报价币种' : 'Default Quote Asset'}
               </h4>
               <div className={styles.optionGroup}>
                 <button

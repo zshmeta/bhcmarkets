@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import Decimal from 'decimal.js';
-import { useWalletStore, selectBalances } from '../../store/walletStore';
+import { useWalletStore, selectBalances } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
 import {

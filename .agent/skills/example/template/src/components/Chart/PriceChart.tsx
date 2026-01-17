@@ -86,7 +86,7 @@ function calculateEMA(data: KlineData[], period: number) {
   const result = [];
   const multiplier = 2 / (period + 1);
   let ema = data[0]?.close || 0;
-  
+
   for (let i = 0; i < data.length; i++) {
     const current = data[i];
     if (!current) continue;
@@ -101,7 +101,7 @@ function calculateEMA(data: KlineData[], period: number) {
 // 计算布林带
 function calculateBOLL(data: KlineData[], period: number = 20, stdDev: number = 2) {
   const upper = [], middle = [], lower = [];
-  
+
   for (let i = period - 1; i < data.length; i++) {
     let sum = 0;
     for (let j = 0; j < period; j++) {
@@ -109,14 +109,14 @@ function calculateBOLL(data: KlineData[], period: number = 20, stdDev: number = 
       if (item) sum += item.close;
     }
     const ma = sum / period;
-    
+
     let squaredDiffSum = 0;
     for (let j = 0; j < period; j++) {
       const item = data[i - j];
       if (item) squaredDiffSum += Math.pow(item.close - ma, 2);
     }
     const std = Math.sqrt(squaredDiffSum / period);
-    
+
     const current = data[i];
     if (current) {
       middle.push({ time: current.time, value: ma });
@@ -124,7 +124,7 @@ function calculateBOLL(data: KlineData[], period: number = 20, stdDev: number = 
       lower.push({ time: current.time, value: ma - stdDev * std });
     }
   }
-  
+
   return { upper, middle, lower };
 }
 
@@ -139,11 +139,11 @@ export function PriceChart() {
   const volumeSeriesRef = useRef<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const indicatorSeriesRef = useRef<Map<string, any>>(new Map());
-  
+
   const selectedSymbol = useWatchlistStore(selectSelectedSymbol);
   const triggers = useAutomationStore((state) => state.triggers);
   const openOrders = useTradingStore((state) => state.orders.filter(o => o.status === 'open'));
-  
+
   const [chartType, setChartType] = useState<ChartType>('candlestick');
   const [timeRange, setTimeRange] = useState<TimeRange>('15m');
   const [klines, setKlines] = useState<KlineData[]>([]);
@@ -173,7 +173,7 @@ export function PriceChart() {
     const cacheKey = `${symbol}-${interval}`;
     const cached = klinesCacheRef.current.get(cacheKey);
     const now = Date.now();
-    
+
     // 有效缓存直接使用
     if (cached && now - cached.timestamp < CACHE_TTL) {
       setKlines(cached.data);
@@ -181,18 +181,18 @@ export function PriceChart() {
       setError(null);
       return;
     }
-    
+
     // 首次加载显示 loading
     if (klines.length === 0) {
       setLoading(true);
     }
-    
+
     try {
       const url = `/binance-api/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=500`;
       const response = await fetch(url);
-      
+
       if (!response.ok) throw response;
-      
+
       const data = await response.json();
       const formattedData: KlineData[] = data.map((k: (string | number)[]) => ({
         time: (Math.floor(Number(k[0]) / 1000)) as UTCTimestamp,
@@ -202,17 +202,17 @@ export function PriceChart() {
         close: parseFloat(k[4] as string),
         volume: parseFloat(k[5] as string),
       }));
-      
+
       // 更新缓存
       klinesCacheRef.current.set(cacheKey, { data: formattedData, timestamp: now });
-      
+
       setKlines(formattedData);
       setError(null);
       setLoading(false);
     } catch (err) {
       const appError = handleApiError(err);
       logError(appError);
-      
+
       // 有缓存数据时使用过期缓存
       if (cached) {
         setKlines(cached.data);
@@ -220,13 +220,13 @@ export function PriceChart() {
         setLoading(false);
         return;
       }
-      
+
       // 重试最多3次
       if (retryCount < 3) {
         setTimeout(() => fetchKlines(symbol, interval, retryCount + 1), 2000 * (retryCount + 1));
         return;
       }
-      
+
       setError(appError.message);
       setLoading(false);
     }
@@ -247,7 +247,7 @@ export function PriceChart() {
   // 格式化时间
   const formatTime = useCallback((timestamp: number) => {
     const date = new Date(timestamp * 1000);
-    return date.toLocaleString('zh-CN', {
+    return date.toLocaleString('en-US', {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
@@ -262,7 +262,7 @@ export function PriceChart() {
     // 等待布局稳定后初始化图表
     const initChart = () => {
       if (!mainChartRef.current) return null;
-      
+
       const containerWidth = mainChartRef.current.clientWidth || mainChartRef.current.offsetWidth;
       const containerHeight = mainChartRef.current.clientHeight || mainChartRef.current.offsetHeight || 350;
 
@@ -337,7 +337,7 @@ export function PriceChart() {
           setCrosshairData(null);
           return;
         }
-        
+
         const data = param.seriesData.get(mainSeriesRef.current);
         if (data && 'open' in data) {
           const kline = data as { open: number; high: number; low: number; close: number };
@@ -364,7 +364,7 @@ export function PriceChart() {
         if (mainChartApiRef.current && entry.target === mainChartRef.current) {
           const { width, height } = entry.contentRect;
           if (width > 0 && height > 0) {
-            mainChartApiRef.current.applyOptions({ 
+            mainChartApiRef.current.applyOptions({
               width: Math.floor(width),
               height: Math.floor(height),
             });
@@ -379,7 +379,7 @@ export function PriceChart() {
 
     const handleResize = () => {
       if (mainChartRef.current && mainChartApiRef.current) {
-        mainChartApiRef.current.applyOptions({ 
+        mainChartApiRef.current.applyOptions({
           width: mainChartRef.current.clientWidth,
           height: mainChartRef.current.clientHeight || 350,
         });
@@ -484,7 +484,7 @@ export function PriceChart() {
         priceFormat: { type: 'volume' },
         priceScaleId: '', // 叠加模式
       });
-      
+
       // 设置成交量在底部的边距
       volumeSeries.priceScale().applyOptions({
         scaleMargins: {
@@ -608,13 +608,13 @@ export function PriceChart() {
 
     try {
       const series = mainSeriesRef.current;
-      
+
       // 添加触发器价格线
       triggers.filter(t => t.enabled && t.symbol === selectedSymbol).forEach(trigger => {
         const triggerPrice = trigger.triggerPrice || trigger.condition.threshold;
         const side = trigger.action.side;
         const type = trigger.action.type;
-        
+
         series.createPriceLine({
           price: parseFloat(triggerPrice),
           color: side === 'buy' ? CHART_COLORS.buy : CHART_COLORS.sell,
@@ -645,13 +645,13 @@ export function PriceChart() {
     const lastKline = klines[klines.length - 1];
     const firstKline = klines[0];
     if (!lastKline || !firstKline) return null;
-    
+
     const current = lastKline.close;
     const first = firstKline.open;
     const high24h = Math.max(...klines.map(k => k.high));
     const low24h = Math.min(...klines.map(k => k.low));
     const totalVolume = klines.reduce((sum, k) => sum + k.volume, 0);
-    
+
     return {
       current,
       high24h,
@@ -692,7 +692,7 @@ export function PriceChart() {
               </button>
             ))}
           </div>
-          
+
           {/* 图表类型 */}
           <div className={styles.chartTypeGroup}>
             <button
@@ -751,7 +751,7 @@ export function PriceChart() {
               </>
             )}
           </div>
-          
+
           {/* OHLCV 数据 */}
           <div className={styles.ohlcData}>
             {crosshairData ? (

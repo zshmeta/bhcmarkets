@@ -5,13 +5,13 @@ import { LanguageToggle } from '../LanguageToggle';
 import { ToastContainer } from '../Toast';
 import { HelpFAQ } from '../HelpFAQ';
 import { NotifBell } from '../NotifBell';
-import {TopNav} from './TopNav';
+import { TopNav } from './TopNav';
 import { AssetSnapshot } from './AssetSnapshot';
 import { AccountMenu } from './AccountMenu';
 import { Icons } from '../Icons';
 import { useI18n } from '../../i18n';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '@repo/sdk';
 import {
   Logo,
   LogoIcons,

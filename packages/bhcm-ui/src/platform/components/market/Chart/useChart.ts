@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { UTCTimestamp } from 'lightweight-charts';
-import { handleApiError, logError } from '../../utils/errorHandler';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
-import { useAutomationStore } from '../../store/automationStore';
-import { useTradingStore } from '../../store/tradingStore';
+import { handleApiError, logError } from '../../../../../../sdk/utils/errorHandler';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
+import { useAutomationStore } from '@repo/sdk';
+import { useTradingStore } from '@repo/sdk';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import { useI18n } from '../../i18n';
 
@@ -162,18 +162,22 @@ const useChart = (): UseChartReturn => {
         if (klines.length === 0) setLoading(true);
 
         try {
-            const url = `/binance-api/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=500`;
+            // Use local market-data service (proxied via /market)
+            // This handles symbol resolution (BTC/USD -> BTCUSDT) and auto-backfilling
+            const url = `/market/candles/${encodeURIComponent(symbol)}?timeframe=${interval}&limit=500`;
             const response = await fetch(url);
             if (!response.ok) throw response;
 
             const data = await response.json();
-            const formattedData: KlineData[] = data.map((k: (string | number)[]) => ({
-                time: Math.floor(Number(k[0]) / 1000) as UTCTimestamp,
-                open: parseFloat(k[1] as string),
-                high: parseFloat(k[2] as string),
-                low: parseFloat(k[3] as string),
-                close: parseFloat(k[4] as string),
-                volume: parseFloat(k[5] as string),
+
+            // Map the local API Candle objects to KlineData format
+            const formattedData: KlineData[] = data.map((k: any) => ({
+                time: Math.floor(k.timestamp / 1000) as UTCTimestamp,
+                open: k.open,
+                high: k.high,
+                low: k.low,
+                close: k.close,
+                volume: k.volume,
             }));
 
             klinesCacheRef.current.set(cacheKey, { data: formattedData, timestamp: now });
@@ -215,7 +219,7 @@ const useChart = (): UseChartReturn => {
 
     // Format time
     const formatTime = useCallback((timestamp: number) => {
-        return new Date(timestamp * 1000).toLocaleString('zh-CN', {
+        return new Date(timestamp * 1000).toLocaleString('en-US', {
             month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
         });
     }, []);

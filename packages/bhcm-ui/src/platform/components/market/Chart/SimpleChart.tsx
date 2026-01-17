@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
-import { handleApiError, logError } from '../../utils/errorHandler';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
+import { handleApiError, logError } from '../../../../../../sdk/utils/errorHandler';
 
 /**
  * SIMPLE CHART - Lightweight SVG-based price chart
@@ -165,15 +165,15 @@ export const SimpleChart = () => {
     console.log('[SimpleChart] Fetching klines:', symbol, interval);
     setLoading(true);
     setError(null);
-    
+
     try {
       const url = `/binance-api/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=100`;
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
-      
+
       const data = await response.json();
       const formattedData: KlineData[] = data.map((k: (string | number)[]) => ({
         time: Math.floor(Number(k[0]) / 1000),
@@ -183,7 +183,7 @@ export const SimpleChart = () => {
         close: parseFloat(k[4] as string),
         volume: parseFloat(k[5] as string),
       }));
-      
+
       console.log('[SimpleChart] Got', formattedData.length, 'candles');
       setKlines(formattedData);
       setLoading(false);
@@ -208,13 +208,13 @@ export const SimpleChart = () => {
     const last = klines[klines.length - 1];
     const first = klines[0];
     if (!last || !first) return null;
-    
+
     const change = last.close - first.open;
     const changePercent = (change / first.open) * 100;
     const high = Math.max(...klines.map(k => k.high));
     const low = Math.min(...klines.map(k => k.low));
     const volume = klines.reduce((sum, k) => sum + k.volume, 0);
-    
+
     return { current: last.close, change, changePercent, high, low, volume };
   }, [klines]);
 
@@ -228,18 +228,18 @@ export const SimpleChart = () => {
   // Calculate chart path
   const chartPath = useMemo(() => {
     if (klines.length < 2) return '';
-    
+
     const prices = klines.map(k => k.close);
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
     const priceRange = maxPrice - minPrice || 1;
-    
+
     const points = klines.map((k, i) => {
       const x = padding.left + (i / (klines.length - 1)) * chartWidth;
       const y = padding.top + chartHeight - ((k.close - minPrice) / priceRange) * chartHeight;
       return `${x},${y}`;
     });
-    
+
     return `M ${points.join(' L ')}`;
   }, [klines, chartWidth, chartHeight]);
 
@@ -270,11 +270,11 @@ export const SimpleChart = () => {
             </>
           )}
         </SymbolInfo>
-        
+
         <TimeButtons>
           {(['1m', '5m', '15m', '1h', '4h', '1d'] as TimeRange[]).map(range => (
-            <TimeBtn 
-              key={range} 
+            <TimeBtn
+              key={range}
               $active={timeRange === range}
               onClick={() => setTimeRange(range)}
             >
@@ -295,9 +295,9 @@ export const SimpleChart = () => {
           </ErrorOverlay>
         )}
         {!loading && !error && klines.length > 0 && (
-          <svg 
-            width="100%" 
-            height="100%" 
+          <svg
+            width="100%"
+            height="100%"
             viewBox={`0 0 ${svgWidth} ${svgHeight}`}
             preserveAspectRatio="none"
             style={{ display: 'block' }}
@@ -312,33 +312,33 @@ export const SimpleChart = () => {
                 <stop offset="100%" stopColor="#F85149" stopOpacity="0.02" />
               </linearGradient>
             </defs>
-            
+
             {/* Area fill */}
             <path d={areaPath} fill={`url(#${gradientId})`} />
-            
+
             {/* Price line */}
-            <path 
-              d={chartPath} 
-              fill="none" 
-              stroke={lineColor} 
+            <path
+              d={chartPath}
+              fill="none"
+              stroke={lineColor}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            
+
             {/* Current price line */}
             {priceInfo && (
               <>
-                <line 
-                  x1={padding.left} 
-                  y1={padding.top + chartHeight * 0.1} 
-                  x2={svgWidth - padding.right} 
+                <line
+                  x1={padding.left}
+                  y1={padding.top + chartHeight * 0.1}
+                  x2={svgWidth - padding.right}
                   y2={padding.top + chartHeight * 0.1}
                   stroke="var(--border-subtle, #30363D)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
                 />
-                <text 
+                <text
                   x={svgWidth - padding.right + 5}
                   y={padding.top + chartHeight * 0.1 + 4}
                   fill="var(--text-secondary, #9AA5B1)"

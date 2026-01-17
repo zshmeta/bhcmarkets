@@ -1,9 +1,9 @@
 import { useMemo, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWalletStore, selectBalances, selectAccount } from '@repo/bhcm-ui/store';
-import { useTradingStore } from '@repo/bhcm-ui/store';
-import { useWatchlistStore } from '@repo/bhcm-ui/store';
-import { useAutomationStore } from '@repo/bhcm-ui/store';
+import { useWalletStore, selectBalances, selectAccount } from '@repo/sdk';
+import { useTradingStore } from '@repo/sdk';
+import { useWatchlistStore } from '@repo/sdk';
+import { useAutomationStore } from '@repo/sdk';
 import { useI18n } from '@repo/bhcm-ui/i18n';
 import { Icons } from '@repo/bhcm-ui/core';
 import type { IconsName } from '@repo/bhcm-ui/core';

@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
 import { Icons } from '../Icons';
-import { formatPrice, formatQuantity, formatTime } from '../../utils';
+import { formatPrice, formatQuantity, formatTime } from '../../../../../../sdk/utils';
 import type { Trade } from '../../types/market';
 import {
     Container,
@@ -134,4 +134,4 @@ const RecentPositionsView = ({
     );
 }
 
-export { RecentPositionsView }  ;
+export { RecentPositionsView };

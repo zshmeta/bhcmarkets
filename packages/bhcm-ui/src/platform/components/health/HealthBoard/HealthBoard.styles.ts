@@ -52,7 +52,7 @@ export const Grid = styled.div`
   padding: 0;
   overflow-x: auto;
   scrollbar-width: none;
-  min-height: 48px;
+  min-height: 30px;
 
   &::-webkit-scrollbar {
     display: none;
@@ -79,7 +79,7 @@ export const MetricItem = styled.div<MetricItemProps>`
   align-items: center;
   text-align: center;
   justify-content: center;
-  height: 48px;
+  height: 30px;
 
   &:last-child {
     border-right: none;
@@ -99,10 +99,10 @@ export const LabelRow = styled.div`
 `;
 
 export const Label = styled.span`
-  font-size: 10px;
+  font-size: 7px;
   color: var(--text-tertiary, #0000DD);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 `;
 
@@ -151,8 +151,8 @@ interface ValueProps {
 }
 
 export const Value = styled.span<ValueProps>`
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 500;
   color: var(--text-primary, #E6EDF3);
   white-space: nowrap;
 
@@ -188,7 +188,7 @@ export const Tooltip = styled.div`
   background: var(--bg-tertiary, #1C2128);
   border: 1px solid var(--border, #30363D);
   border-radius: 0.25rem;
-  font-size: 0.6875rem;
+  font-size: 0.675rem;
   color: var(--text-secondary, #9AA5B1);
   line-height: 1.4;
   z-index: 100;
@@ -202,12 +202,12 @@ export const Tooltip = styled.div`
 export const DepthInfo = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   padding: 0 0.5rem;
-  height: 24px;
+  height: 13px;
   border-top: 1px solid var(--border-subtle, #262C36);
   background: var(--bg-tertiary, #1C2128);
-  font-size: 10px;
+  font-size: 7px;
 `;
 
 export const DepthLabel = styled.span`
@@ -234,7 +234,7 @@ export const ConfidenceBadge = styled.span<ConfidenceBadgeProps>`
   justify-content: center;
   width: 24px;
   height: 24px;
-  font-size: 12px;
+  font-size: 10px;
   border-radius: 50%;
   margin-left: auto;
   cursor: help;

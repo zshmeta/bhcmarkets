@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useMarketStore, selectConnectionStatus, selectDataConfidence } from '../../store/marketStore';
+import { useMarketStore, selectConnectionStatus, selectDataConfidence } from '@repo/sdk';
 import { useI18n } from '../../i18n';
-import { formatLastUpdateTime } from '../../utils';
+import { formatLastUpdateTime } from '../../../../../../sdk/utils';
 
 /* ═══════════════════════════════════════════════════════════
  * useNetworkStatus Hook

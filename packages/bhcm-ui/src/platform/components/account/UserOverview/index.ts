@@ -15,7 +15,7 @@ export type { UserOverviewViewProps } from './UserOverview.view';
 
 // Hook (business logic)
 export { useUserOverview } from './useUserOverview';
-export { formatNumber } from '../../utils';
+export { formatNumber } from '../../../../../../sdk/utils';
 export type {
     UseUserOverviewReturn,
     UserInfo,

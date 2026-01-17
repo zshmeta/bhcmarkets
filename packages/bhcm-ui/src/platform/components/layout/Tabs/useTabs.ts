@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
-import { useTradingStore } from '../../store/tradingStore';
-import { useAutomationStore } from '../../store/automationStore';
-import { useWatchlistStore, selectSelectedSymbol } from '../../store/watchlistStore';
+import { useTradingStore } from '@repo/sdk';
+import { useAutomationStore } from '@repo/sdk';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 
 /* ═══════════════════════════════════════════════════════════
  * useTabs Hook

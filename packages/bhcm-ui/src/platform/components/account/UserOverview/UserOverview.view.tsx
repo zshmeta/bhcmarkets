@@ -5,7 +5,7 @@ import type {
     EquityData,
     AccountOverviewTranslations,
 } from './useUserOverview';
-import { formatNumber } from '../../utils';
+import { formatNumber } from '../../../../../../sdk/utils';
 import {
     Container,
     NotLoggedInWrapper,

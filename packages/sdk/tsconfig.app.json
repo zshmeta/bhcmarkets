@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "types": [
+      "vite/client"
+    ],
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": [
+    "src",
+    "../sdk/marketStore.test.ts",
+    "../sdk/marketStore.ts",
+    "../sdk/tradingStore.test.ts",
+    "../sdk/tradingStore.ts",
+    "../sdk/walletStore_BACKUP_3375.ts",
+    "../sdk/walletStore_BASE_3375.ts",
+    "../sdk/walletStore.ts",
+    "../sdk/walletStore_REMOTE_3375.ts",
+    "../sdk/walletStore_LOCAL_3375.ts"
+  ]
+}

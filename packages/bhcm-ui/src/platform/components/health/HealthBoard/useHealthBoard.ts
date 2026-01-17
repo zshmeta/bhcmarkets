@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { useMarketStore, selectMetrics, selectLevel2Book, selectDataConfidence, selectCanTrustMetrics } from '../../store/marketStore';
+import { useMarketStore, selectMetrics, selectLevel2Book, selectDataConfidence, selectCanTrustMetrics } from '@repo/sdk';
 import { useI18n } from '../../i18n';
-import { formatPrice, formatVolume } from '../../utils';
+import { formatPrice, formatVolume } from '../../../../../../sdk/utils';
 import type { DataConfidenceLevel } from '../../types/market';
 
 /* ═══════════════════════════════════════════════════════════
@@ -104,12 +104,6 @@ const useHealthBoard = (): UseHealthBoardReturn => {
 
         return [
             {
-                label: t.metrics?.midPrice || 'Mid Price',
-                value: formatPrice(storeMetrics.mid),
-                tooltip: t.metrics?.midPriceDesc,
-                isUncertain: true,
-            },
-            {
                 label: t.metrics?.spread || 'Spread',
                 value: (storeMetrics.spreadBps || 0).toFixed(2),
                 unit: t.Level2Book?.spreadBps || 'bps',
@@ -124,22 +118,17 @@ const useHealthBoard = (): UseHealthBoardReturn => {
                 tooltip: t.metrics?.imbalanceDesc,
                 isUncertain: true,
             },
-            {
-                label: t.metrics?.volatility || 'Volatility',
-                value: (storeMetrics.microVolatility || 0).toFixed(4),
-                tooltip: t.metrics?.volatilityDesc,
-            },
+            // {
+            //     label: t.metrics?.volatility || 'Volatility',
+            //     value: (storeMetrics.microVolatility || 0).toFixed(4),
+            //     tooltip: t.metrics?.volatilityDesc,
+            // },
             {
                 label: t.metrics?.tradeIntensity || 'Intensity',
                 value: storeMetrics.tradeIntensity || 0,
                 unit: '/10s',
                 tooltip: t.metrics?.tradeIntensityDesc,
                 isUncertain: true,
-            },
-            {
-                label: t.metrics?.vwap || 'VWAP',
-                value: formatPrice(storeMetrics.vwap60s),
-                tooltip: t.metrics?.vwapDesc,
             },
             {
                 label: t.metrics?.liquidityScore || 'Liquidity',

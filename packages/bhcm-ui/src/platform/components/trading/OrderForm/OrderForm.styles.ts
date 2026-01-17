@@ -35,13 +35,13 @@ export const Container = styled.div<{ $focused?: boolean }>`
   margin: 0;
 
   .card-header {
-    padding: 12px 16px;
+    padding: 3px 7px;
     border-bottom: 1px solid var(--border-subtle, #30363D);
     background: var(--bg-primary, #0D1117);
   }
 
   .card-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--text-secondary, #8B949E);
     text-transform: uppercase;
@@ -53,7 +53,7 @@ export const Form = styled.form`
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 `;
 
 /* ═══════════════════════════════════════════════════════════
@@ -63,7 +63,7 @@ export const Form = styled.form`
 export const CategoryTabs = styled.div`
   display: flex;
   background: var(--bg-primary, #0D1117);
-  padding: 3px;
+  padding: 0.5px;
   border-radius: 6px;
   border: 1px solid var(--border-subtle, #30363D);
 `;
@@ -193,7 +193,7 @@ export const Input = styled.input`
 
 export const InputSuffix = styled.span`
   position: absolute;
-  right: 12px;
+  right: 30px;
   font-size: 11px;
   color: var(--text-tertiary, #6E7681);
   font-weight: 500;
@@ -238,7 +238,7 @@ export const PercentButtons = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
-  margin-top: 4px;
+  margin-top: 1px;
 `;
 
 export const PercentBtn = styled.button`

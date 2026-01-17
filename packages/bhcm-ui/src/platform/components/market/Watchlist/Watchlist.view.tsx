@@ -1,7 +1,7 @@
 import { useMemo, memo } from 'react';
 import { Icons } from '../Icons';
 import { LineChart } from '../LineChart/LineChart';
-import type { SymbolInfo, WatchlistCategory } from '../../store/watchlistStore';
+import type { SymbolInfo, WatchlistCategory } from '@repo/sdk';
 import type { WatchlistPosition, WatchlistTranslations } from './useWatchlist';
 import {
     Container,
@@ -22,7 +22,7 @@ import {
     SymbolRow,
     SymbolCell,
     FavoriteIcon,
-    InWatchlistIcon,
+    // InWatchlistIcon, // Disabled - feature not active
     SymbolLabel,
     ChangeCell,
     SparklineCell,
@@ -41,16 +41,8 @@ import {
 /* ─── SVG Icons ─── */
 function StarIcon({ filled }: { filled: boolean }) {
     return (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-    );
-}
-
-function CheckIcon() {
-    return (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <polyline points="20 6 9 17 4 12" />
         </svg>
     );
 }
@@ -106,12 +98,12 @@ const SymbolRowItem = memo(({
             </FavoriteIcon>
 
             <SymbolCell>
-                {isInWatchlist && (
+                {/* {isInWatchlist && (
                     <InWatchlistIcon title="In watchlist">
                         <CheckIcon />
                     </InWatchlistIcon>
-                )}
-                <SymbolLabel>{symbol.baseAsset}</SymbolLabel>
+                )} */}
+                <SymbolLabel>{symbol.symbol}</SymbolLabel>
             </SymbolCell>
 
             <ChangeCell $positive={isPositive} $negative={!isPositive}>
@@ -304,7 +296,7 @@ const WatchlistView = ({
                             style={{ gridTemplateColumns: '1fr', justifyContent: 'center' }}
                         >
                             <SymbolLabel style={{ textAlign: 'center' }}>
-                                {symbol.baseAsset.substring(0, 3)}
+                                {symbol.symbol}
                             </SymbolLabel>
                         </SymbolRow>
                     ))}

@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { clamp } from '../../utils';
-import { useMarketStore, selectLevel2Book, selectMetrics, selectBestBid, selectBestAsk, selectDataConfidence } from '../../store/marketStore';
-import { useTradingStore, selectFocusMode } from '../../store/tradingStore';
-import { useWalletStore, selectBalances } from '../../store/walletStore';
+import { clamp } from '../../../../../../sdk/utils';
+import { useMarketStore, selectLevel2Book, selectMetrics, selectBestBid, selectBestAsk, selectDataConfidence } from '@repo/sdk';
+import { useTradingStore, selectFocusMode } from '@repo/sdk';
+import { useWalletStore, selectBalances } from '@repo/sdk';
 import { useI18n, formatMessage } from '../../i18n';
 import { toast } from '../Toast';
 import type { OrderSide, OrderType, TrailingType } from '../../types/trading';
@@ -329,69 +329,69 @@ const useOrderForm = (
         }, 100);
     }, [setFocusMode]);
 
-	// ─── Form Submission ───
-	const handleSubmit = useCallback(async (e: React.FormEvent) => {
-		e.preventDefault();
+    // ─── Form Submission ───
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
+        e.preventDefault();
 
-		if (dataConfidence.level === 'stale') {
-			toast.warning(t.dataConfidence.staleDesc);
-			return;
-		}
-		if (dataConfidence.level === 'degraded' && !showDegradedConfirm) {
-			setShowDegradedConfirm(true);
-			return;
-		}
-		if (!quantity || parseFloat(quantity) <= 0) {
-			toast.warning(t.OrderForm.invalidAmount);
-			return;
-		}
+        if (dataConfidence.level === 'stale') {
+            toast.warning(t.dataConfidence.staleDesc);
+            return;
+        }
+        if (dataConfidence.level === 'degraded' && !showDegradedConfirm) {
+            setShowDegradedConfirm(true);
+            return;
+        }
+        if (!quantity || parseFloat(quantity) <= 0) {
+            toast.warning(t.OrderForm.invalidAmount);
+            return;
+        }
 
-		let order = null;
+        let order = null;
 
-		if (orderCategory === 'spot') {
-			if (type === 'limit' && (!price || parseFloat(price) <= 0)) {
-				toast.warning(t.OrderForm.invalidPrice);
-				return;
-			}
-			order = await createOrder({
-				symbol, side, type,
-				price: type === 'limit' ? price : undefined,
-				quantity,
-				takeProfitPrice: takeProfitPrice || undefined,
-				stopLossPrice: stopLossPrice || undefined,
-			});
+        if (orderCategory === 'spot') {
+            if (type === 'limit' && (!price || parseFloat(price) <= 0)) {
+                toast.warning(t.OrderForm.invalidPrice);
+                return;
+            }
+            order = await createOrder({
+                symbol, side, type,
+                price: type === 'limit' ? price : undefined,
+                quantity,
+                takeProfitPrice: takeProfitPrice || undefined,
+                stopLossPrice: stopLossPrice || undefined,
+            });
 
-		} else if (orderCategory === 'conditional') {
-			if (type === 'trailing_stop') {
-				if (!trailingValue || parseFloat(trailingValue) <= 0) {
-					toast.warning(t.OrderForm.invalidTrailingValue);
-					return;
-				}
-				order = await createTrailingStopOrder({
-					symbol, side, quantity,
-					trailingType,
-					trailingValue,
-					activationPrice: trailingActivationPrice || undefined,
-				});
-			} else {
-				if (!triggerPrice || parseFloat(triggerPrice) <= 0) {
-					toast.warning(t.OrderForm.invalidTriggerPrice);
-					return;
-				}
-				if (['stop_limit', 'take_profit_limit'].includes(type) && (!limitPrice || parseFloat(limitPrice) <= 0)) {
-					toast.warning(t.OrderForm.invalidLimitPrice);
-					return;
-				}
-				order = await createOrder({
-					symbol, side, type,
-					triggerPrice,
-					price: ['stop_limit', 'take_profit_limit'].includes(type) ? limitPrice : undefined,
-					quantity,
-				});
-			}
-		}
+        } else if (orderCategory === 'conditional') {
+            if (type === 'trailing_stop') {
+                if (!trailingValue || parseFloat(trailingValue) <= 0) {
+                    toast.warning(t.OrderForm.invalidTrailingValue);
+                    return;
+                }
+                order = await createTrailingStopOrder({
+                    symbol, side, quantity,
+                    trailingType,
+                    trailingValue,
+                    activationPrice: trailingActivationPrice || undefined,
+                });
+            } else {
+                if (!triggerPrice || parseFloat(triggerPrice) <= 0) {
+                    toast.warning(t.OrderForm.invalidTriggerPrice);
+                    return;
+                }
+                if (['stop_limit', 'take_profit_limit'].includes(type) && (!limitPrice || parseFloat(limitPrice) <= 0)) {
+                    toast.warning(t.OrderForm.invalidLimitPrice);
+                    return;
+                }
+                order = await createOrder({
+                    symbol, side, type,
+                    triggerPrice,
+                    price: ['stop_limit', 'take_profit_limit'].includes(type) ? limitPrice : undefined,
+                    quantity,
+                });
+            }
+        }
 
-		if (order) {
+        if (order) {
             toast.success(t.toast.orderSubmitted);
             // Reset form
             setQuantity('');

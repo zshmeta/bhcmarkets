@@ -296,7 +296,7 @@ const OrderFormView = ({
                                 placeholder="0.00"
                             />
                             <StepBtn type="button" onClick={onStepUp}><Icons name="plus" size="xs" /></StepBtn>
-                            <InputSuffix style={{ right: '8px' }}>{quoteAsset}</InputSuffix>
+                            <InputSuffix style={{ right: '18px' }}>{quoteAsset}</InputSuffix>
                         </InputWrapper>
                     </InputGroup>
                 )}

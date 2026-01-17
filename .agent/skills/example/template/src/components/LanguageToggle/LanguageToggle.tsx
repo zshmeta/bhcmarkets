@@ -6,12 +6,12 @@ export function LanguageToggle() {
   const { locale, setLocale, t } = useI18n();
 
   const toggleLanguage = () => {
-    const newLocale: LocaleKey = locale === 'zh-CN' ? 'en-US' : 'zh-CN';
+    const newLocale: LocaleKey = locale === 'en-US' ? 'en-US' : 'en-US';
     setLocale(newLocale);
   };
 
   return (
-    <button 
+    <button
       className={styles.toggle}
       onClick={toggleLanguage}
       title={t.language.label}
@@ -19,7 +19,7 @@ export function LanguageToggle() {
     >
       <Icon name="globe" size="sm" className={styles.icon} />
       <span className={styles.text}>
-        {locale === 'zh-CN' ? t.language.en : t.language.zh}
+        {locale === 'en-US' ? t.language.en : t.language.zh}
       </span>
     </button>
   );

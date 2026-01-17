@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
-import { useWalletStore } from '../store/walletStore';
+import { useAuthStore, useWalletStore } from '@repo/sdk';
 import { useI18n } from '../i18n';
 import { Icons } from '../components-refactored/Icons';
 import { useIsMobile } from '../hooks/useMediaQuery';
@@ -175,7 +174,7 @@ export const AuthPage: React.FC = () => {
                     <WelcomeParagraph>
                         {isMobile
                             ? t.auth?.welcomeMessageMobile
-                            : (locale === 'zh-CN' ? t.auth?.welcomeMessageZh : t.auth?.welcomeMessageEn)}
+                            : (locale === 'en-US' ? t.auth?.welcomeMessageZh : t.auth?.welcomeMessageEn)}
                     </WelcomeParagraph>
                 </WelcomeBanner>
 

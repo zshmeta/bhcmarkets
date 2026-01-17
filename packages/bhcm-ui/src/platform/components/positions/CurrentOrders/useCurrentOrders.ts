@@ -1,4 +1,4 @@
-import { useTradingStore } from '../../store/tradingStore';
+import { useTradingStore } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import type { PaperOrder } from '../../types/trading';
 

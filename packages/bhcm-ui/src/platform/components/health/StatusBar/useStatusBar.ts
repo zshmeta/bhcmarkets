@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useMarketStore, selectConnectionStatus, selectDataConfidence, selectLogs } from '../../store/marketStore';
+import { useMarketStore, selectConnectionStatus, selectDataConfidence, selectLogs } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 
 /* ═══════════════════════════════════════════════════════════

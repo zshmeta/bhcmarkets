@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useWalletStore } from '@repo/bhcm-ui/store';
+import { useWalletStore } from '@repo/sdk';
 import { useI18n } from '@repo/bhcm-ui/i18n';
 import { Icons } from '@repo/bhcm-ui/core';
 import { useIsMobile } from '../hooks/useMediaQuery';

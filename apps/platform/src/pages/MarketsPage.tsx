@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '@repo/bhcm-ui/i18n';
 import { LineChart } from '@repo/bhcm-ui/market';
 import { Icons, IconsName } from '@repo/bhcm-ui/core';
-import { useWatchlistStore } from '@repo/bhcm-ui/store';
+import { useWatchlistStore } from '@repo/sdk';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { MobileMarketsPage } from './mobile';
 import {
