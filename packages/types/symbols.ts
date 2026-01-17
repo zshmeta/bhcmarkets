@@ -234,3 +234,79 @@ export function getSymbolDef(symbol: string): SymbolDefinition | undefined {
 export function getSymbolsForSource(source: 'binance' | 'yahoo'): SymbolDefinition[] {
   return ALL_SYMBOLS.filter(s => s.sources[source] !== undefined);
 }
+
+// =============================================================================
+// SYMBOL NORMALIZATION (BOUNDARY HELPERS)
+// =============================================================================
+
+const safeDecodeURIComponent = (value: string): string => {
+  // If it's not valid URI encoding, just return the original.
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+// Map of external/source symbol strings -> canonical symbol (e.g. "BTC-USD" -> "BTC/USD")
+const SOURCE_TO_CANONICAL = (() => {
+  const map = new Map<string, string>();
+  for (const def of ALL_SYMBOLS) {
+    if (def.sources.binance) map.set(def.sources.binance.toUpperCase(), def.symbol);
+    if (def.sources.yahoo) map.set(def.sources.yahoo.toUpperCase(), def.symbol);
+  }
+  return map;
+})();
+
+/**
+ * Returns true if this is already one of our canonical supported symbols.
+ */
+export function isCanonicalSupportedSymbol(symbol: string): boolean {
+  return SYMBOL_MAP.has(symbol);
+}
+
+/**
+ * Normalize various symbol formats into the repo's canonical display/transport form.
+ *
+ * - Keeps UI stable: returns canonical symbols like "BTC/USD" when possible.
+ * - Accepts common input forms at boundaries: "BTC-USD", URL-encoded, and source symbols.
+ * - If the symbol is unknown, returns a trimmed version (uppercased) so callers can still
+ *   display it without crashing; downstream validators should reject unsupported symbols.
+ */
+export function toCanonicalSymbol(input: string): string | null {
+  if (typeof input !== 'string') return null;
+  const decoded = safeDecodeURIComponent(input).trim();
+  if (!decoded) return null;
+
+  // Fast path: exact canonical match
+  if (SYMBOL_MAP.has(decoded)) return decoded;
+
+  const upper = decoded.toUpperCase();
+
+  // Canonical match after casing normalization
+  if (SYMBOL_MAP.has(upper)) return upper;
+
+  // Source symbol match (yahoo/binance)
+  const bySource = SOURCE_TO_CANONICAL.get(upper);
+  if (bySource) return bySource;
+
+  // Common pair separator normalization (only if it becomes a supported canonical symbol)
+  if (upper.includes('-')) {
+    const candidate = upper.replace(/-/g, '/');
+    if (SYMBOL_MAP.has(candidate)) return candidate;
+  }
+  if (upper.includes('_')) {
+    const candidate = upper.replace(/_/g, '/');
+    if (SYMBOL_MAP.has(candidate)) return candidate;
+  }
+
+  return upper;
+}
+
+/**
+ * Encode a canonical symbol for safe usage in URL path params.
+ */
+export function toUrlSymbol(symbol: string): string {
+  const canonical = toCanonicalSymbol(symbol) ?? symbol;
+  return encodeURIComponent(canonical);
+}

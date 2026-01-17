@@ -43,30 +43,30 @@ describe('marketStore', () => {
 
   it('can toggle live mode', async () => {
     const { useMarketStore } = await import('./marketStore');
-    
+
     useMarketStore.getState().setLiveMode(true);
     expect(useMarketStore.getState().isLiveMode).toBe(true);
-    
+
     useMarketStore.getState().setLiveMode(false);
     expect(useMarketStore.getState().isLiveMode).toBe(false);
   });
 
   it('connects to WebSocket when subscribing in live mode', async () => {
     const { useMarketStore } = await import('./marketStore');
-    
-    useMarketStore.getState().setLiveMode(true);
-    useMarketStore.getState().subscribe('BTC-USD');
 
-    expect(WS).toHaveBeenCalledWith('ws://localhost:3001/ws');
+    useMarketStore.getState().setLiveMode(true);
+    useMarketStore.getState().subscribe('BTC/USD');
+
+    expect(WS).toHaveBeenCalledWith('ws://localhost:6060/ws');
     expect(mockWebSocket.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
   });
 
   it('closes WebSocket when unsubscribing in live mode', async () => {
     const { useMarketStore } = await import('./marketStore');
-    
+
     useMarketStore.getState().setLiveMode(true);
-    useMarketStore.getState().subscribe('BTC-USD');
-    
+    useMarketStore.getState().subscribe('BTC/USD');
+
     useMarketStore.getState().unsubscribe();
 
     expect(mockWebSocket.close).toHaveBeenCalled();

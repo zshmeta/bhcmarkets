@@ -35,6 +35,7 @@ export function loadEnv(): AppConfig {
   const databaseUrl = process.env.DATABASE_URL;
   const redisUrl = process.env.REDIS_URL;
 
+  
   if (!databaseUrl) {
     throw new Error("DATABASE_URL is required");
   }

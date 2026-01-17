@@ -140,6 +140,42 @@ export const FilterBtn = styled.button<FilterBtnProps>`
 `;
 
 /* ═══════════════════════════════════════════════════════════
+ * FILTER CHIPS
+ * ═══════════════════════════════════════════════════════════
+ */
+export const FilterRow = styled.div`
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border, #30363D);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+`;
+
+export const FilterChip = styled.button<{ $active?: boolean }>`
+  background: ${({ $active }) => $active ? 'var(--bg-secondary, #21262D)' : 'transparent'};
+  border: 1px solid ${({ $active }) => $active ? 'var(--text-secondary, #8B949E)' : 'var(--border-subtle, #30363D)'};
+  color: ${({ $active }) => $active ? 'var(--text-primary, #E6EDF3)' : 'var(--text-tertiary, #6E7681)'};
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--bg-secondary, #21262D);
+    color: var(--text-primary, #E6EDF3);
+  }
+`;
+
+/* ═══════════════════════════════════════════════════════════
  * LIST
  * ═══════════════════════════════════════════════════════════
  */
@@ -181,7 +217,7 @@ export const Item = styled.div<ItemProps>`
   padding: 0.25rem 0.25rem;
   cursor: pointer;
   transition: background 0.1s;
-  border-bottom: 1px solid var(--border-light, #21262D);
+  border: 2px solid  #0000DD;
   min-height: 22px;
 
   &:hover {
@@ -223,8 +259,10 @@ interface FavoriteProps {
   $active?: boolean;
 }
 
+// Add borders around th higher items to make them more distinct
 export const FavoriteBtn = styled.button<FavoriteProps>`
-  background: none;
+
+  background: transparent;
   border: none;
   padding: 0;
   color: var(--text-tertiary, #6E7681);
@@ -480,6 +518,7 @@ interface CategoryHeaderProps {
 }
 
 export const CategoryHeader = styled.div<CategoryHeaderProps>`
+  border: 1px solid  #30363D;
   display: flex;
   align-items: center;
   gap: 0.5rem;

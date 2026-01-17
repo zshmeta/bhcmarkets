@@ -29,6 +29,8 @@ import {
     BidAskCell,
     TableHeader,
     AddListButton,
+    FilterRow,
+    FilterChip,
 } from './Watchlist.styles';
 
 /* ═══════════════════════════════════════════════════════════
@@ -214,6 +216,8 @@ export interface WatchlistViewProps {
     expandedCategories: Set<string>;
     /** Active tab */
     activeTab: 'watchlists' | 'all';
+    /** Active asset filter */
+    activeFilter: 'all' | 'favorites' | string;
     /** Get position for a symbol */
     getPosition: (symbol: string) => WatchlistPosition | undefined;
     /** Translations */
@@ -234,6 +238,7 @@ export interface WatchlistViewProps {
     onToggleFavorite: (symbol: string) => void;
     onToggleCategory: (categoryId: string) => void;
     onTabChange: (tab: 'watchlists' | 'all') => void;
+    onFilterChange: (filter: any) => void;
     onKeyDown: (e: React.KeyboardEvent) => void;
 
     /** Collapsed sidebar mode */
@@ -252,6 +257,7 @@ const WatchlistView = ({
     searchQuery,
     expandedCategories,
     activeTab,
+    activeFilter,
     translations: t,
     inputRef,
     onSymbolSelect,
@@ -260,6 +266,7 @@ const WatchlistView = ({
     onToggleFavorite,
     onToggleCategory,
     onTabChange,
+    onFilterChange,
     onKeyDown,
     isCollapsed = false,
 }: WatchlistViewProps) => {
@@ -349,13 +356,25 @@ const WatchlistView = ({
                 )}
             </SearchWrapper>
 
+            {/* Filter Chips */}
+            <FilterRow>
+                <FilterChip $active={activeFilter === 'all'} onClick={() => onFilterChange('all')}>All</FilterChip>
+                <FilterChip $active={activeFilter === 'favorites'} onClick={() => onFilterChange('favorites')}>Favorites</FilterChip>
+                {/*
+                <FilterChip $active={activeFilter === 'crypto'} onClick={() => onFilterChange('crypto')}>Crypto</FilterChip>
+                <FilterChip $active={activeFilter === 'forex'} onClick={() => onFilterChange('forex')}>Forex</FilterChip>
+                <FilterChip $active={activeFilter === 'stock'} onClick={() => onFilterChange('stock')}>Stocks</FilterChip>
+                <FilterChip $active={activeFilter === 'index'} onClick={() => onFilterChange('index')}>Indices</FilterChip>
+                <FilterChip $active={activeFilter === 'commodity'} onClick={() => onFilterChange('commodity')}>Commodities</FilterChip> */}
+            </FilterRow>
+
             {/* Table Header */}
             <TableHeader>
                 <span></span>
                 <span></span>
                 <span></span>
-                <span>{t.bid || 'Bid'}</span>
-                <span>{t.ask || 'Ask'}</span>
+                <span></span>
+                <span></span>
             </TableHeader>
 
             {/* Category List */}

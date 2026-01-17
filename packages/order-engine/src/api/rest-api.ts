@@ -211,7 +211,8 @@ export class RestApiServer {
       // Extract params
       const params: Record<string, string> = {};
       route.paramNames.forEach((name, i) => {
-        params[name] = match[i + 1]!;
+        // Support URL-encoded symbols (e.g., BTC%2FUSD)
+        params[name] = decodeURIComponent(match[i + 1]!);
       });
 
       // Parse body for POST/PUT

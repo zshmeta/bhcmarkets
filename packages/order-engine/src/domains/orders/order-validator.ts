@@ -37,7 +37,12 @@ const TimeInForceSchema = z.enum(['GTC', 'IOC', 'FOK', 'GTD']);
 
 const PlaceOrderSchema = z.object({
   accountId: z.string().uuid('Invalid account ID'),
-  symbol: z.string().min(1).max(20).regex(/^[A-Z0-9-_]+$/i, 'Invalid symbol format'),
+  // Canonical symbols across the repo use formats like:
+  // - BTC/USD (crypto/forex)
+  // - AIR.PA (equities)
+  // - SPX (indices)
+  // Keep this permissive but still URL/DB safe.
+  symbol: z.string().min(1).max(64).regex(/^[A-Z0-9][A-Z0-9./_-]*$/i, 'Invalid symbol format'),
   side: OrderSideSchema,
   type: OrderTypeSchema,
   quantity: z.number().positive('Quantity must be positive'),

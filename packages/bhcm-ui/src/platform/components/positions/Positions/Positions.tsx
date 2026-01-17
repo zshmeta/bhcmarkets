@@ -19,6 +19,7 @@ const Positions = () => {
         confirmClose,
         tpslSymbol,
         calculatePnL,
+        getPrice,
         setConfirmClose,
         setTPSLSymbol,
         handleClosePosition,
@@ -42,6 +43,7 @@ const Positions = () => {
             confirmClose={confirmClose}
             tpslSymbol={tpslSymbol}
             calculatePnL={calculatePnL}
+            getPrice={getPrice}
             onSetConfirmClose={setConfirmClose}
             onSetTPSLSymbol={setTPSLSymbol}
             onClosePosition={handleClosePosition}

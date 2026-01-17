@@ -69,7 +69,9 @@ const PriceLevel = memo(({
 
     const handleClick = () => {
         if (onPriceClick) {
-            const orderSide = side === 'bid' ? 'buy' : 'sell';
+            // Taker Logic: If I click a BID, I want to SELL to them.
+            // If I click an ASK, I want to BUY from them.
+            const orderSide = side === 'bid' ? 'sell' : 'buy';
             onPriceClick(level.price, orderSide);
         }
     };

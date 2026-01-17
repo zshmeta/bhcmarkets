@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import {
     useWatchlistStore,
     selectFilteredSymbols,
@@ -15,6 +15,7 @@ import {
 } from '@repo/sdk';
 import { useTradingStore, selectPositions } from '@repo/sdk';
 import { useMarketStore } from '@repo/sdk';
+import { getSymbolDef, type AssetKind } from '@repo/types';
 import { useI18n } from '../../i18n';
 
 /* ═══════════════════════════════════════════════════════════
@@ -66,6 +67,8 @@ export interface UseWatchlistReturn {
     searchQuery: string;
     /** Whether favorites-only filter is active */
     showFavoritesOnly: boolean;
+    /** Active asset filter */
+    activeFilter: AssetKind | 'all' | 'favorites';
     /** Expanded category IDs */
     expandedCategories: Set<string>;
     /** Active tab */
@@ -84,6 +87,8 @@ export interface UseWatchlistReturn {
     handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     /** Clear search */
     handleClearSearch: () => void;
+    /** Set asset filter */
+    handleFilterChange: (filter: AssetKind | 'all' | 'favorites') => void;
     /** Toggle favorites filter */
     handleToggleFavoritesFilter: () => void;
     /** Toggle favorite for a symbol */
@@ -103,6 +108,8 @@ const useWatchlist = (
 ): UseWatchlistReturn => {
     const { t } = useI18n();
     const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const [activeFilter, setActiveFilter] = useState<AssetKind | 'all' | 'favorites'>('all');
 
     // Store subscriptions
     const filteredSymbols = useWatchlistStore(selectFilteredSymbols);
@@ -203,6 +210,25 @@ const useWatchlist = (
     }, [updateSymbolPrice]);
 
 
+    // Apply local filters (Asset Class) on top of store filters (Search)
+    const finalSymbols = useMemo(() => {
+        let result = filteredSymbols;
+
+        // Apply Favorites Filter (mapped to 'favorites' chip)
+        if (activeFilter === 'favorites') {
+            result = result.filter(s => favorites.includes(s.symbol));
+        }
+        // Apply Asset Class Filter
+        else if (activeFilter !== 'all') {
+            result = result.filter(s => {
+                const def = getSymbolDef(s.symbol);
+                return def?.kind === activeFilter;
+            });
+        }
+
+        return result;
+    }, [filteredSymbols, activeFilter, favorites]);
+
     // Position lookup
     const getPosition = useCallback((symbol: string): WatchlistPosition | undefined => {
         if (positions instanceof Map) {
@@ -235,8 +261,13 @@ const useWatchlist = (
     }, [setSearchQuery]);
 
     const handleToggleFavoritesFilter = useCallback(() => {
-        setShowFavoritesOnly(!showFavoritesOnly);
-    }, [setShowFavoritesOnly, showFavoritesOnly]);
+        // Toggle between 'favorites' and 'all' for backward compatibility if needed
+        setActiveFilter(prev => prev === 'favorites' ? 'all' : 'favorites');
+    }, []);
+
+    const handleFilterChange = useCallback((filter: AssetKind | 'all' | 'favorites') => {
+        setActiveFilter(filter);
+    }, []);
 
     const handleToggleCategory = useCallback((categoryId: string) => {
         toggleCategoryAction(categoryId);
@@ -244,27 +275,29 @@ const useWatchlist = (
 
     const handleTabChange = useCallback((tab: 'watchlists' | 'all') => {
         setActiveTabAction(tab);
+        // Reset filter when switching tabs to avoid confusion? Or keep it?
+        // Let's keep it for now.
     }, [setActiveTabAction]);
 
     // Keyboard navigation
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-        if (filteredSymbols.length === 0) return;
-        const currentIndex = filteredSymbols.findIndex(s => s.symbol === selectedSymbol);
+        if (finalSymbols.length === 0) return;
+        const currentIndex = finalSymbols.findIndex(s => s.symbol === selectedSymbol);
 
         if (e.key === 'ArrowDown') {
             e.preventDefault();
-            const nextIndex = currentIndex < filteredSymbols.length - 1 ? currentIndex + 1 : 0;
-            const nextSymbol = filteredSymbols[nextIndex];
+            const nextIndex = currentIndex < finalSymbols.length - 1 ? currentIndex + 1 : 0;
+            const nextSymbol = finalSymbols[nextIndex];
             if (nextSymbol) handleSymbolSelect(nextSymbol.symbol);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredSymbols.length - 1;
-            const prevSymbol = filteredSymbols[prevIndex];
+            const prevIndex = currentIndex > 0 ? currentIndex - 1 : finalSymbols.length - 1;
+            const prevSymbol = finalSymbols[prevIndex];
             if (prevSymbol) handleSymbolSelect(prevSymbol.symbol);
         } else if (e.key === 'Enter' && currentIndex >= 0) {
             onSymbolChange?.(selectedSymbol);
         }
-    }, [filteredSymbols, selectedSymbol, handleSymbolSelect, onSymbolChange]);
+    }, [finalSymbols, selectedSymbol, handleSymbolSelect, onSymbolChange]);
 
     // Translations
     const translations = useMemo((): WatchlistTranslations => ({
@@ -285,13 +318,14 @@ const useWatchlist = (
     }), [t]);
 
     return {
-        symbols: filteredSymbols,
+        symbols: finalSymbols,
         categories,
         selectedSymbol,
         favorites,
         pinned,
         searchQuery,
-        showFavoritesOnly,
+        showFavoritesOnly: activeFilter === 'favorites',
+        activeFilter,
         expandedCategories,
         activeTab,
         getPosition,
@@ -301,6 +335,7 @@ const useWatchlist = (
         handleSearchChange,
         handleClearSearch,
         handleToggleFavoritesFilter,
+        handleFilterChange,
         toggleFavorite: toggleFavoriteAction,
         togglePinned: togglePinnedAction,
         handleToggleCategory,

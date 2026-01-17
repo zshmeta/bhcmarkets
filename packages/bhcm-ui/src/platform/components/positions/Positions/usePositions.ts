@@ -3,7 +3,7 @@ import Decimal from 'decimal.js';
 import { useTradingStore } from '@repo/sdk';
 import { useWalletStore, selectBalances } from '@repo/sdk';
 import { useMarketStore, selectMetrics, selectLevel2Book } from '@repo/sdk';
-import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
+import { useWatchlistStore, selectSelectedSymbol, selectSymbols } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 
 /* ═══════════════════════════════════════════════════════════
@@ -38,6 +38,7 @@ export interface UsePositionsReturn {
 
     // Calculations
     calculatePnL: (pos: Position) => PositionPnL;
+    getPrice: (symbol: string) => number;
 
     // Actions
     setConfirmClose: (symbol: string | null) => void;
@@ -57,6 +58,7 @@ const usePositions = (): UsePositionsReturn => {
     const metrics = useMarketStore(selectMetrics);
     const Level2Book = useMarketStore(selectLevel2Book);
     const selectedSymbol = useWatchlistStore(selectSelectedSymbol);
+    const allSymbols = useWatchlistStore(selectSymbols);
 
     // Modal state
     const [confirmClose, setConfirmClose] = useState<string | null>(null);
@@ -65,6 +67,15 @@ const usePositions = (): UsePositionsReturn => {
     // Derived values
     const currentSymbol = Level2Book?.symbol || selectedSymbol;
     const currentPrice = metrics ? parseFloat(metrics.mid) : 0;
+
+    // Create a price map for ALL symbols to support PnL calculation across different assets
+    const priceMap = useMemo(() => {
+        const map = new Map<string, number>();
+        allSymbols.forEach(s => {
+            map.set(s.symbol, parseFloat(s.price || '0'));
+        });
+        return map;
+    }, [allSymbols]);
 
     // Convert positions to array
     const positionList = useMemo((): [string, Position][] => {
@@ -81,18 +92,29 @@ const usePositions = (): UsePositionsReturn => {
     const calculatePnL = useCallback((pos: Position): PositionPnL => {
         const qty = new Decimal(pos.quantity);
         const entry = new Decimal(pos.avgEntryPrice);
-        const isCurrentSymbol = pos.symbol === currentSymbol;
+        
+        // Use the price from the map (all symbols), fallback to currentPrice if active symbol, or 0
+        let marketPrice = priceMap.get(pos.symbol) || 0;
+        
+        // Fallback for the active symbol if it hasn't updated in the watchlist store yet
+        if (marketPrice === 0 && pos.symbol === currentSymbol) {
+            marketPrice = currentPrice;
+        }
 
-        if (!isCurrentSymbol || currentPrice === 0) {
+        if (marketPrice === 0) {
             return { pnl: null, pnlPercent: null, hasPrice: false };
         }
 
-        const price = new Decimal(currentPrice);
+        const price = new Decimal(marketPrice);
         const pnl = qty.times(price.minus(entry));
         const pnlPercent = entry.gt(0) ? price.minus(entry).div(entry).times(100).toNumber() : 0;
 
         return { pnl: pnl.toNumber(), pnlPercent, hasPrice: true };
-    }, [currentSymbol, currentPrice]);
+    }, [priceMap, currentSymbol, currentPrice]);
+
+    const getPrice = useCallback((symbol: string): number => {
+        return priceMap.get(symbol) || (symbol === currentSymbol ? currentPrice : 0);
+    }, [priceMap, currentSymbol, currentPrice]);
 
     // Total unrealized P&L
     const totalPnL = useMemo(() => {
@@ -160,6 +182,7 @@ const usePositions = (): UsePositionsReturn => {
         confirmClose,
         tpslSymbol,
         calculatePnL,
+        getPrice,
         setConfirmClose,
         setTPSLSymbol,
         handleClosePosition,

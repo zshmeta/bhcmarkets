@@ -26,6 +26,7 @@ export const Container = styled.div<ContainerProps>`
   height: 100%;
   min-height: 0;
   border: 1px solid var(--border-subtle, #262C36);
+  padding: 0;
 
   @media (max-height: 900px) { min-height: 280px; }
   @media (max-width: 768px) { min-height: 150px; }
@@ -43,8 +44,8 @@ export const Toolbar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.5rem;
-  height: 36px;
+  padding: 0.5rem 0.5rem;
+  height: 40px;
   background: var(--bg-tertiary, #1C2128);
   border-bottom: 1px solid var(--border, #30363D);
   gap: 0.5rem;

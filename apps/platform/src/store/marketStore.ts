@@ -3,6 +3,7 @@ import type { DataConfidenceLevel, Level2BookData, MarketMetrics, Trade } from '
 import type { NetworkEvent } from '../../../../packages/bhcm-ui/src/types/market';
 import { generateUUID } from '../../../../packages/sdk/utils/uuid';
 import { useWatchlistStore } from './watchlistStore';
+import { toCanonicalSymbol } from '@repo/types/symbols';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -153,8 +154,9 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 		},
 	],
 	clearLogs: () => set({ logs: [] }),
-	isLiveMode: true,
+	isLiveMode: false,
 	setLiveMode: (isLive) => set({ isLiveMode: isLive }),
+
 	networkHealth: {
 		score: 45,
 		trend: 'stable',
@@ -178,6 +180,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 	// ... (existing helper function remain same)
 
 	subscribe: (symbol) => {
+		const canonicalSymbol = toCanonicalSymbol(symbol) ?? symbol;
 		const currentState = get();
 
 		if (intervalId) {
@@ -194,7 +197,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 			Level2Book: null,
 			metrics: null,
 			ticker: null,
-			activeSymbol: symbol, // Set active symbol
+			activeSymbol: canonicalSymbol, // Keep display/transport canonical
 		});
 
 		// Close socket to force fresh connection for active symbol (simplifies "mode" handling)
@@ -217,7 +220,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 
 				socket.addEventListener('open', () => {
 					if (socket?.readyState === WebSocket.OPEN) {
-						socket.send(JSON.stringify({ type: 'subscribe', symbols: [symbol] }));
+						socket.send(JSON.stringify({ type: 'subscribe', symbols: [canonicalSymbol] }));
 						set((state) => ({
 							connectionStatus: { ...state.connectionStatus, state: 'connected', lastMessageTime: Date.now() },
 							// ...
@@ -341,7 +344,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 					level: 'info' as const,
 					category: 'market',
 					event: 'subscribe',
-					data: { symbol },
+					data: { symbol: canonicalSymbol },
 					timestamp: Date.now(),
 				},
 			].slice(-200),
@@ -356,7 +359,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 				: null,
 		}));
 
-		let mid = symbol.startsWith('ETH') ? 3125 : symbol.startsWith('SOL') ? 105 : 52450;
+		let mid = canonicalSymbol.startsWith('ETH') ? 3125 : canonicalSymbol.startsWith('SOL') ? 105 : 52450;
 
 		connectTimeoutId = window.setTimeout(() => {
 			set((state) => ({
@@ -373,7 +376,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 						level: 'info' as const,
 						category: 'market',
 						event: 'connected',
-						data: { symbol },
+						data: { symbol: canonicalSymbol },
 						timestamp: Date.now(),
 					},
 				].slice(-200),
@@ -399,7 +402,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 			const spread = Math.max(bestAsk - bestBid, 0);
 			const spreadBps = mid > 0 ? (spread / mid) * 10000 : 0;
 
-			const trade = nowTrade(symbol, mid);
+			const trade = nowTrade(canonicalSymbol, mid);
 			const trades = [trade, ...state.RecentPositions].slice(0, 200);
 
 			const latency = Math.random() * 15;
@@ -408,13 +411,13 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 
 			set((prev) => ({
 				Level2Book: {
-					symbol,
+					symbol: canonicalSymbol,
 					bids,
 					asks,
 					lastUpdateId: (prev.Level2Book?.lastUpdateId || 0) + 1,
 				},
 				metrics: {
-					symbol,
+					symbol: canonicalSymbol,
 					bid: bestBid.toFixed(2),
 					ask: bestAsk.toFixed(2),
 					mid: mid.toFixed(2),
@@ -429,7 +432,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 					bidDepthVolume: (Math.random() * 1000).toFixed(2),
 					askDepthVolume: (Math.random() * 1000).toFixed(2),
 				},
-				ticker: { symbol, price: mid.toFixed(2), priceChange24h: (Math.random() - 0.5) * 5 },
+				ticker: { symbol: canonicalSymbol, price: mid.toFixed(2), priceChange24h: (Math.random() - 0.5) * 5 },
 				RecentPositions: trades,
 				connectionStatus: {
 					...prev.connectionStatus,

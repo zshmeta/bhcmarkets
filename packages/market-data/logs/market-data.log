@@ -19554,3 +19554,498 @@
 {"level":30,"time":1768627255325,"service":"market-data","component":"collector-registry","msg":"Stopping all collectors..."}
 {"level":50,"time":1768627255326,"service":"market-data","component":"tick-repository","error":{"type":"Error","message":"write CONNECTION_ENDED 100.100.13.10:5432","stack":"Error: write CONNECTION_ENDED 100.100.13.10:5432\n    at Query.handler (file:///home/zshmeta/bhcmarkets/node_modules/.bun/postgres@3.4.8/node_modules/postgres/src/index.js:331:34)\n    at Query.handle (file:///home/zshmeta/bhcmarkets/node_modules/.bun/postgres@3.4.8/node_modules/postgres/src/query.js:140:65)","code":"CONNECTION_ENDED","errno":"CONNECTION_ENDED","address":["100.100.13.10"],"port":[5432]},"count":49,"msg":"Failed to save candle batch"}
 {"level":30,"time":1768627255330,"service":"market-data","component":"candle-aggregator","msg":"Candle aggregator stopped"}
+{"level":30,"time":1768663217286,"service":"market-data","env":"development","logLevel":"info","logFilePath":"./logs/market-data.log","msg":"Logger initialized"}
+{"level":30,"time":1768663217455,"service":"market-data","component":"bootstrap","env":"development","msg":"Starting Market Data Service..."}
+{"level":30,"time":1768663217455,"service":"market-data","component":"bootstrap","msg":"Initializing services..."}
+{"level":30,"time":1768663217455,"service":"market-data","component":"bootstrap","msg":"Connecting to database..."}
+{"level":30,"time":1768663217771,"service":"market-data","component":"bootstrap","msg":"Database connected"}
+{"level":30,"time":1768663217771,"service":"market-data","component":"bootstrap","msg":"Connecting to Redis..."}
+{"level":30,"time":1768663217817,"service":"market-data","component":"redis-client","msg":"Redis connected"}
+{"level":30,"time":1768663217918,"service":"market-data","component":"redis-client","msg":"Redis client initialized"}
+{"level":30,"time":1768663218002,"service":"market-data","component":"redis-client","msg":"Redis subscriber client initialized"}
+{"level":30,"time":1768663218003,"service":"market-data","component":"bootstrap","msg":"Redis connected"}
+{"level":30,"time":1768663218005,"service":"market-data","component":"collector-registry","msg":"Initializing collectors..."}
+{"level":30,"time":1768663218007,"service":"market-data","component":"collector-registry","collectors":["binance","yahoo","rabbitforex","fx-commodities"],"msg":"Collectors initialized"}
+{"level":30,"time":1768663218039,"service":"market-data","component":"tick-repository","msg":"Database connection established"}
+{"level":30,"time":1768663218039,"service":"market-data","component":"historical-service","msg":"Historical service initialized"}
+{"level":30,"time":1768663218039,"service":"market-data","component":"bootstrap","msg":"Services initialized"}
+{"level":30,"time":1768663218040,"service":"market-data","component":"bootstrap","msg":"Wiring data pipeline..."}
+{"level":30,"time":1768663218040,"service":"market-data","component":"bootstrap","msg":"Data pipeline wired"}
+{"level":30,"time":1768663218040,"service":"market-data","component":"bootstrap","msg":"Starting servers..."}
+{"level":30,"time":1768663218046,"service":"market-data","component":"websocket-server","port":6060,"msg":"WebSocket server listening"}
+{"level":30,"time":1768663218048,"service":"market-data","component":"bootstrap","port":6000,"msg":"HTTP API server listening"}
+{"level":30,"time":1768663218048,"service":"market-data","component":"bootstrap","msg":"Starting data collection..."}
+{"level":30,"time":1768663218048,"service":"market-data","component":"collector-registry","msg":"Starting all collectors..."}
+{"level":30,"time":1768663218049,"service":"market-data","component":"collector-registry","collector":"binance","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663218049,"service":"market-data","collector":"binance","msg":"Connecting to Binance WebSocket..."}
+{"level":30,"time":1768663219625,"service":"market-data","collector":"binance","msg":"WebSocket connection established"}
+{"level":30,"time":1768663219625,"service":"market-data","component":"collector-registry","collector":"binance","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663219626,"service":"market-data","collector":"binance","msg":"Connected successfully"}
+{"level":30,"time":1768663219626,"service":"market-data","component":"collector-registry","collector":"binance","msg":"Collector started"}
+{"level":30,"time":1768663219626,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663219626,"service":"market-data","collector":"yahoo","msg":"Verifying yfinance-service accessibility (stocks)..."}
+{"level":50,"time":1768663227636,"service":"market-data","collector":"yahoo","error":{"type":"DOMException","message":"This operation was aborted","stack":"AbortError: This operation was aborted\n    at node:internal/deps/undici/undici:15845:13\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runNextTicks (node:internal/process/task_queues:68:3)\n    at process.processTimers (node:internal/timers:538:9)\n    at async YahooCollector.fetchBatch (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:336:17)\n    at async YahooCollector.doConnect (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:107:20)\n    at async YahooCollector.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/base.collector.ts:157:7)\n    at async CollectorRegistry.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/collector.registry.ts:156:9)\n    at async MarketDataService.startDataCollection (/home/zshmeta/bhcmarkets/packages/market-data/src/index.ts:288:5)\n    at async MarketDataService.start (/home/zshmeta/bhcmarkets/packages/market-data/src/index.ts:118:7)","name":"AbortError","code":20,"INDEX_SIZE_ERR":1,"DOMSTRING_SIZE_ERR":2,"HIERARCHY_REQUEST_ERR":3,"WRONG_DOCUMENT_ERR":4,"INVALID_CHARACTER_ERR":5,"NO_DATA_ALLOWED_ERR":6,"NO_MODIFICATION_ALLOWED_ERR":7,"NOT_FOUND_ERR":8,"NOT_SUPPORTED_ERR":9,"INUSE_ATTRIBUTE_ERR":10,"INVALID_STATE_ERR":11,"SYNTAX_ERR":12,"INVALID_MODIFICATION_ERR":13,"NAMESPACE_ERR":14,"INVALID_ACCESS_ERR":15,"VALIDATION_ERR":16,"TYPE_MISMATCH_ERR":17,"SECURITY_ERR":18,"NETWORK_ERR":19,"ABORT_ERR":20,"URL_MISMATCH_ERR":21,"QUOTA_EXCEEDED_ERR":22,"TIMEOUT_ERR":23,"INVALID_NODE_TYPE_ERR":24,"DATA_CLONE_ERR":25},"msg":"Connection failed"}
+{"level":50,"time":1768663227651,"service":"market-data","component":"collector-registry","source":"yahoo","type":"connection_failed","message":"This operation was aborted","retryable":true,"msg":"Collector error"}
+{"level":30,"time":1768663227651,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"connecting","to":"reconnecting","msg":"Collector state changed"}
+{"level":30,"time":1768663227652,"service":"market-data","collector":"yahoo","delayMs":1036,"attempt":1,"msg":"Scheduling reconnect"}
+{"level":30,"time":1768663227653,"service":"market-data","component":"collector-registry","collector":"yahoo","msg":"Collector started"}
+{"level":30,"time":1768663227653,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663227653,"service":"market-data","collector":"rabbitforex","baseUrl":"http://100.100.13.10:3000","msg":"Verifying RabbitForexAPI accessibility..."}
+{"level":30,"time":1768663227810,"service":"market-data","collector":"rabbitforex","fxOk":true,"metalsOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768663227810,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663227810,"service":"market-data","collector":"rabbitforex","msg":"Connected successfully"}
+{"level":30,"time":1768663227810,"service":"market-data","component":"collector-registry","collector":"rabbitforex","msg":"Collector started"}
+{"level":30,"time":1768663227810,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663227810,"service":"market-data","collector":"fx-commodities","msg":"Verifying yfinance-service accessibility..."}
+{"level":30,"time":1768663228688,"service":"market-data","collector":"yahoo","attempt":1,"msg":"Attempting reconnection"}
+{"level":30,"time":1768663228688,"service":"market-data","collector":"yahoo","msg":"Verifying yfinance-service accessibility (stocks)..."}
+{"level":50,"time":1768663228754,"service":"market-data","collector":"yahoo","error":{"type":"Error","message":"yfinance-service returned invalid data for AAPL","stack":"Error: yfinance-service returned invalid data for AAPL\n    at YahooCollector.doConnect (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:110:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async YahooCollector.attemptReconnect (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/base.collector.ts:431:7)"},"msg":"Reconnection attempt failed"}
+{"level":50,"time":1768663228754,"service":"market-data","component":"collector-registry","source":"yahoo","type":"connection_failed","message":"yfinance-service returned invalid data for AAPL","retryable":true,"msg":"Collector error"}
+{"level":30,"time":1768663228755,"service":"market-data","collector":"yahoo","delayMs":2085,"attempt":2,"msg":"Scheduling reconnect"}
+{"level":30,"time":1768663230840,"service":"market-data","collector":"yahoo","attempt":2,"msg":"Attempting reconnection"}
+{"level":30,"time":1768663230841,"service":"market-data","collector":"yahoo","msg":"Verifying yfinance-service accessibility (stocks)..."}
+{"level":50,"time":1768663230881,"service":"market-data","collector":"yahoo","error":{"type":"Error","message":"yfinance-service returned invalid data for AAPL","stack":"Error: yfinance-service returned invalid data for AAPL\n    at YahooCollector.doConnect (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:110:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async YahooCollector.attemptReconnect (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/base.collector.ts:431:7)"},"msg":"Reconnection attempt failed"}
+{"level":50,"time":1768663230881,"service":"market-data","component":"collector-registry","source":"yahoo","type":"connection_failed","message":"yfinance-service returned invalid data for AAPL","retryable":true,"msg":"Collector error"}
+{"level":30,"time":1768663230882,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"reconnecting","to":"error","msg":"Collector state changed"}
+{"level":40,"time":1768663230882,"service":"market-data","collector":"yahoo","failureCount":5,"msg":"Circuit breaker OPENED"}
+{"level":40,"time":1768663230882,"service":"market-data","collector":"yahoo","remainingMs":60000,"msg":"Circuit open, waiting for cooldown"}
+{"level":50,"time":1768663235813,"service":"market-data","collector":"fx-commodities","error":{"type":"Error","message":"yfinance-service is unreachable","stack":"Error: yfinance-service is unreachable\n    at FxCommoditiesCollector.doConnect (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/fx-commodities.collector.ts:132:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async FxCommoditiesCollector.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/base.collector.ts:157:7)\n    at async CollectorRegistry.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/collector.registry.ts:156:9)\n    at async MarketDataService.startDataCollection (/home/zshmeta/bhcmarkets/packages/market-data/src/index.ts:288:5)\n    at async MarketDataService.start (/home/zshmeta/bhcmarkets/packages/market-data/src/index.ts:118:7)"},"msg":"Connection failed"}
+{"level":50,"time":1768663235815,"service":"market-data","component":"collector-registry","source":"fx-commodities","type":"connection_failed","message":"yfinance-service is unreachable","retryable":true,"msg":"Collector error"}
+{"level":30,"time":1768663235815,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"connecting","to":"reconnecting","msg":"Collector state changed"}
+{"level":30,"time":1768663235815,"service":"market-data","collector":"fx-commodities","delayMs":1029,"attempt":1,"msg":"Scheduling reconnect"}
+{"level":30,"time":1768663235815,"service":"market-data","component":"collector-registry","collector":"fx-commodities","msg":"Collector started"}
+{"level":30,"time":1768663235816,"service":"market-data","collector":"binance","symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD","ADA/USD","DOGE/USD","DOT/USD","AVAX/USD","LINK/USD","MATIC/USD","LTC/USD","USDC/USD"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663235817,"service":"market-data","collector":"binance","streams":["btcusdt@ticker","ethusdt@ticker","bnbusdt@ticker","xrpusdt@ticker","solusdt@ticker","adausdt@ticker","dogeusdt@ticker","dotusdt@ticker","avaxusdt@ticker","linkusdt@ticker","maticusdt@ticker","ltcusdt@ticker","usdcusdt@ticker"],"id":1,"msg":"Sending subscription request"}
+{"level":30,"time":1768663235821,"service":"market-data","component":"collector-registry","collector":"binance","symbolCount":13,"symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD"],"msg":"Subscribed to symbols"}
+{"level":40,"time":1768663235821,"service":"market-data","component":"collector-registry","collector":"yahoo","state":"error","msg":"Collector not connected; queued subscriptions"}
+{"level":30,"time":1768663235821,"service":"market-data","collector":"rabbitforex","symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD","EUR/GBP","EUR/JPY","GBP/JPY","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663235822,"service":"market-data","collector":"rabbitforex","intervalMs":1000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663235956,"service":"market-data","component":"collector-registry","collector":"rabbitforex","symbolCount":15,"symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD"],"msg":"Subscribed to symbols"}
+{"level":40,"time":1768663235956,"service":"market-data","component":"collector-registry","collector":"fx-commodities","state":"reconnecting","msg":"Collector not connected; queued subscriptions"}
+{"level":30,"time":1768663235956,"service":"market-data","component":"collector-registry","msg":"All collectors started"}
+{"level":30,"time":1768663235956,"service":"market-data","component":"bootstrap","httpPort":6000,"wsPort":6060,"msg":"✅ Market Data Service started successfully"}
+{"level":30,"time":1768663236844,"service":"market-data","collector":"fx-commodities","attempt":1,"msg":"Attempting reconnection"}
+{"level":30,"time":1768663236844,"service":"market-data","collector":"fx-commodities","msg":"Verifying yfinance-service accessibility..."}
+{"level":30,"time":1768663236906,"service":"market-data","collector":"fx-commodities","yfinanceOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768663236906,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"reconnecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663236906,"service":"market-data","collector":"fx-commodities","symbols":["SPX","NDX","DJI","VIX","FTSE","DAX","N225","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663236907,"service":"market-data","collector":"fx-commodities","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663236909,"service":"market-data","collector":"fx-commodities","msg":"Reconnection successful"}
+{"level":30,"time":1768663244134,"service":"market-data","component":"bootstrap","msg":"Received SIGINT"}
+{"level":30,"time":1768663244135,"service":"market-data","component":"bootstrap","msg":"🛑 Stopping Market Data Service..."}
+{"level":30,"time":1768663244135,"service":"market-data","component":"collector-registry","msg":"Stopping all collectors..."}
+{"level":30,"time":1768663244135,"service":"market-data","collector":"binance","msg":"Stopping collector"}
+{"level":30,"time":1768663244150,"service":"market-data","component":"collector-registry","collector":"binance","from":"connected","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663244150,"service":"market-data","component":"collector-registry","collector":"binance","msg":"Collector stopped"}
+{"level":30,"time":1768663244150,"service":"market-data","collector":"yahoo","msg":"Stopping collector"}
+{"level":30,"time":1768663244151,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"error","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663244151,"service":"market-data","component":"collector-registry","collector":"yahoo","msg":"Collector stopped"}
+{"level":30,"time":1768663244151,"service":"market-data","collector":"rabbitforex","msg":"Stopping collector"}
+{"level":30,"time":1768663244151,"service":"market-data","collector":"rabbitforex","msg":"Stopped poll loop"}
+{"level":30,"time":1768663244151,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"connected","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663244151,"service":"market-data","component":"collector-registry","collector":"rabbitforex","msg":"Collector stopped"}
+{"level":30,"time":1768663244151,"service":"market-data","collector":"fx-commodities","msg":"Stopping collector"}
+{"level":30,"time":1768663244152,"service":"market-data","collector":"fx-commodities","msg":"Stopped poll loop"}
+{"level":30,"time":1768663244152,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"connected","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663244152,"service":"market-data","component":"collector-registry","collector":"fx-commodities","msg":"Collector stopped"}
+{"level":30,"time":1768663244184,"service":"market-data","component":"candle-aggregator","msg":"Candle aggregator stopped"}
+{"level":30,"time":1768663244207,"service":"market-data","component":"bootstrap","msg":"Received SIGINT"}
+{"level":30,"time":1768663244207,"service":"market-data","component":"bootstrap","msg":"🛑 Stopping Market Data Service..."}
+{"level":30,"time":1768663244207,"service":"market-data","component":"collector-registry","msg":"Stopping all collectors..."}
+{"level":50,"time":1768663244208,"service":"market-data","component":"tick-repository","error":{"type":"Error","message":"write CONNECTION_ENDED 100.100.13.10:5432","stack":"Error: write CONNECTION_ENDED 100.100.13.10:5432\n    at Query.handler (file:///home/zshmeta/bhcmarkets/node_modules/.bun/postgres@3.4.8/node_modules/postgres/src/index.js:331:34)\n    at Query.handle (file:///home/zshmeta/bhcmarkets/node_modules/.bun/postgres@3.4.8/node_modules/postgres/src/query.js:140:65)","code":"CONNECTION_ENDED","errno":"CONNECTION_ENDED","address":["100.100.13.10"],"port":[5432]},"count":24,"msg":"Failed to save candle batch"}
+{"level":30,"time":1768663244209,"service":"market-data","component":"candle-aggregator","msg":"Candle aggregator stopped"}
+{"level":30,"time":1768663244222,"service":"market-data","component":"tick-repository","msg":"Database connection closed"}
+{"level":30,"time":1768663244222,"service":"market-data","component":"tick-repository","msg":"Database connection closed"}
+{"level":30,"time":1768663244222,"service":"market-data","component":"historical-service","msg":"Historical service stopped"}
+{"level":30,"time":1768663244222,"service":"market-data","component":"historical-service","msg":"Historical service stopped"}
+{"level":30,"time":1768663244223,"service":"market-data","component":"websocket-server","msg":"WebSocket server closed"}
+{"level":30,"time":1768663244223,"service":"market-data","component":"websocket-server","msg":"WebSocket server closed"}
+{"level":30,"time":1768663244278,"service":"market-data","component":"bootstrap","msg":"✅ Service stopped gracefully"}
+{"level":30,"time":1768663605236,"service":"market-data","env":"development","logLevel":"info","logFilePath":"./logs/market-data.log","msg":"Logger initialized"}
+{"level":30,"time":1768663605351,"service":"market-data","component":"bootstrap","env":"development","msg":"Starting Market Data Service..."}
+{"level":30,"time":1768663605351,"service":"market-data","component":"bootstrap","msg":"Initializing services..."}
+{"level":30,"time":1768663605351,"service":"market-data","component":"bootstrap","msg":"Connecting to database..."}
+{"level":30,"time":1768663605567,"service":"market-data","component":"bootstrap","msg":"Database connected"}
+{"level":30,"time":1768663605567,"service":"market-data","component":"bootstrap","msg":"Connecting to Redis..."}
+{"level":30,"time":1768663605610,"service":"market-data","component":"redis-client","msg":"Redis connected"}
+{"level":30,"time":1768663605709,"service":"market-data","component":"redis-client","msg":"Redis client initialized"}
+{"level":30,"time":1768663605801,"service":"market-data","component":"redis-client","msg":"Redis subscriber client initialized"}
+{"level":30,"time":1768663605801,"service":"market-data","component":"bootstrap","msg":"Redis connected"}
+{"level":30,"time":1768663605803,"service":"market-data","component":"collector-registry","msg":"Initializing collectors..."}
+{"level":30,"time":1768663605805,"service":"market-data","component":"collector-registry","collectors":["binance","yahoo","rabbitforex","fx-commodities"],"msg":"Collectors initialized"}
+{"level":30,"time":1768663605835,"service":"market-data","component":"tick-repository","msg":"Database connection established"}
+{"level":30,"time":1768663605835,"service":"market-data","component":"historical-service","msg":"Historical service initialized"}
+{"level":30,"time":1768663605836,"service":"market-data","component":"bootstrap","msg":"Services initialized"}
+{"level":30,"time":1768663605836,"service":"market-data","component":"bootstrap","msg":"Wiring data pipeline..."}
+{"level":30,"time":1768663605836,"service":"market-data","component":"bootstrap","msg":"Data pipeline wired"}
+{"level":30,"time":1768663605836,"service":"market-data","component":"bootstrap","msg":"Starting servers..."}
+{"level":30,"time":1768663605843,"service":"market-data","component":"websocket-server","port":6060,"msg":"WebSocket server listening"}
+{"level":30,"time":1768663605845,"service":"market-data","component":"bootstrap","port":6000,"msg":"HTTP API server listening"}
+{"level":30,"time":1768663605845,"service":"market-data","component":"bootstrap","msg":"Starting data collection..."}
+{"level":30,"time":1768663605846,"service":"market-data","component":"collector-registry","msg":"Starting all collectors..."}
+{"level":30,"time":1768663605846,"service":"market-data","component":"collector-registry","collector":"binance","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663605847,"service":"market-data","collector":"binance","msg":"Connecting to Binance WebSocket..."}
+{"level":30,"time":1768663606937,"service":"market-data","collector":"binance","msg":"WebSocket connection established"}
+{"level":30,"time":1768663606937,"service":"market-data","component":"collector-registry","collector":"binance","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663606937,"service":"market-data","collector":"binance","msg":"Connected successfully"}
+{"level":30,"time":1768663606937,"service":"market-data","component":"collector-registry","collector":"binance","msg":"Collector started"}
+{"level":30,"time":1768663606938,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663606938,"service":"market-data","collector":"yahoo","msg":"Verifying yfinance-service accessibility (stocks)..."}
+{"level":30,"time":1768663608092,"service":"market-data","collector":"yahoo","testSymbol":"AAPL","price":255.53,"msg":"yfinance-service connection verified"}
+{"level":30,"time":1768663608092,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663608092,"service":"market-data","collector":"yahoo","msg":"Connected successfully"}
+{"level":30,"time":1768663608092,"service":"market-data","component":"collector-registry","collector":"yahoo","msg":"Collector started"}
+{"level":30,"time":1768663608092,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663608092,"service":"market-data","collector":"rabbitforex","baseUrl":"http://100.100.13.10:3000","msg":"Verifying RabbitForexAPI accessibility..."}
+{"level":30,"time":1768663608229,"service":"market-data","collector":"rabbitforex","fxOk":true,"metalsOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768663608229,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663608229,"service":"market-data","collector":"rabbitforex","msg":"Connected successfully"}
+{"level":30,"time":1768663608229,"service":"market-data","component":"collector-registry","collector":"rabbitforex","msg":"Collector started"}
+{"level":30,"time":1768663608229,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663608230,"service":"market-data","collector":"fx-commodities","msg":"Verifying yfinance-service accessibility..."}
+{"level":30,"time":1768663612072,"service":"market-data","collector":"fx-commodities","yfinanceOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768663612072,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663612072,"service":"market-data","collector":"fx-commodities","msg":"Connected successfully"}
+{"level":30,"time":1768663612072,"service":"market-data","component":"collector-registry","collector":"fx-commodities","msg":"Collector started"}
+{"level":30,"time":1768663612074,"service":"market-data","collector":"binance","symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD","ADA/USD","DOGE/USD","DOT/USD","AVAX/USD","LINK/USD","MATIC/USD","LTC/USD","USDC/USD"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663612074,"service":"market-data","collector":"binance","streams":["btcusdt@ticker","ethusdt@ticker","bnbusdt@ticker","xrpusdt@ticker","solusdt@ticker","adausdt@ticker","dogeusdt@ticker","dotusdt@ticker","avaxusdt@ticker","linkusdt@ticker","maticusdt@ticker","ltcusdt@ticker","usdcusdt@ticker"],"id":1,"msg":"Sending subscription request"}
+{"level":30,"time":1768663612079,"service":"market-data","component":"collector-registry","collector":"binance","symbolCount":13,"symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768663612079,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663612080,"service":"market-data","collector":"yahoo","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663612080,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Fetching initial quotes"}
+{"level":50,"time":1768663620085,"service":"market-data","collector":"yahoo","error":{"type":"DOMException","message":"This operation was aborted","stack":"AbortError: This operation was aborted\n    at node:internal/deps/undici/undici:15845:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async YahooCollector.fetchBatch (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:336:17)\n    at async YahooCollector.pollSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:259:24)\n    at async <anonymous> (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:196:11)\n    at async YahooCollector.doSubscribe (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:139:5)\n    at async YahooCollector.subscribe (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/base.collector.ts:214:5)\n    at async CollectorRegistry.subscribeToSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/collector.registry.ts:325:9)\n    at async CollectorRegistry.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/collector.registry.ts:164:5)\n    at async MarketDataService.startDataCollection (/home/zshmeta/bhcmarkets/packages/market-data/src/index.ts:288:5)","name":"AbortError","code":20,"INDEX_SIZE_ERR":1,"DOMSTRING_SIZE_ERR":2,"HIERARCHY_REQUEST_ERR":3,"WRONG_DOCUMENT_ERR":4,"INVALID_CHARACTER_ERR":5,"NO_DATA_ALLOWED_ERR":6,"NO_MODIFICATION_ALLOWED_ERR":7,"NOT_FOUND_ERR":8,"NOT_SUPPORTED_ERR":9,"INUSE_ATTRIBUTE_ERR":10,"INVALID_STATE_ERR":11,"SYNTAX_ERR":12,"INVALID_MODIFICATION_ERR":13,"NAMESPACE_ERR":14,"INVALID_ACCESS_ERR":15,"VALIDATION_ERR":16,"TYPE_MISMATCH_ERR":17,"SECURITY_ERR":18,"NETWORK_ERR":19,"ABORT_ERR":20,"URL_MISMATCH_ERR":21,"QUOTA_EXCEEDED_ERR":22,"TIMEOUT_ERR":23,"INVALID_NODE_TYPE_ERR":24,"DATA_CLONE_ERR":25},"batch":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Batch fetch failed"}
+{"level":30,"time":1768663620095,"service":"market-data","component":"collector-registry","collector":"yahoo","symbolCount":15,"symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768663620095,"service":"market-data","collector":"rabbitforex","symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD","EUR/GBP","EUR/JPY","GBP/JPY","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663620096,"service":"market-data","collector":"rabbitforex","intervalMs":1000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663620233,"service":"market-data","component":"collector-registry","collector":"rabbitforex","symbolCount":15,"symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768663620233,"service":"market-data","collector":"fx-commodities","symbols":["SPX","NDX","DJI","VIX","FTSE","DAX","N225","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663620233,"service":"market-data","collector":"fx-commodities","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663625944,"service":"market-data","component":"tick-repository","count":24,"msg":"Candle batch saved"}
+{"level":50,"time":1768663628236,"service":"market-data","collector":"fx-commodities","error":{"type":"DOMException","message":"This operation was aborted","stack":"AbortError: This operation was aborted\n    at node:internal/deps/undici/undici:15845:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async FxCommoditiesCollector.fetchYFinanceBatch (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/fx-commodities.collector.ts:270:17)\n    at async FxCommoditiesCollector.pollYFinance (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/fx-commodities.collector.ts:232:22)\n    at async FxCommoditiesCollector.pollSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/fx-commodities.collector.ts:212:9)\n    at async <anonymous> (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/fx-commodities.collector.ts:190:11)\n    at async FxCommoditiesCollector.doSubscribe (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/fx-commodities.collector.ts:150:5)\n    at async FxCommoditiesCollector.subscribe (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/base.collector.ts:214:5)\n    at async CollectorRegistry.subscribeToSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/collector.registry.ts:325:9)\n    at async CollectorRegistry.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/collector.registry.ts:164:5)","name":"AbortError","code":20,"INDEX_SIZE_ERR":1,"DOMSTRING_SIZE_ERR":2,"HIERARCHY_REQUEST_ERR":3,"WRONG_DOCUMENT_ERR":4,"INVALID_CHARACTER_ERR":5,"NO_DATA_ALLOWED_ERR":6,"NO_MODIFICATION_ALLOWED_ERR":7,"NOT_FOUND_ERR":8,"NOT_SUPPORTED_ERR":9,"INUSE_ATTRIBUTE_ERR":10,"INVALID_STATE_ERR":11,"SYNTAX_ERR":12,"INVALID_MODIFICATION_ERR":13,"NAMESPACE_ERR":14,"INVALID_ACCESS_ERR":15,"VALIDATION_ERR":16,"TYPE_MISMATCH_ERR":17,"SECURITY_ERR":18,"NETWORK_ERR":19,"ABORT_ERR":20,"URL_MISMATCH_ERR":21,"QUOTA_EXCEEDED_ERR":22,"TIMEOUT_ERR":23,"INVALID_NODE_TYPE_ERR":24,"DATA_CLONE_ERR":25},"msg":"Index/commodity poll failed"}
+{"level":30,"time":1768663628242,"service":"market-data","component":"collector-registry","collector":"fx-commodities","symbolCount":12,"symbols":["SPX","NDX","DJI","VIX","FTSE"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768663628242,"service":"market-data","component":"collector-registry","msg":"All collectors started"}
+{"level":30,"time":1768663628242,"service":"market-data","component":"bootstrap","httpPort":6000,"wsPort":6060,"msg":"✅ Market Data Service started successfully"}
+{"level":30,"time":1768663665802,"service":"market-data","component":"collector-registry","ticksPerMinute":1188,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768663671431,"service":"market-data","component":"bootstrap","msg":"Received SIGINT"}
+{"level":30,"time":1768663671432,"service":"market-data","component":"bootstrap","msg":"🛑 Stopping Market Data Service..."}
+{"level":30,"time":1768663671432,"service":"market-data","component":"collector-registry","msg":"Stopping all collectors..."}
+{"level":30,"time":1768663671432,"service":"market-data","collector":"binance","msg":"Stopping collector"}
+{"level":30,"time":1768663671442,"service":"market-data","component":"collector-registry","collector":"binance","from":"connected","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663671442,"service":"market-data","component":"collector-registry","collector":"binance","msg":"Collector stopped"}
+{"level":30,"time":1768663671442,"service":"market-data","collector":"yahoo","msg":"Stopping collector"}
+{"level":30,"time":1768663671442,"service":"market-data","collector":"yahoo","msg":"Stopped poll loop"}
+{"level":30,"time":1768663671442,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"connected","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663671442,"service":"market-data","component":"collector-registry","collector":"yahoo","msg":"Collector stopped"}
+{"level":30,"time":1768663671442,"service":"market-data","collector":"rabbitforex","msg":"Stopping collector"}
+{"level":30,"time":1768663671443,"service":"market-data","collector":"rabbitforex","msg":"Stopped poll loop"}
+{"level":30,"time":1768663671443,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"connected","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663671443,"service":"market-data","component":"collector-registry","collector":"rabbitforex","msg":"Collector stopped"}
+{"level":30,"time":1768663671443,"service":"market-data","collector":"fx-commodities","msg":"Stopping collector"}
+{"level":30,"time":1768663671443,"service":"market-data","collector":"fx-commodities","msg":"Stopped poll loop"}
+{"level":30,"time":1768663671443,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"connected","to":"stopped","msg":"Collector state changed"}
+{"level":30,"time":1768663671443,"service":"market-data","component":"collector-registry","collector":"fx-commodities","msg":"Collector stopped"}
+{"level":30,"time":1768663671444,"service":"market-data","component":"candle-aggregator","msg":"Candle aggregator stopped"}
+{"level":30,"time":1768663671445,"service":"market-data","component":"tick-repository","msg":"Database connection closed"}
+{"level":30,"time":1768663671445,"service":"market-data","component":"historical-service","msg":"Historical service stopped"}
+{"level":30,"time":1768663671455,"service":"market-data","component":"websocket-server","msg":"WebSocket server closed"}
+{"level":30,"time":1768663671468,"service":"market-data","component":"bootstrap","msg":"Received SIGINT"}
+{"level":30,"time":1768663671468,"service":"market-data","component":"bootstrap","msg":"🛑 Stopping Market Data Service..."}
+{"level":30,"time":1768663671468,"service":"market-data","component":"collector-registry","msg":"Stopping all collectors..."}
+{"level":30,"time":1768663671468,"service":"market-data","component":"candle-aggregator","msg":"Candle aggregator stopped"}
+{"level":30,"time":1768663671468,"service":"market-data","component":"tick-repository","msg":"Database connection closed"}
+{"level":30,"time":1768663671468,"service":"market-data","component":"historical-service","msg":"Historical service stopped"}
+{"level":30,"time":1768663671519,"service":"market-data","component":"bootstrap","msg":"✅ Service stopped gracefully"}
+{"level":30,"time":1768663815665,"service":"market-data","env":"development","logLevel":"info","logFilePath":"./logs/market-data.log","msg":"Logger initialized"}
+{"level":30,"time":1768663817753,"service":"market-data","component":"bootstrap","env":"development","msg":"Starting Market Data Service..."}
+{"level":30,"time":1768663817756,"service":"market-data","component":"bootstrap","msg":"Initializing services..."}
+{"level":30,"time":1768663817756,"service":"market-data","component":"bootstrap","msg":"Connecting to database..."}
+{"level":30,"time":1768663818808,"service":"market-data","component":"bootstrap","msg":"Database connected"}
+{"level":30,"time":1768663818813,"service":"market-data","component":"bootstrap","msg":"Connecting to Redis..."}
+{"level":30,"time":1768663819398,"service":"market-data","component":"redis-client","msg":"Redis connected"}
+{"level":30,"time":1768663819676,"service":"market-data","component":"redis-client","msg":"Redis client initialized"}
+{"level":30,"time":1768663820394,"service":"market-data","component":"redis-client","msg":"Redis subscriber client initialized"}
+{"level":30,"time":1768663820399,"service":"market-data","component":"bootstrap","msg":"Redis connected"}
+{"level":30,"time":1768663820438,"service":"market-data","component":"collector-registry","msg":"Initializing collectors..."}
+{"level":30,"time":1768663820439,"service":"market-data","component":"collector-registry","collectors":["binance","yahoo","rabbitforex","fx-commodities"],"msg":"Collectors initialized"}
+{"level":30,"time":1768663821311,"service":"market-data","component":"tick-repository","msg":"Database connection established"}
+{"level":30,"time":1768663821328,"service":"market-data","component":"historical-service","msg":"Historical service initialized"}
+{"level":30,"time":1768663821430,"service":"market-data","component":"bootstrap","msg":"Services initialized"}
+{"level":30,"time":1768663821435,"service":"market-data","component":"bootstrap","msg":"Wiring data pipeline..."}
+{"level":30,"time":1768663821435,"service":"market-data","component":"bootstrap","msg":"Data pipeline wired"}
+{"level":30,"time":1768663821435,"service":"market-data","component":"bootstrap","msg":"Starting servers..."}
+{"level":30,"time":1768663821567,"service":"market-data","component":"websocket-server","port":6060,"msg":"WebSocket server listening"}
+{"level":30,"time":1768663821585,"service":"market-data","component":"bootstrap","port":6000,"msg":"HTTP API server listening"}
+{"level":30,"time":1768663821589,"service":"market-data","component":"bootstrap","msg":"Starting data collection..."}
+{"level":30,"time":1768663821589,"service":"market-data","component":"collector-registry","msg":"Starting all collectors..."}
+{"level":30,"time":1768663821601,"service":"market-data","component":"collector-registry","collector":"binance","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663821601,"service":"market-data","collector":"binance","msg":"Connecting to Binance WebSocket..."}
+{"level":30,"time":1768663828907,"service":"market-data","collector":"binance","msg":"WebSocket connection established"}
+{"level":30,"time":1768663828935,"service":"market-data","component":"collector-registry","collector":"binance","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663828948,"service":"market-data","collector":"binance","msg":"Connected successfully"}
+{"level":30,"time":1768663828948,"service":"market-data","component":"collector-registry","collector":"binance","msg":"Collector started"}
+{"level":30,"time":1768663828960,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663828960,"service":"market-data","collector":"yahoo","msg":"Verifying yfinance-service accessibility (stocks)..."}
+{"level":30,"time":1768663832808,"service":"market-data","collector":"yahoo","testSymbol":"AAPL","price":255.53,"msg":"yfinance-service connection verified"}
+{"level":30,"time":1768663832808,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663832808,"service":"market-data","collector":"yahoo","msg":"Connected successfully"}
+{"level":30,"time":1768663832808,"service":"market-data","component":"collector-registry","collector":"yahoo","msg":"Collector started"}
+{"level":30,"time":1768663832808,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663832808,"service":"market-data","collector":"rabbitforex","baseUrl":"http://100.100.13.10:3000","msg":"Verifying RabbitForexAPI accessibility..."}
+{"level":30,"time":1768663836183,"service":"market-data","collector":"rabbitforex","fxOk":true,"metalsOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768663836200,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663836200,"service":"market-data","collector":"rabbitforex","msg":"Connected successfully"}
+{"level":30,"time":1768663836200,"service":"market-data","component":"collector-registry","collector":"rabbitforex","msg":"Collector started"}
+{"level":30,"time":1768663836329,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768663836560,"service":"market-data","collector":"fx-commodities","msg":"Verifying yfinance-service accessibility..."}
+{"level":50,"time":1768663841187,"service":"market-data","collector":"fx-commodities","error":{"type":"Error","message":"yfinance-service is unreachable","stack":"Error: yfinance-service is unreachable\n    at FxCommoditiesCollector.doConnect (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/fx-commodities.collector.ts:132:13)\n    at async FxCommoditiesCollector.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/base.collector.ts:157:7)\n    at async CollectorRegistry.start (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/collector.registry.ts:156:9)\n    at async MarketDataService.startDataCollection (/home/zshmeta/bhcmarkets/packages/market-data/src/index.ts:288:5)\n    at async MarketDataService.start (/home/zshmeta/bhcmarkets/packages/market-data/src/index.ts:118:7)"},"msg":"Connection failed"}
+{"level":50,"time":1768663841224,"service":"market-data","component":"collector-registry","source":"fx-commodities","type":"connection_failed","message":"yfinance-service is unreachable","retryable":true,"msg":"Collector error"}
+{"level":30,"time":1768663841224,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"connecting","to":"reconnecting","msg":"Collector state changed"}
+{"level":30,"time":1768663841224,"service":"market-data","collector":"fx-commodities","delayMs":1157,"attempt":1,"msg":"Scheduling reconnect"}
+{"level":30,"time":1768663841225,"service":"market-data","component":"collector-registry","collector":"fx-commodities","msg":"Collector started"}
+{"level":30,"time":1768663841226,"service":"market-data","collector":"binance","symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD","ADA/USD","DOGE/USD","DOT/USD","AVAX/USD","LINK/USD","MATIC/USD","LTC/USD","USDC/USD"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663841226,"service":"market-data","collector":"binance","streams":["btcusdt@ticker","ethusdt@ticker","bnbusdt@ticker","xrpusdt@ticker","solusdt@ticker","adausdt@ticker","dogeusdt@ticker","dotusdt@ticker","avaxusdt@ticker","linkusdt@ticker","maticusdt@ticker","ltcusdt@ticker","usdcusdt@ticker"],"id":1,"msg":"Sending subscription request"}
+{"level":30,"time":1768663841247,"service":"market-data","component":"collector-registry","collector":"binance","symbolCount":13,"symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768663841247,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663841247,"service":"market-data","collector":"yahoo","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663841247,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Fetching initial quotes"}
+{"level":30,"time":1768663842002,"service":"market-data","component":"collector-registry","collector":"yahoo","symbolCount":15,"symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768663842003,"service":"market-data","collector":"rabbitforex","symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD","EUR/GBP","EUR/JPY","GBP/JPY","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663842003,"service":"market-data","collector":"rabbitforex","intervalMs":1000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663842136,"service":"market-data","component":"collector-registry","collector":"rabbitforex","symbolCount":15,"symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD"],"msg":"Subscribed to symbols"}
+{"level":40,"time":1768663842137,"service":"market-data","component":"collector-registry","collector":"fx-commodities","state":"reconnecting","msg":"Collector not connected; queued subscriptions"}
+{"level":30,"time":1768663842137,"service":"market-data","component":"collector-registry","msg":"All collectors started"}
+{"level":30,"time":1768663842137,"service":"market-data","component":"bootstrap","httpPort":6000,"wsPort":6060,"msg":"✅ Market Data Service started successfully"}
+{"level":30,"time":1768663842386,"service":"market-data","collector":"fx-commodities","attempt":1,"msg":"Attempting reconnection"}
+{"level":30,"time":1768663842386,"service":"market-data","collector":"fx-commodities","msg":"Verifying yfinance-service accessibility..."}
+{"level":30,"time":1768663842617,"service":"market-data","collector":"fx-commodities","yfinanceOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768663842618,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"reconnecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768663842622,"service":"market-data","collector":"fx-commodities","symbols":["SPX","NDX","DJI","VIX","FTSE","DAX","N225","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768663842630,"service":"market-data","collector":"fx-commodities","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768663842631,"service":"market-data","collector":"fx-commodities","msg":"Reconnection successful"}
+{"level":30,"time":1768663843096,"service":"market-data","component":"collector-registry","collector":"fx-commodities","symbolCount":12,"symbols":["SPX","NDX","DJI","VIX","FTSE"],"msg":"Applied pending subscriptions"}
+{"level":30,"time":1768663861678,"service":"market-data","component":"tick-repository","count":10,"msg":"Candle batch saved"}
+{"level":30,"time":1768663871521,"service":"market-data","component":"tick-repository","count":39,"msg":"Candle batch saved"}
+{"level":30,"time":1768663880425,"service":"market-data","component":"collector-registry","ticksPerMinute":946,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768663921662,"service":"market-data","component":"tick-repository","count":12,"msg":"Candle batch saved"}
+{"level":30,"time":1768663931493,"service":"market-data","component":"tick-repository","count":37,"msg":"Candle batch saved"}
+{"level":30,"time":1768663940425,"service":"market-data","component":"collector-registry","ticksPerMinute":1443,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768663981647,"service":"market-data","component":"tick-repository","count":10,"msg":"Candle batch saved"}
+{"level":30,"time":1768663991492,"service":"market-data","component":"tick-repository","count":39,"msg":"Candle batch saved"}
+{"level":30,"time":1768664000425,"service":"market-data","component":"collector-registry","ticksPerMinute":1443,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768664041641,"service":"market-data","component":"tick-repository","count":12,"msg":"Candle batch saved"}
+{"level":30,"time":1768664051493,"service":"market-data","component":"tick-repository","count":37,"msg":"Candle batch saved"}
+{"level":30,"time":1768664060425,"service":"market-data","component":"collector-registry","ticksPerMinute":1451,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768664101507,"service":"market-data","component":"tick-repository","count":12,"msg":"Candle batch saved"}
+{"level":50,"time":1768664104259,"service":"market-data","collector":"yahoo","error":{"type":"DOMException","message":"This operation was aborted","stack":"AbortError: This operation was aborted\n    at node:internal/deps/undici/undici:15845:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async YahooCollector.fetchBatch (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:336:17)\n    at async YahooCollector.pollSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:259:24)\n    at async <anonymous> (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:196:11)","name":"AbortError","code":20,"INDEX_SIZE_ERR":1,"DOMSTRING_SIZE_ERR":2,"HIERARCHY_REQUEST_ERR":3,"WRONG_DOCUMENT_ERR":4,"INVALID_CHARACTER_ERR":5,"NO_DATA_ALLOWED_ERR":6,"NO_MODIFICATION_ALLOWED_ERR":7,"NOT_FOUND_ERR":8,"NOT_SUPPORTED_ERR":9,"INUSE_ATTRIBUTE_ERR":10,"INVALID_STATE_ERR":11,"SYNTAX_ERR":12,"INVALID_MODIFICATION_ERR":13,"NAMESPACE_ERR":14,"INVALID_ACCESS_ERR":15,"VALIDATION_ERR":16,"TYPE_MISMATCH_ERR":17,"SECURITY_ERR":18,"NETWORK_ERR":19,"ABORT_ERR":20,"URL_MISMATCH_ERR":21,"QUOTA_EXCEEDED_ERR":22,"TIMEOUT_ERR":23,"INVALID_NODE_TYPE_ERR":24,"DATA_CLONE_ERR":25},"batch":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Batch fetch failed"}
+{"level":30,"time":1768664111502,"service":"market-data","component":"tick-repository","count":37,"msg":"Candle batch saved"}
+{"level":30,"time":1768664120426,"service":"market-data","component":"collector-registry","ticksPerMinute":1442,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768664172397,"service":"market-data","component":"tick-repository","count":50,"msg":"Candle batch saved"}
+{"level":30,"time":1768664189304,"service":"market-data","component":"collector-registry","ticksPerMinute":1224,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768664732796,"service":"market-data","env":"development","logLevel":"info","logFilePath":"./logs/market-data.log","msg":"Logger initialized"}
+{"level":30,"time":1768664733016,"service":"market-data","component":"bootstrap","env":"development","msg":"Starting Market Data Service..."}
+{"level":30,"time":1768664733016,"service":"market-data","component":"bootstrap","msg":"Initializing services..."}
+{"level":30,"time":1768664733016,"service":"market-data","component":"bootstrap","msg":"Connecting to database..."}
+{"level":30,"time":1768664733287,"service":"market-data","component":"bootstrap","msg":"Database connected"}
+{"level":30,"time":1768664733287,"service":"market-data","component":"bootstrap","msg":"Connecting to Redis..."}
+{"level":30,"time":1768664733327,"service":"market-data","component":"redis-client","msg":"Redis connected"}
+{"level":30,"time":1768664733424,"service":"market-data","component":"redis-client","msg":"Redis client initialized"}
+{"level":30,"time":1768664733508,"service":"market-data","component":"redis-client","msg":"Redis subscriber client initialized"}
+{"level":30,"time":1768664733508,"service":"market-data","component":"bootstrap","msg":"Redis connected"}
+{"level":30,"time":1768664733509,"service":"market-data","component":"collector-registry","msg":"Initializing collectors..."}
+{"level":30,"time":1768664733510,"service":"market-data","component":"collector-registry","collectors":["binance","yahoo","rabbitforex","fx-commodities"],"msg":"Collectors initialized"}
+{"level":30,"time":1768664733539,"service":"market-data","component":"tick-repository","msg":"Database connection established"}
+{"level":30,"time":1768664733540,"service":"market-data","component":"historical-service","msg":"Historical service initialized"}
+{"level":30,"time":1768664733540,"service":"market-data","component":"bootstrap","msg":"Services initialized"}
+{"level":30,"time":1768664733540,"service":"market-data","component":"bootstrap","msg":"Wiring data pipeline..."}
+{"level":30,"time":1768664733540,"service":"market-data","component":"bootstrap","msg":"Data pipeline wired"}
+{"level":30,"time":1768664733540,"service":"market-data","component":"bootstrap","msg":"Starting servers..."}
+{"level":30,"time":1768664733543,"service":"market-data","component":"websocket-server","port":6060,"msg":"WebSocket server listening"}
+{"level":30,"time":1768664733544,"service":"market-data","component":"bootstrap","port":6000,"msg":"HTTP API server listening"}
+{"level":30,"time":1768664733544,"service":"market-data","component":"bootstrap","msg":"Starting data collection..."}
+{"level":30,"time":1768664733544,"service":"market-data","component":"collector-registry","msg":"Starting all collectors..."}
+{"level":30,"time":1768664733544,"service":"market-data","component":"collector-registry","collector":"binance","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768664733545,"service":"market-data","collector":"binance","msg":"Connecting to Binance WebSocket..."}
+{"level":30,"time":1768664734375,"service":"market-data","collector":"binance","msg":"WebSocket connection established"}
+{"level":30,"time":1768664734377,"service":"market-data","component":"collector-registry","collector":"binance","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768664734377,"service":"market-data","collector":"binance","msg":"Connected successfully"}
+{"level":30,"time":1768664734377,"service":"market-data","component":"collector-registry","collector":"binance","msg":"Collector started"}
+{"level":30,"time":1768664734377,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768664734377,"service":"market-data","collector":"yahoo","msg":"Verifying yfinance-service accessibility (stocks)..."}
+{"level":30,"time":1768664734777,"service":"market-data","collector":"yahoo","testSymbol":"AAPL","price":255.53,"msg":"yfinance-service connection verified"}
+{"level":30,"time":1768664734777,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768664734778,"service":"market-data","collector":"yahoo","msg":"Connected successfully"}
+{"level":30,"time":1768664734778,"service":"market-data","component":"collector-registry","collector":"yahoo","msg":"Collector started"}
+{"level":30,"time":1768664734778,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768664734778,"service":"market-data","collector":"rabbitforex","baseUrl":"http://100.100.13.10:3000","msg":"Verifying RabbitForexAPI accessibility..."}
+{"level":30,"time":1768664734908,"service":"market-data","collector":"rabbitforex","fxOk":true,"metalsOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768664734908,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768664734908,"service":"market-data","collector":"rabbitforex","msg":"Connected successfully"}
+{"level":30,"time":1768664734908,"service":"market-data","component":"collector-registry","collector":"rabbitforex","msg":"Collector started"}
+{"level":30,"time":1768664734908,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768664734908,"service":"market-data","collector":"fx-commodities","msg":"Verifying yfinance-service accessibility..."}
+{"level":30,"time":1768664735141,"service":"market-data","collector":"fx-commodities","yfinanceOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768664735142,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768664735142,"service":"market-data","collector":"fx-commodities","msg":"Connected successfully"}
+{"level":30,"time":1768664735142,"service":"market-data","component":"collector-registry","collector":"fx-commodities","msg":"Collector started"}
+{"level":30,"time":1768664735142,"service":"market-data","collector":"binance","symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD","ADA/USD","DOGE/USD","DOT/USD","AVAX/USD","LINK/USD","MATIC/USD","LTC/USD","USDC/USD"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768664735142,"service":"market-data","collector":"binance","streams":["btcusdt@ticker","ethusdt@ticker","bnbusdt@ticker","xrpusdt@ticker","solusdt@ticker","adausdt@ticker","dogeusdt@ticker","dotusdt@ticker","avaxusdt@ticker","linkusdt@ticker","maticusdt@ticker","ltcusdt@ticker","usdcusdt@ticker"],"id":1,"msg":"Sending subscription request"}
+{"level":30,"time":1768664735146,"service":"market-data","component":"collector-registry","collector":"binance","symbolCount":13,"symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768664735146,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768664735146,"service":"market-data","collector":"yahoo","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768664735146,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Fetching initial quotes"}
+{"level":30,"time":1768664735993,"service":"market-data","component":"collector-registry","collector":"yahoo","symbolCount":15,"symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768664735993,"service":"market-data","collector":"rabbitforex","symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD","EUR/GBP","EUR/JPY","GBP/JPY","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768664735993,"service":"market-data","collector":"rabbitforex","intervalMs":1000,"msg":"Starting poll loop"}
+{"level":30,"time":1768664736059,"service":"market-data","component":"collector-registry","collector":"rabbitforex","symbolCount":15,"symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768664736059,"service":"market-data","collector":"fx-commodities","symbols":["SPX","NDX","DJI","VIX","FTSE","DAX","N225","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768664736060,"service":"market-data","collector":"fx-commodities","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768664736734,"service":"market-data","component":"collector-registry","collector":"fx-commodities","symbolCount":12,"symbols":["SPX","NDX","DJI","VIX","FTSE"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768664736734,"service":"market-data","component":"collector-registry","msg":"All collectors started"}
+{"level":30,"time":1768664736734,"service":"market-data","component":"bootstrap","httpPort":6000,"wsPort":6060,"msg":"✅ Market Data Service started successfully"}
+{"level":30,"time":1768664763822,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768664793509,"service":"market-data","component":"collector-registry","ticksPerMinute":1432,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768664823626,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768664853508,"service":"market-data","component":"collector-registry","ticksPerMinute":1463,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768664883616,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768664913509,"service":"market-data","component":"collector-registry","ticksPerMinute":1472,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768664943615,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768664973508,"service":"market-data","component":"collector-registry","ticksPerMinute":1431,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665003628,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665033509,"service":"market-data","component":"collector-registry","ticksPerMinute":1459,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665063630,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665093508,"service":"market-data","component":"collector-registry","ticksPerMinute":1438,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665123632,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665153509,"service":"market-data","component":"collector-registry","ticksPerMinute":1457,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665183636,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665213509,"service":"market-data","component":"collector-registry","ticksPerMinute":1451,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665243781,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665273508,"service":"market-data","component":"collector-registry","ticksPerMinute":1497,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665303614,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665333508,"service":"market-data","component":"collector-registry","ticksPerMinute":1500,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665363813,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665393510,"service":"market-data","component":"collector-registry","ticksPerMinute":1482,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665423798,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768665453510,"service":"market-data","component":"collector-registry","ticksPerMinute":1482,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665483800,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665493640,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665513509,"service":"market-data","component":"collector-registry","ticksPerMinute":1453,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665543789,"service":"market-data","component":"tick-repository","count":21,"msg":"Candle batch saved"}
+{"level":30,"time":1768665553638,"service":"market-data","component":"tick-repository","count":28,"msg":"Candle batch saved"}
+{"level":30,"time":1768665573510,"service":"market-data","component":"collector-registry","ticksPerMinute":1449,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665603798,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665613642,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665633510,"service":"market-data","component":"collector-registry","ticksPerMinute":1498,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665663614,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665673610,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665693511,"service":"market-data","component":"collector-registry","ticksPerMinute":1464,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665723613,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665733610,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665753511,"service":"market-data","component":"collector-registry","ticksPerMinute":1447,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665783616,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665793611,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665813511,"service":"market-data","component":"collector-registry","ticksPerMinute":1446,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665843621,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665853615,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665873511,"service":"market-data","component":"collector-registry","ticksPerMinute":1482,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665903616,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665913611,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665933512,"service":"market-data","component":"collector-registry","ticksPerMinute":1469,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768665963643,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768665973643,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768665993512,"service":"market-data","component":"collector-registry","ticksPerMinute":1471,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666023818,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666033644,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666053512,"service":"market-data","component":"collector-registry","ticksPerMinute":1469,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666083659,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666093650,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666113515,"service":"market-data","component":"collector-registry","ticksPerMinute":1462,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666143658,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666153663,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666173515,"service":"market-data","component":"collector-registry","ticksPerMinute":1448,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666203663,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666213660,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666233514,"service":"market-data","component":"collector-registry","ticksPerMinute":1449,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666263853,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666273671,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666293515,"service":"market-data","component":"collector-registry","ticksPerMinute":1459,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666323817,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666333666,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666353516,"service":"market-data","component":"collector-registry","ticksPerMinute":1445,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666383830,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666393667,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666413515,"service":"market-data","component":"collector-registry","ticksPerMinute":1435,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666443824,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666453670,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666473518,"service":"market-data","component":"collector-registry","ticksPerMinute":1438,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666503676,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666513676,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666533518,"service":"market-data","component":"collector-registry","ticksPerMinute":1427,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666563827,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666573671,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666593517,"service":"market-data","component":"collector-registry","ticksPerMinute":1472,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666623843,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666633684,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666653518,"service":"market-data","component":"collector-registry","ticksPerMinute":1477,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666683847,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666693680,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666713518,"service":"market-data","component":"collector-registry","ticksPerMinute":1459,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666743817,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666753684,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666773518,"service":"market-data","component":"collector-registry","ticksPerMinute":1439,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666803840,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666813680,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666833519,"service":"market-data","component":"collector-registry","ticksPerMinute":1456,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666863828,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666873677,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666893519,"service":"market-data","component":"collector-registry","ticksPerMinute":1456,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666923834,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666933681,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768666953520,"service":"market-data","component":"collector-registry","ticksPerMinute":1475,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768666983841,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768666993679,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667013520,"service":"market-data","component":"collector-registry","ticksPerMinute":1521,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667043847,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667053687,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667073520,"service":"market-data","component":"collector-registry","ticksPerMinute":1486,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667103850,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667113679,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667133521,"service":"market-data","component":"collector-registry","ticksPerMinute":1488,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667163851,"service":"market-data","component":"tick-repository","count":12,"msg":"Candle batch saved"}
+{"level":30,"time":1768667173682,"service":"market-data","component":"tick-repository","count":37,"msg":"Candle batch saved"}
+{"level":30,"time":1768667193521,"service":"market-data","component":"collector-registry","ticksPerMinute":1481,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667223844,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667233680,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667253521,"service":"market-data","component":"collector-registry","ticksPerMinute":1478,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667283835,"service":"market-data","component":"tick-repository","count":21,"msg":"Candle batch saved"}
+{"level":30,"time":1768667293680,"service":"market-data","component":"tick-repository","count":28,"msg":"Candle batch saved"}
+{"level":30,"time":1768667313521,"service":"market-data","component":"collector-registry","ticksPerMinute":1439,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667343832,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667353684,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667373523,"service":"market-data","component":"collector-registry","ticksPerMinute":1473,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667403840,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667413684,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667433524,"service":"market-data","component":"collector-registry","ticksPerMinute":1456,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667463857,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667473695,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667493524,"service":"market-data","component":"collector-registry","ticksPerMinute":1461,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667523877,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667533697,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667553528,"service":"market-data","component":"collector-registry","ticksPerMinute":1465,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667583861,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667593694,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667613531,"service":"market-data","component":"collector-registry","ticksPerMinute":1433,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667643708,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667653705,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667673531,"service":"market-data","component":"collector-registry","ticksPerMinute":1470,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667703850,"service":"market-data","component":"tick-repository","count":22,"msg":"Candle batch saved"}
+{"level":30,"time":1768667713698,"service":"market-data","component":"tick-repository","count":27,"msg":"Candle batch saved"}
+{"level":30,"time":1768667733531,"service":"market-data","component":"collector-registry","ticksPerMinute":1510,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":50,"time":1768667743264,"service":"market-data","collector":"yahoo","error":{"type":"DOMException","message":"This operation was aborted","stack":"AbortError: This operation was aborted\n    at node:internal/deps/undici/undici:15845:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async YahooCollector.fetchBatch (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:336:17)\n    at async YahooCollector.pollSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:259:24)\n    at async <anonymous> (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/yahoo.collector.ts:196:11)","name":"AbortError","code":20,"INDEX_SIZE_ERR":1,"DOMSTRING_SIZE_ERR":2,"HIERARCHY_REQUEST_ERR":3,"WRONG_DOCUMENT_ERR":4,"INVALID_CHARACTER_ERR":5,"NO_DATA_ALLOWED_ERR":6,"NO_MODIFICATION_ALLOWED_ERR":7,"NOT_FOUND_ERR":8,"NOT_SUPPORTED_ERR":9,"INUSE_ATTRIBUTE_ERR":10,"INVALID_STATE_ERR":11,"SYNTAX_ERR":12,"INVALID_MODIFICATION_ERR":13,"NAMESPACE_ERR":14,"INVALID_ACCESS_ERR":15,"VALIDATION_ERR":16,"TYPE_MISMATCH_ERR":17,"SECURITY_ERR":18,"NETWORK_ERR":19,"ABORT_ERR":20,"URL_MISMATCH_ERR":21,"QUOTA_EXCEEDED_ERR":22,"TIMEOUT_ERR":23,"INVALID_NODE_TYPE_ERR":24,"DATA_CLONE_ERR":25},"batch":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Batch fetch failed"}
+{"level":50,"time":1768667792042,"service":"market-data","collector":"rabbitforex","error":{"type":"DOMException","message":"This operation was aborted","stack":"AbortError: This operation was aborted\n    at node:internal/deps/undici/undici:15845:13\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runNextTicks (node:internal/process/task_queues:68:3)\n    at process.processTimers (node:internal/timers:538:9)\n    at async RabbitForexCollector.fetchRates (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:282:17)\n    at async RabbitForexCollector.pollForexRates (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:200:34)\n    at async RabbitForexCollector.pollSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:183:9)\n    at async <anonymous> (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:158:11)","name":"AbortError","code":20,"INDEX_SIZE_ERR":1,"DOMSTRING_SIZE_ERR":2,"HIERARCHY_REQUEST_ERR":3,"WRONG_DOCUMENT_ERR":4,"INVALID_CHARACTER_ERR":5,"NO_DATA_ALLOWED_ERR":6,"NO_MODIFICATION_ALLOWED_ERR":7,"NOT_FOUND_ERR":8,"NOT_SUPPORTED_ERR":9,"INUSE_ATTRIBUTE_ERR":10,"INVALID_STATE_ERR":11,"SYNTAX_ERR":12,"INVALID_MODIFICATION_ERR":13,"NAMESPACE_ERR":14,"INVALID_ACCESS_ERR":15,"VALIDATION_ERR":16,"TYPE_MISMATCH_ERR":17,"SECURITY_ERR":18,"NETWORK_ERR":19,"ABORT_ERR":20,"URL_MISMATCH_ERR":21,"QUOTA_EXCEEDED_ERR":22,"TIMEOUT_ERR":23,"INVALID_NODE_TYPE_ERR":24,"DATA_CLONE_ERR":25},"msg":"Forex poll failed"}
+{"level":50,"time":1768667794536,"service":"market-data","collector":"rabbitforex","error":{"type":"TypeError","message":"fetch failed: other side closed","stack":"TypeError: fetch failed\n    at node:internal/deps/undici/undici:15845:13\n    at async RabbitForexCollector.fetchMetals (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:318:17)\n    at async RabbitForexCollector.pollMetalRates (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:231:34)\n    at async RabbitForexCollector.pollSymbols (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:192:9)\n    at async <anonymous> (/home/zshmeta/bhcmarkets/packages/market-data/src/domains/collectors/rabbitforex.collector.ts:158:11)\ncaused by: SocketError: other side closed\n    at Socket.onHttpSocketEnd (node:internal/deps/undici/undici:7147:26)\n    at Socket.emit (node:events:520:35)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"msg":"Metals poll failed"}
+{"level":30,"time":1768667794631,"service":"market-data","component":"collector-registry","ticksPerMinute":659,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768667795228,"service":"market-data","component":"tick-repository","count":11,"msg":"Candle batch saved"}
+{"level":30,"time":1768667803427,"service":"market-data","component":"tick-repository","count":38,"msg":"Candle batch saved"}
+{"level":30,"time":1768667823404,"service":"market-data","component":"tick-repository","count":12,"msg":"Candle batch saved"}
+{"level":30,"time":1768667833414,"service":"market-data","component":"tick-repository","count":37,"msg":"Candle batch saved"}
+{"level":30,"time":1768667854632,"service":"market-data","component":"collector-registry","ticksPerMinute":1878,"validationErrors":0,"msg":"Tick rate summary"}

@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { Icons } from '../Icons';
 import type { SymbolSelectorProps } from './SymbolSelector.types';
+import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import {
     Container,
     TriggerButton,
@@ -18,9 +19,20 @@ import {
 
 
 
-function SymbolSelector({
+const SymbolSelector = ({
     categories, selectedSymbol, onSelect, className,
-}: SymbolSelectorProps) {
+}: SymbolSelectorProps) => {
+    const storeSelectedSymbol = useWatchlistStore(selectSelectedSymbol);
+    const storeSetSelectedSymbol = useWatchlistStore((state) => state.setSelectedSymbol);
+    const [internalSelectedSymbol, setInternalSelectedSymbol] = useState<string | undefined>(undefined);
+
+    const resolvedSelectedSymbol = selectedSymbol ?? storeSelectedSymbol ?? internalSelectedSymbol;
+    const resolvedOnSelect = useMemo(() => {
+        if (onSelect) return onSelect;
+        if (storeSetSelectedSymbol) return storeSetSelectedSymbol;
+        return (symbol: string) => setInternalSelectedSymbol(symbol);
+    }, [onSelect, storeSetSelectedSymbol]);
+
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'watchlists' | 'all'>('all');
     const [searchQuery, setSearchQuery] = useState('');
@@ -49,7 +61,7 @@ function SymbolSelector({
     };
 
     const handleSelect = (symbol: string) => {
-        onSelect(symbol);
+        resolvedOnSelect(symbol);
         setIsOpen(false);
     };
 
@@ -62,13 +74,13 @@ function SymbolSelector({
     return (
         <Container ref={containerRef} className={className}>
             <TriggerButton onClick={() => setIsOpen(!isOpen)}>
-                <span>{selectedSymbol || 'Select Market'}</span>
+                <span>{resolvedSelectedSymbol || 'Select Market'}</span>
                 <Icons name={isOpen ? 'chevron-up' : 'chevron-down'} size="xs" />
             </TriggerButton>
 
             {isOpen && (
                 <Dropdown>
-                    <Tabs>
+                    {/* <Tabs>
                         <Tab
                             $active={activeTab === 'watchlists'}
                             onClick={() => setActiveTab('watchlists')}
@@ -81,7 +93,7 @@ function SymbolSelector({
                         >
                             All symbols
                         </Tab>
-                    </Tabs>
+                    </Tabs> */}
 
                     <SearchBar>
                         <div style={{ position: 'relative' }}>
@@ -113,7 +125,7 @@ function SymbolSelector({
                                         {category.items.map(item => (
                                             <SymbolItem
                                                 key={item.id}
-                                                $selected={item.symbol === selectedSymbol}
+                                                $selected={item.symbol === resolvedSelectedSymbol}
                                                 onClick={() => handleSelect(item.symbol)}
                                             >
                                                 <span>{item.symbol}</span>
@@ -131,4 +143,4 @@ function SymbolSelector({
     );
 }
 
-export default SymbolSelector;
+export { SymbolSelector };

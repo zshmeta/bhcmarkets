@@ -6,6 +6,16 @@ import { useWalletStore, selectBalances } from '@repo/sdk';
 import { useI18n, formatMessage } from '../../i18n';
 import { toast } from '../Toast';
 import type { OrderSide, OrderType, TrailingType } from '../../types/trading';
+import type {
+    OrderCategory,
+    OrderFormFormState,
+    DataConfidenceInfo,
+    BalanceInfo,
+    EstimatedValues,
+    OrderFormTranslations,
+    OrderFormData,
+    OrderFormActions
+} from './OrderForm.types';
 
 /* ═══════════════════════════════════════════════════════════
  * useOrderForm Hook
@@ -18,143 +28,9 @@ import type { OrderSide, OrderType, TrailingType } from '../../types/trading';
  * - Confirmation modal state
  */
 
-export type OrderCategory = 'spot' | 'conditional';
-
-export interface OrderFormFormState {
-    side: OrderSide;
-    orderCategory: OrderCategory;
-    type: OrderType;
-    price: string;
-    quantity: string;
-    total: string;
-    quantityPercent: number;
-    takeProfitPrice: string;
-    stopLossPrice: string;
-    triggerPrice: string;
-    limitPrice: string;
-    showTp: boolean;
-    showSl: boolean;
-    comment: string;
-    trailingType: TrailingType;
-    trailingValue: string;
-    trailingActivationPrice: string;
-}
-
-export interface DataConfidenceInfo {
-    level: string;
-    reason: string;
-}
-
-export interface BalanceInfo {
-    base: { asset: string; available: string };
-    quote: { asset: string; available: string };
-}
-
-export interface EstimatedValues {
-    price: string;
-    slippage: string;
-    fee: string;
-}
-
-export interface OrderFormTranslations {
-    title: string;
-    buy: string;
-    sell: string;
-    limit: string;
-    market: string;
-    price: string;
-    amount: string;
-    takeProfit: string;
-    stopLoss: string;
-    estimatedPrice: string;
-    slippage: string;
-    fee: string;
-    total: string;
-    available: string;
-    bid1: string;
-    mid: string;
-    ask1: string;
-    placeBuyOrder: string;
-    placeSellOrder: string;
-    confirmDegraded: string;
-    invalidAmount: string;
-    invalidPrice: string;
-    invalidTrailingValue: string;
-    invalidTriggerPrice: string;
-    invalidLimitPrice: string;
-    insufficientBalance: string;
-}
-
 export interface UseOrderFormReturn {
-    // Form state
-    form: OrderFormFormState;
-
-    // Derived state
-    symbol: string;
-    baseAsset: string;
-    quoteAsset: string;
-    balances: BalanceInfo;
-    dataConfidence: DataConfidenceInfo;
-    focusMode: boolean;
-    estimated: EstimatedValues;
-    isSubmitDisabled: boolean;
-
-    // Modal state
-    showDegradedConfirm: boolean;
-    showConfirmModal: boolean;
-
-    // Translations
-    translations: OrderFormTranslations;
-
-    // Input refs
-    priceInputRef: React.RefObject<HTMLInputElement | null>;
-    quantityInputRef: React.RefObject<HTMLInputElement | null>;
-    tpInputRef: React.RefObject<HTMLInputElement | null>;
-    slInputRef: React.RefObject<HTMLInputElement | null>;
-
-    // Actions - Form
-    setSide: (side: OrderSide) => void;
-    setOrderCategory: (cat: OrderCategory) => void;
-    setType: (type: OrderType) => void;
-    setPrice: (val: string) => void;
-    setQuantity: (val: string) => void;
-    setTakeProfitPrice: (val: string) => void;
-    setStopLossPrice: (val: string) => void;
-    setTriggerPrice: (val: string) => void;
-    setLimitPrice: (val: string) => void;
-    setTrailingType: (type: TrailingType) => void;
-    setTrailingValue: (val: string) => void;
-    setTrailingActivationPrice: (val: string) => void;
-    setQuantityPercent: (pct: number) => void;
-    setShowTp: (show: boolean) => void;
-    setShowSl: (show: boolean) => void;
-    setComment: (val: string) => void;
-
-    // Actions - Quick fill
-    setFromBestBid: () => void;
-    setFromBestAsk: () => void;
-    setFromMid: () => void;
-    handleStepUp: () => void;
-    handleStepDown: () => void;
-    updateQuantityFromPercent: (pct: number) => void;
-
-    // Actions - Focus
-    handleInputFocus: (inputName: string) => () => void;
-    handleInputBlur: () => void;
-
-    // Actions - Submit
-    handleSubmit: (e: React.FormEvent) => void;
-    setShowDegradedConfirm: (show: boolean) => void;
-    setShowConfirmModal: (show: boolean) => void;
-    handleConfirmOrder: () => void;
-
-    // Format helper
-    formatBuyOrderText: (asset: string) => string;
-    formatSellOrderText: (asset: string) => string;
-
-    // Market Data for View
-    bestBidPrice: string;
-    bestAskPrice: string;
+    data: OrderFormData;
+    actions: OrderFormActions;
 }
 
 const useOrderForm = (
@@ -489,6 +365,43 @@ const useOrderForm = (
         insufficientBalance: t.OrderForm.insufficientBalance,
     }), [t]);
 
+    // ─── Validation ───
+    const errors = useMemo(() => {
+        const errs: OrderFormData['errors'] = {};
+        
+        // Quantity validation
+        if (quantity && parseFloat(quantity) > 0) {
+            const max = getMaxQuantity();
+            if (parseFloat(quantity) > max) {
+                errs.quantity = t.OrderForm.insufficientBalance;
+            }
+        } else if (quantity && parseFloat(quantity) <= 0) {
+             errs.quantity = t.OrderForm.invalidAmount;
+        }
+
+        // Price validation
+        if (type === 'limit' && price && parseFloat(price) <= 0) {
+            errs.price = t.OrderForm.invalidPrice;
+        }
+
+        // Conditional validation
+        if (orderCategory === 'conditional') {
+            if (type === 'trailing_stop') {
+                if (trailingValue && parseFloat(trailingValue) <= 0) {
+                    errs.trailingValue = t.OrderForm.invalidTrailingValue;
+                }
+            } else {
+                 if (triggerPrice && parseFloat(triggerPrice) <= 0) {
+                    errs.triggerPrice = t.OrderForm.invalidTriggerPrice;
+                 }
+                 if (['stop_limit', 'take_profit_limit'].includes(type) && limitPrice && parseFloat(limitPrice) <= 0) {
+                     errs.limitPrice = t.OrderForm.invalidLimitPrice;
+                 }
+            }
+        }
+        return errs;
+    }, [quantity, price, type, orderCategory, trailingValue, triggerPrice, limitPrice, getMaxQuantity, t]);
+
     // ─── Form State Object ───
     const form: OrderFormFormState = {
         side, orderCategory, type, price, quantity, total, quantityPercent,
@@ -498,54 +411,60 @@ const useOrderForm = (
     };
 
     return {
-        form,
-        symbol,
-        baseAsset,
-        quoteAsset,
-        balances,
-        dataConfidence: { level: dataConfidence.level, reason: dataConfidence.reason },
-        focusMode,
-        estimated,
-        isSubmitDisabled,
-        showDegradedConfirm,
-        showConfirmModal,
-        translations,
-        priceInputRef,
-        quantityInputRef,
-        tpInputRef,
-        slInputRef,
-        setSide,
-        setOrderCategory,
-        setType,
-        setPrice,
-        setQuantity,
-        setTakeProfitPrice,
-        setStopLossPrice,
-        setTriggerPrice,
-        setLimitPrice,
-        setTrailingType,
-        setTrailingValue,
-        setTrailingActivationPrice,
-        setQuantityPercent,
-        setShowTp,
-        setShowSl,
-        setComment,
-        setFromBestBid,
-        setFromBestAsk,
-        setFromMid,
-        handleStepUp,
-        handleStepDown,
-        updateQuantityFromPercent,
-        handleInputFocus,
-        handleInputBlur,
-        handleSubmit,
-        setShowDegradedConfirm,
-        setShowConfirmModal,
-        handleConfirmOrder,
-        formatBuyOrderText: (asset: string) => formatMessage(t.OrderForm.placeBuyOrder, { symbol: asset }),
-        formatSellOrderText: (asset: string) => formatMessage(t.OrderForm.placeSellOrder, { symbol: asset }),
-        bestBidPrice: bestBid?.price || metrics?.mid || '0.00',
-        bestAskPrice: bestAsk?.price || metrics?.mid || '0.00',
+        data: {
+            form,
+            baseAsset,
+            quoteAsset,
+            balances,
+            dataConfidence: { level: dataConfidence.level, reason: dataConfidence.reason },
+            estimated,
+            focusMode,
+            isSubmitDisabled,
+            showDegradedConfirm,
+            showConfirmModal,
+            translations,
+            bestBidPrice: bestBid?.price || metrics?.mid || '0.00',
+            bestAskPrice: bestAsk?.price || metrics?.mid || '0.00',
+            refs: {
+                price: priceInputRef,
+                quantity: quantityInputRef,
+                tp: tpInputRef,
+                sl: slInputRef,
+            },
+            commonConfirm: t.common.confirm,
+            commonCancel: t.common.cancel,
+            errors,
+        },
+        actions: {
+            onSideChange: setSide,
+            onOrderCategoryChange: setOrderCategory,
+            onTypeChange: setType,
+            onPriceChange: setPrice,
+            onQuantityChange: setQuantity,
+            onTakeProfitPriceChange: setTakeProfitPrice,
+            onStopLossPriceChange: setStopLossPrice,
+            onTriggerPriceChange: setTriggerPrice,
+            onLimitPriceChange: setLimitPrice,
+            onTrailingTypeChange: setTrailingType,
+            onTrailingValueChange: setTrailingValue,
+            onTrailingActivationPriceChange: setTrailingActivationPrice,
+            onQuantityPercentChange: setQuantityPercent,
+            onShowTpChange: setShowTp,
+            onShowSlChange: setShowSl,
+            onCommentChange: setComment,
+            onSetFromBestBid: setFromBestBid,
+            onSetFromBestAsk: setFromBestAsk,
+            onSetFromMid: setFromMid,
+            onStepUp: handleStepUp,
+            onStepDown: handleStepDown,
+            onUpdateQuantityFromPercent: updateQuantityFromPercent,
+            onInputFocus: handleInputFocus,
+            onInputBlur: handleInputBlur,
+            onSubmit: handleSubmit,
+            onShowDegradedConfirm: setShowDegradedConfirm,
+            onShowConfirmModal: setShowConfirmModal,
+            onConfirmOrder: handleConfirmOrder,
+        }
     };
 }
 

@@ -261,14 +261,14 @@ export interface Ticker {
     volume24h?: string;
 }
 
-export interface Trade {
-    id: string;
-    symbol?: string;
-    price: string;
-    quantity: string;
-    time: number;
-    isBuyerMaker: boolean;
-}
+// export interface Trade {
+//     id: string;
+//     symbol?: string;
+//     price: string;
+//     quantity: string;
+//     time: number;
+//     isBuyerMaker: boolean;
+// }
 
 
 

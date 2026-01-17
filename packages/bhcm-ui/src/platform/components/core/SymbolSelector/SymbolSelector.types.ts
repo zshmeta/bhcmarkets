@@ -12,7 +12,9 @@ export interface Category {
 
 export interface SymbolSelectorProps {
     categories: Category[];
+    /** Controlled selected symbol (optional if using watchlistStore) */
     selectedSymbol?: string;
-    onSelect: (symbol: string) => void;
+    /** Controlled selection handler (optional if using watchlistStore) */
+    onSelect?: (symbol: string) => void;
     className?: string;
 }

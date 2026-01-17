@@ -71,6 +71,7 @@ export interface PositionsViewProps {
 
     // Calculations
     calculatePnL: (pos: Position) => PositionPnL;
+    getPrice: (symbol: string) => number;
 
     // Actions
     onSetConfirmClose: (symbol: string | null) => void;
@@ -92,6 +93,7 @@ const PositionsView = ({
     confirmClose,
     tpslSymbol,
     calculatePnL,
+    getPrice,
     onSetConfirmClose,
     onSetTPSLSymbol,
     onClosePosition,
@@ -144,7 +146,7 @@ const PositionsView = ({
                             <TableBody>
                                 {positions.map(([symbol, pos]) => {
                                     const { pnl, pnlPercent, hasPrice } = calculatePnL(pos);
-                                    const isCurrentSymbol = symbol === currentSymbol;
+                                    const price = getPrice(symbol);
 
                                     return (
                                         <tr key={symbol}>
@@ -157,7 +159,7 @@ const PositionsView = ({
                                             <NumericCell>{renderValue(parseFloat(pos.quantity).toFixed(4))}</NumericCell>
                                             <NumericCell>{renderValue(parseFloat(pos.avgEntryPrice).toFixed(2))}</NumericCell>
                                             <NumericCell>
-                                                {isCurrentSymbol && currentPrice > 0 ? currentPrice.toFixed(2) : '—'}
+                                                {price > 0 ? price.toFixed(2) : '—'}
                                             </NumericCell>
                                             <PnlCell
                                                 $positive={pnl !== null && pnl >= 0}
@@ -230,15 +232,20 @@ const PositionsView = ({
             {tpslSymbol && (
                 <TPSLModalOverlay onClick={() => onSetTPSLSymbol(null)}>
                     <TPSLModalContent onClick={(e) => e.stopPropagation()}>
-                        <TPSLForm
-                            symbol={tpslSymbol}
-                            currentPrice={currentPrice}
-                            avgEntryPrice={0}
-                            quantity="0"
-                            translations={t.tpsl}
-                            onClose={() => onSetTPSLSymbol(null)}
-                            onSave={onSaveTPSL}
-                        />
+                        {(() => {
+                            const activePosition = positions.find(([s]) => s === tpslSymbol)?.[1];
+                            return (
+                                <TPSLForm
+                                    symbol={tpslSymbol}
+                                    currentPrice={getPrice(tpslSymbol)}
+                                    avgEntryPrice={activePosition ? parseFloat(activePosition.avgEntryPrice) : 0}
+                                    quantity={activePosition ? activePosition.quantity : "0"}
+                                    translations={t.tpsl}
+                                    onClose={() => onSetTPSLSymbol(null)}
+                                    onSave={onSaveTPSL}
+                                />
+                            );
+                        })()}
                     </TPSLModalContent>
                 </TPSLModalOverlay>
             )}

@@ -23,6 +23,7 @@ const Watchlist = ({ onSymbolChange, isCollapsed = false, compact: _compact = fa
     pinned,
     searchQuery,
     showFavoritesOnly,
+    activeFilter,
     expandedCategories,
     activeTab,
     getPosition,
@@ -32,6 +33,7 @@ const Watchlist = ({ onSymbolChange, isCollapsed = false, compact: _compact = fa
     handleSearchChange,
     handleClearSearch,
     handleToggleFavoritesFilter,
+    handleFilterChange,
     toggleFavorite,
     handleToggleCategory,
     handleTabChange,
@@ -47,6 +49,7 @@ const Watchlist = ({ onSymbolChange, isCollapsed = false, compact: _compact = fa
       searchQuery={searchQuery}
       expandedCategories={expandedCategories}
       activeTab={activeTab}
+      activeFilter={activeFilter}
       getPosition={getPosition}
       translations={translations}
       inputRef={inputRef}
@@ -56,6 +59,7 @@ const Watchlist = ({ onSymbolChange, isCollapsed = false, compact: _compact = fa
       onToggleFavorite={toggleFavorite}
       onToggleCategory={handleToggleCategory}
       onTabChange={handleTabChange}
+      onFilterChange={handleFilterChange}
       onKeyDown={handleKeyDown}
       isCollapsed={isCollapsed}
     />

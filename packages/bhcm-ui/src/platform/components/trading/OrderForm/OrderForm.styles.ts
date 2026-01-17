@@ -50,7 +50,7 @@ export const Container = styled.div<{ $focused?: boolean }>`
 `;
 
 export const Form = styled.form`
-  padding: 16px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -79,7 +79,7 @@ export const CategoryTab = styled.button<{ $active?: boolean }>`
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s ease;
-  
+
   background: ${({ $active }) => $active ? 'var(--bg-secondary, #21262D)' : 'transparent'};
   color: ${({ $active }) => $active ? 'var(--text-primary, #E6EDF3)' : 'var(--text-tertiary, #6E7681)'};
 
@@ -94,7 +94,8 @@ export const CategoryTab = styled.button<{ $active?: boolean }>`
  */
 export const PriceBoxContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   gap: 10px;
 `;
 
@@ -107,12 +108,12 @@ export const PriceBox = styled.button<{ $side: 'buy' | 'sell'; $active: boolean 
   cursor: pointer;
   transition: all 0.15s ease;
   background: var(--bg-primary, #0D1117);
-  
+
   border: 1px solid ${({ $active, $side }) => {
     if (!$active) return 'var(--border-subtle, #30363D)';
     return $side === 'buy' ? 'var(--buy, #3FB950)' : 'var(--sell, #F85149)';
   }};
-  
+
   ${({ $active, $side }) => $active && css`
     background: ${$side === 'buy' ? 'rgba(63, 185, 80, 0.08)' : 'rgba(248, 81, 73, 0.08)'};
     box-shadow: 0 0 0 1px ${$side === 'buy' ? 'var(--buy, #3FB950)' : 'var(--sell, #F85149)'};
@@ -142,13 +143,63 @@ export const BigPrice = styled.span`
 `;
 
 /* ═══════════════════════════════════════════════════════════
+ * ADVANCED SECTION
+ * ═══════════════════════════════════════════════════════════
+ */
+export const AdvancedSection = styled.div`
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--border-subtle, #30363D);
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+
+  &::before {
+    content: 'CONDITIONS';
+    position: absolute;
+    top: -6px;
+    left: 10px;
+    background: var(--bg-surface, #161B22);
+    padding: 0 4px;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-tertiary, #6E7681);
+  }
+`;
+
+/* ═══════════════════════════════════════════════════════════
+ * SPREAD BADGE
+ * ═══════════════════════════════════════════════════════════
+ */
+export const SpreadBadge = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--text-tertiary, #6E7681);
+
+  .value { font-weight: 600; color: var(--text-secondary, #8B949E); }
+  .label { font-size: 8px; text-transform: uppercase; margin-bottom: 2px; }
+`;
+
+/* ═══════════════════════════════════════════════════════════
  * INPUT FIELDS
  * ═══════════════════════════════════════════════════════════
  */
 export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+`;
+
+export const ErrorText = styled.span`
+  font-size: 10px;
+  color: var(--sell, #F85149);
+  padding-left: 2px;
 `;
 
 export const Label = styled.label`
@@ -161,17 +212,17 @@ export const Label = styled.label`
   align-items: center;
 `;
 
-export const InputWrapper = styled.div`
+export const InputWrapper = styled.div<{ $error?: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
   background: var(--bg-primary, #0D1117);
-  border: 1px solid var(--border-subtle, #30363D);
+  border: 1px solid ${({ $error }) => $error ? 'var(--sell, #F85149)' : 'var(--border-subtle, #30363D)'};
   border-radius: 6px;
   transition: border-color 0.15s ease;
 
   &:focus-within {
-    border-color: var(--accent, #58A6FF);
+    border-color: ${({ $error }) => $error ? 'var(--sell, #F85149)' : 'var(--accent, #58A6FF)'};
   }
 `;
 
@@ -222,10 +273,6 @@ export const StepBtn = styled.button`
     color: var(--text-primary, #E6EDF3);
   }
 `;
-
-/* Quick fill - hidden */
-export const QuickFillButtons = styled.div`display: none;`;
-export const QuickFillBtn = styled.button``;
 
 /* ═══════════════════════════════════════════════════════════
  * PERCENTAGE BUTTONS
@@ -281,7 +328,7 @@ export const CheckboxLabel = styled.label`
   font-size: 12px;
   color: var(--text-secondary, #8B949E);
   cursor: pointer;
-  
+
   &:hover { color: var(--text-primary, #E6EDF3); }
 `;
 
@@ -312,7 +359,7 @@ export const Checkbox = styled.input`
   &:checked {
     background: var(--buy, #3FB950);
     border-color: var(--buy, #3FB950);
-    
+
     &::after {
       left: 18px;
       background: #fff;
@@ -396,7 +443,7 @@ export const SubmitBtn = styled.button<{ $side: 'buy' | 'sell'; disabled?: boole
   font-family: inherit;
   transition: all 0.15s ease;
   margin-top: 4px;
-  
+
   background: ${({ $side }) => $side === 'buy' ? 'var(--buy, #3FB950)' : 'var(--sell, #F85149)'};
   color: #fff;
   font-size: 13px;
@@ -414,7 +461,7 @@ export const SubmitBtn = styled.button<{ $side: 'buy' | 'sell'; disabled?: boole
     opacity: 0.7;
     cursor: not-allowed;
   }
-  
+
   .action { font-weight: 600; }
   .price { display: none; }
 `;
@@ -439,7 +486,7 @@ export const CommentInput = styled.textarea`
   padding: 8px 12px;
   min-height: 65px;
   resize: none;
-  
+
   &:focus { outline: none; }
   &::placeholder { color: var(--text-disabled, #484F58); }
 `;
@@ -510,12 +557,11 @@ export const CancelBtn = styled.button`
 `;
 
 /* ═══════════════════════════════════════════════════════════
- * LEGACY - Hidden
+ * LEGACY - Removed
  * ═══════════════════════════════════════════════════════════
  */
 export const HeaderRow = styled.div`display: flex; gap: 8px;`;
-export const SideToggle = styled.div`display: none;`;
-export const SideBtn = styled.button<{ $active?: boolean; $side: string }>`display: none;`;
+
 export const TypeToggle = styled.div`
   display: flex;
   background: var(--bg-primary, #0D1117);
@@ -534,11 +580,6 @@ export const TypeBtn = styled.button<{ $active?: boolean }>`
   cursor: pointer;
   text-transform: uppercase;
 `;
-
-export const QuickActions = styled.div`display: none;`;
-export const QuickBtn = styled.button<{ $side: string }>`display: none;`;
-export const OcoSection = styled.div`display: none;`;
-export const OcoLabel = styled.div`display: none;`;
 
 /* Tooltips */
 export const TooltipPopup = styled.div`
@@ -571,7 +612,7 @@ export const TooltipIcons = styled.span`
   font-size: 8px;
   cursor: help;
   margin-left: 5px;
-  
+
   &::before { content: '?'; }
   &:hover { color: var(--text-secondary, #8B949E); }
 `;

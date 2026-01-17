@@ -72,11 +72,15 @@ const useLevel2Book = (): UseLevel2BookReturn => {
     const maxQuantities = useMemo(() => {
         if (!Level2Book) return { bids: 1, asks: 1 };
 
-        let max = 0.001;
-        Level2Book.bids.forEach(lvl => max = Math.max(max, parseFloat(lvl.quantity)));
-        Level2Book.asks.forEach(lvl => max = Math.max(max, parseFloat(lvl.quantity)));
+        let maxBids = 0.001;
+        let maxAsks = 0.001;
 
-        return { bids: max, asks: max };
+        // Only consider the top 15 levels (visible ones) for scaling
+        // This ensures the bars are meaningful even if there's a whale deep in the book
+        Level2Book.bids.slice(0, 15).forEach(lvl => maxBids = Math.max(maxBids, parseFloat(lvl.quantity)));
+        Level2Book.asks.slice(0, 15).forEach(lvl => maxAsks = Math.max(maxAsks, parseFloat(lvl.quantity)));
+
+        return { bids: maxBids, asks: maxAsks };
     }, [Level2Book]);
 
     // Map previous prices for change detection

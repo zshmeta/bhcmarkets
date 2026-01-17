@@ -94,4 +94,25 @@ describe('order-engine REST API', () => {
     const json = await res.json();
     expect(json).toEqual({ error: 'Not found' });
   });
+
+  it('decodes URL params for symbols (BTC%2FUSD)', async () => {
+    // Provide a minimal orderManager so the endpoint is initialized.
+    server.setOrderManager({
+      getOrderBookSnapshot: (symbol: string) => ({
+        symbol,
+        bids: [],
+        asks: [],
+        timestamp: 123,
+      }),
+      getStats: () => ({
+        symbolStats: new Map(),
+      }),
+    });
+
+    const res = await fetch(`${baseUrl}/orderbook/BTC%2FUSD?depth=1`);
+    expect(res.status).toBe(200);
+
+    const json = await res.json();
+    expect(json).toMatchObject({ symbol: 'BTC/USD' });
+  });
 });

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import SymbolSelector from './SymbolSelector';
+import { SymbolSelector } from './SymbolSelector';
 import type { Category } from './SymbolSelector.types';
 
 const mockCategories: Category[] = [

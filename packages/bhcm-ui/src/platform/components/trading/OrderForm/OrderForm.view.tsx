@@ -6,16 +6,14 @@
  */
 
 import { Icons } from '../Icons';
-import type { OrderSide, OrderType, TrailingType } from '../../types/trading';
 import type {
-    OrderCategory,
-    OrderFormFormState,
-    DataConfidenceInfo,
-    BalanceInfo,
-    EstimatedValues,
-    OrderFormTranslations,
-} from './useOrderForm';
+    OrderFormData,
+    OrderFormActions
+} from './OrderForm.types';
 import {
+    AdvancedSection,
+    SpreadBadge,
+    ErrorText,
     Container,
     Form,
     CategoryTabs,
@@ -81,134 +79,71 @@ import { Modal } from '../Modal';
  * ═══════════════════════════════════════════════════════════
  */
 export interface OrderFormViewProps {
-    // Form state
-    form: OrderFormFormState;
-
-    // Derived state
-    baseAsset: string;
-    quoteAsset: string;
-    balances: BalanceInfo;
-    dataConfidence: DataConfidenceInfo;
-    focusMode: boolean;
-    estimated: EstimatedValues;
-    isSubmitDisabled: boolean;
-
-    // Modal state
-    showDegradedConfirm: boolean;
-    showConfirmModal: boolean;
-
-    // Translations
-    translations: OrderFormTranslations;
-
-    // Input refs
-    priceInputRef: React.RefObject<HTMLInputElement | null>;
-    quantityInputRef: React.RefObject<HTMLInputElement | null>;
-    tpInputRef: React.RefObject<HTMLInputElement | null>;
-    slInputRef: React.RefObject<HTMLInputElement | null>;
-
-    // Actions - Form
-    onSideChange: (side: OrderSide) => void;
-    onOrderCategoryChange: (cat: OrderCategory) => void;
-    onTypeChange: (type: OrderType) => void;
-    onPriceChange: (val: string) => void;
-    onQuantityChange: (val: string) => void;
-    onTakeProfitPriceChange: (val: string) => void;
-    onStopLossPriceChange: (val: string) => void;
-    onTriggerPriceChange: (val: string) => void;
-    onLimitPriceChange: (val: string) => void;
-    onTrailingTypeChange: (type: TrailingType) => void;
-    onTrailingValueChange: (val: string) => void;
-    onTrailingActivationPriceChange: (val: string) => void;
-    onQuantityPercentChange: (pct: number) => void;
-    onShowTpChange: (show: boolean) => void;
-    onShowSlChange: (show: boolean) => void;
-    onCommentChange: (val: string) => void;
-
-    // Actions - Quick fill
-    onSetFromBestBid: () => void;
-    onSetFromBestAsk: () => void;
-    onSetFromMid: () => void;
-    onStepUp: () => void;
-    onStepDown: () => void;
-    onUpdateQuantityFromPercent: (pct: number) => void;
-
-    // Actions - Focus
-    onInputFocus: (inputName: string) => () => void;
-    onInputBlur: () => void;
-
-    // Actions - Submit
-    onSubmit: (e: React.FormEvent) => void;
-    onShowDegradedConfirm: (show: boolean) => void;
-    onShowConfirmModal: (show: boolean) => void;
-    onConfirmOrder: () => void;
-
-
-    // Market Data for Price Boxes
-    bestBidPrice: string;
-    bestAskPrice: string;
-
-    // Common translations
-    commonConfirm: string;
-    commonCancel: string;
+    data: OrderFormData;
+    actions: OrderFormActions;
 }
 
 /* ═══════════════════════════════════════════════════════════
  * MAIN VIEW COMPONENT
  * ═══════════════════════════════════════════════════════════
  */
-const OrderFormView = ({
-    form,
-    baseAsset,
-    quoteAsset,
-    balances,
-    dataConfidence,
-    focusMode,
-    estimated,
-    isSubmitDisabled,
-    showDegradedConfirm,
-    translations,
-    priceInputRef,
-    quantityInputRef,
-    tpInputRef,
-    slInputRef,
-    onSideChange,
-    onOrderCategoryChange,
-    onTypeChange,
-    onPriceChange,
-    onQuantityChange,
-    onTakeProfitPriceChange,
-    onStopLossPriceChange,
-    onTriggerPriceChange,
-    onLimitPriceChange,
-    onTrailingTypeChange,
-    onTrailingValueChange,
-    onTrailingActivationPriceChange,
-    onShowTpChange,
-    onShowSlChange,
-    onCommentChange,
-    onStepUp,
-    onStepDown,
-    onUpdateQuantityFromPercent,
-    onInputFocus,
-    onInputBlur,
-    onSubmit,
-    onShowDegradedConfirm,
-    onShowConfirmModal,
-    onConfirmOrder,
-
+const OrderFormView = ({ data, actions }: OrderFormViewProps) => {
+    // Destructure Data for easier access
+    const {
+        form,
+        baseAsset,
+        quoteAsset,
+        balances,
+        dataConfidence,
+        focusMode,
+        estimated,
+        isSubmitDisabled,
+        showDegradedConfirm,
+        showConfirmModal,
+        translations: t,
+        bestBidPrice,
+    bestAskPrice,
     commonConfirm,
     commonCancel,
-    bestBidPrice,
-    bestAskPrice,
-    showConfirmModal,
-}: OrderFormViewProps) => {
-    // Pure component - translations come from props
-    const t = translations;
+    refs,
+    errors
+} = data;
 
-    const { side, orderCategory, type, price, quantity, total,
+// Destructure Form State
+    const {
+        side, orderCategory, type, price, quantity, total,
         takeProfitPrice, stopLossPrice, triggerPrice, limitPrice,
         showTp, showSl, comment,
-        trailingType, trailingValue, trailingActivationPrice } = form;
+        trailingType, trailingValue, trailingActivationPrice
+    } = form;
+
+    // Destructure Actions
+    const {
+        onSideChange,
+        onOrderCategoryChange,
+        onTypeChange,
+        onPriceChange,
+        onQuantityChange,
+        onTakeProfitPriceChange,
+        onStopLossPriceChange,
+        onTriggerPriceChange,
+        onLimitPriceChange,
+        onTrailingTypeChange,
+        onTrailingValueChange,
+        onTrailingActivationPriceChange,
+        onShowTpChange,
+        onShowSlChange,
+        onCommentChange,
+        onStepUp,
+        onStepDown,
+        onUpdateQuantityFromPercent,
+        onInputFocus,
+        onInputBlur,
+        onSubmit,
+        onShowDegradedConfirm,
+        onShowConfirmModal,
+        onConfirmOrder
+    } = actions;
 
     // Tab Handler for Flat Layout
     const handleTabChange = (tab: string) => {
@@ -236,11 +171,25 @@ const OrderFormView = ({
         return 'limit';
     }, [orderCategory, type]);
 
+    // Calculate Spread for UI
+    const spread = useMemo(() => {
+        const bid = parseFloat(bestBidPrice);
+        const ask = parseFloat(bestAskPrice);
+        if (!isNaN(bid) && !isNaN(ask) && ask > 0) {
+            const diff = ask - bid;
+            const pct = (diff / ask) * 100;
+            return {
+                value: diff.toFixed(2),
+                percent: pct.toFixed(2)
+            };
+        }
+        return { value: '0.00', percent: '0.00' };
+    }, [bestBidPrice, bestAskPrice]);
+
     return (
         <Container $focused={focusMode}>
             <div className="card-header">
-                <span className="card-title">{translations?.title || 'Order Entry'}</span>
-                {/* Icons/Actions could go here */}
+                <span className="card-title">{t?.title || 'Order Entry'}</span>
             </div>
 
             <Form onSubmit={onSubmit}>
@@ -266,6 +215,12 @@ const OrderFormView = ({
                         <PriceLabel $side="sell">Sell</PriceLabel>
                         <BigPrice>{bestBidPrice || '0.00'}</BigPrice>
                     </PriceBox>
+                    
+                    <SpreadBadge>
+                        <span className="value">{spread.value}</span>
+                        <span className="label">({spread.percent}%)</span>
+                    </SpreadBadge>
+
                     <PriceBox type="button" $side="buy" $active={side === 'buy'} onClick={() => onSideChange('buy')}>
                         <PriceLabel $side="buy">Buy</PriceLabel>
                         <BigPrice>{bestAskPrice || '0.00'}</BigPrice>
@@ -282,10 +237,10 @@ const OrderFormView = ({
                                 <TooltipPopup>Maximum buy or minimum sell price</TooltipPopup>
                             </TooltipWrapper>
                         </Label>
-                        <InputWrapper>
+                        <InputWrapper $error={!!errors?.price}>
                             <StepBtn type="button" onClick={onStepDown}><Icons name="minus" size="xs" /></StepBtn>
                             <Input
-                                ref={priceInputRef}
+                                ref={refs.price}
                                 type="text"
                                 inputMode="decimal"
                                 className="input"
@@ -298,12 +253,13 @@ const OrderFormView = ({
                             <StepBtn type="button" onClick={onStepUp}><Icons name="plus" size="xs" /></StepBtn>
                             <InputSuffix style={{ right: '18px' }}>{quoteAsset}</InputSuffix>
                         </InputWrapper>
+                        {errors?.price && <ErrorText>{errors.price}</ErrorText>}
                     </InputGroup>
                 )}
 
                 {/* CONDITIONAL ORDER - TRAILING STOP */}
                 {orderCategory === 'conditional' && type === 'trailing_stop' && (
-                    <>
+                    <AdvancedSection>
                         <InputGroup>
                             <Label>
                                 Trailing Type
@@ -325,7 +281,7 @@ const OrderFormView = ({
                                     <TooltipPopup>Distance from peak/valley to trigger exit</TooltipPopup>
                                 </TooltipWrapper>
                             </Label>
-                            <InputWrapper>
+                            <InputWrapper $error={!!errors?.trailingValue}>
                                 <Input
                                     type="text"
                                     inputMode="decimal"
@@ -338,6 +294,7 @@ const OrderFormView = ({
                                 />
                                 <InputSuffix style={{ right: '8px' }}>{trailingType === 'percent' ? '%' : quoteAsset}</InputSuffix>
                             </InputWrapper>
+                            {errors?.trailingValue && <ErrorText>{errors.trailingValue}</ErrorText>}
                         </InputGroup>
                         <InputGroup>
                             <Label>
@@ -361,12 +318,12 @@ const OrderFormView = ({
                                 <InputSuffix style={{ right: '8px' }}>{quoteAsset}</InputSuffix>
                             </InputWrapper>
                         </InputGroup>
-                    </>
+                    </AdvancedSection>
                 )}
 
                 {/* CONDITIONAL ORDER - STOP/TP LIMIT */}
                 {orderCategory === 'conditional' && type !== 'trailing_stop' && (
-                    <>
+                    <AdvancedSection>
                         <InputGroup>
                             <Label>
                                 {type === 'stop_limit' ? 'Trigger Price' : 'TP Trigger'}
@@ -375,7 +332,7 @@ const OrderFormView = ({
                                     <TooltipPopup>Price event that activates this order</TooltipPopup>
                                 </TooltipWrapper>
                             </Label>
-                            <InputWrapper>
+                            <InputWrapper $error={!!errors?.triggerPrice}>
                                 <Input
                                     type="text"
                                     inputMode="decimal"
@@ -388,6 +345,7 @@ const OrderFormView = ({
                                 />
                                 <InputSuffix style={{ right: '8px' }}>{quoteAsset}</InputSuffix>
                             </InputWrapper>
+                            {errors?.triggerPrice && <ErrorText>{errors.triggerPrice}</ErrorText>}
                         </InputGroup>
                         <InputGroup>
                             <Label>
@@ -397,7 +355,7 @@ const OrderFormView = ({
                                     <TooltipPopup>Execution price once triggered</TooltipPopup>
                                 </TooltipWrapper>
                             </Label>
-                            <InputWrapper>
+                            <InputWrapper $error={!!errors?.limitPrice}>
                                 <Input
                                     type="text"
                                     inputMode="decimal"
@@ -410,11 +368,10 @@ const OrderFormView = ({
                                 />
                                 <InputSuffix style={{ right: '8px' }}>{quoteAsset}</InputSuffix>
                             </InputWrapper>
+                            {errors?.limitPrice && <ErrorText>{errors.limitPrice}</ErrorText>}
                         </InputGroup>
-                    </>
+                    </AdvancedSection>
                 )}
-
-                {/* OCO REMOVED - Logic simplified */}
 
                 {/* AMOUNT INPUT (Common) */}
                 <InputGroup>
@@ -425,9 +382,9 @@ const OrderFormView = ({
                             <TooltipPopup>Order quantity in base asset units</TooltipPopup>
                         </TooltipWrapper>
                     </Label>
-                    <InputWrapper>
+                    <InputWrapper $error={!!errors?.quantity}>
                         <Input
-                            ref={quantityInputRef}
+                            ref={refs.quantity}
                             type="text"
                             inputMode="decimal"
                             className="input"
@@ -440,6 +397,7 @@ const OrderFormView = ({
                         />
                         <InputSuffix style={{ right: '8px' }}>{baseAsset}</InputSuffix>
                     </InputWrapper>
+                    {errors?.quantity && <ErrorText>{errors.quantity}</ErrorText>}
                     <PercentButtons>
                         {[25, 50, 75, 100].map((pct) => (
                             <PercentBtn key={pct} type="button" onClick={() => onUpdateQuantityFromPercent(pct)}>
@@ -475,7 +433,7 @@ const OrderFormView = ({
                             <LabelSmall>{t.takeProfit}</LabelSmall>
                             <InputWrapper>
                                 <InputSmall
-                                    ref={tpInputRef}
+                                    ref={refs.tp}
                                     type="text"
                                     inputMode="decimal"
                                     className="input"
@@ -495,7 +453,7 @@ const OrderFormView = ({
                             <LabelSmall>{t.stopLoss}</LabelSmall>
                             <InputWrapper>
                                 <InputSmall
-                                    ref={slInputRef}
+                                    ref={refs.sl}
                                     type="text"
                                     inputMode="decimal"
                                     className="input"
@@ -588,8 +546,6 @@ const OrderFormView = ({
                 <SubmitBtn type="submit" $side={side} disabled={isSubmitDisabled}>
                     <span className="action">Place {side} Order</span>
                 </SubmitBtn>
-
-                {/* QUICK ACTIONS - REMOVED AS REQUESTED */}
             </Form>
 
             {/* TRADE CONFIRMATION MODAL */}

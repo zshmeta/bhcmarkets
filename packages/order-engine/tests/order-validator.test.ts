@@ -28,7 +28,7 @@ describe('OrderValidator', () => {
     it('should validate valid limit order', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'limit',
         quantity: 1,
@@ -42,7 +42,7 @@ describe('OrderValidator', () => {
     it('should reject invalid account ID', () => {
       const result = validator.validate({
         accountId: 'invalid',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'limit',
         quantity: 1,
@@ -72,7 +72,7 @@ describe('OrderValidator', () => {
     it('should reject invalid order side', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'invalid',
         type: 'limit',
         quantity: 1,
@@ -85,7 +85,7 @@ describe('OrderValidator', () => {
     it('should require price for limit orders', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'limit',
         quantity: 1,
@@ -98,7 +98,7 @@ describe('OrderValidator', () => {
     it('should not require price for market orders', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'market',
         quantity: 1,
@@ -110,7 +110,7 @@ describe('OrderValidator', () => {
     it('should require stopPrice for stop orders', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'stop',
         quantity: 1,
@@ -123,7 +123,7 @@ describe('OrderValidator', () => {
     it('should require both price and stopPrice for stop_limit orders', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'stop_limit',
         quantity: 1,
@@ -139,7 +139,7 @@ describe('OrderValidator', () => {
     it('should reject quantity below minimum', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'market',
         quantity: 0.0001, // Below 0.001 min
@@ -152,7 +152,7 @@ describe('OrderValidator', () => {
     it('should reject quantity above maximum', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'market',
         quantity: 10000, // Above 1000 max
@@ -165,7 +165,7 @@ describe('OrderValidator', () => {
     it('should reject negative quantity', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'market',
         quantity: -1,
@@ -179,7 +179,7 @@ describe('OrderValidator', () => {
     it('should reject price below minimum', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'limit',
         quantity: 1,
@@ -193,7 +193,7 @@ describe('OrderValidator', () => {
     it('should reject price above maximum', () => {
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'limit',
         quantity: 1,
@@ -207,11 +207,11 @@ describe('OrderValidator', () => {
 
   describe('Price Deviation Check', () => {
     it('should reject price with high deviation from market', () => {
-      validator.setMarketPrice('BTC-USD', 50000);
+      validator.setMarketPrice('BTC/USD', 50000);
 
       const result = validator.validate({
         accountId: '00000000-0000-0000-0000-000000000001',
-        symbol: 'BTC-USD',
+        symbol: 'BTC/USD',
         side: 'buy',
         type: 'limit',
         quantity: 1,
