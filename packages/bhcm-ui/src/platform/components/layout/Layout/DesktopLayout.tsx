@@ -31,7 +31,7 @@ import {
 const DesktopLayout = () => {
   const { t } = useI18n();
   const location = useLocation();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, loginWithRedirect } = useAuthStore();
 
   const showNetworkStatus =
     (location.pathname === '/trade' || location.pathname === '/') && isAuthenticated;
@@ -75,10 +75,27 @@ const DesktopLayout = () => {
           <LanguageToggle />
           <ThemeToggle />
 
-          {isAuthenticated && (
+          {isAuthenticated ? (
             <AccountWrapper>
               <AccountMenu />
             </AccountWrapper>
+          ) : (
+            <button
+              onClick={loginWithRedirect}
+              style={{
+                background: 'var(--accent, #58A6FF)',
+                color: '#fff',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                marginLeft: '8px'
+              }}
+            >
+              Sign In
+            </button>
           )}
         </Actions>
       </header>

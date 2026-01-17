@@ -1,17 +1,21 @@
-/**
- * Login Page.
- * 
- * User login interface with email and password.
- */
-
 import { useMemo, useState, type FormEvent, type ChangeEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, EmailInput, Notification, PasswordInput, Text } from "@repo/ui";
+import { Notification, Text } from "@repo/ui";
 import { useAuth } from "../../auth/auth.hooks.js";
 import { authApi } from "../../auth/auth.api.js";
 import { resolveReturnTo, redirectToReturnTo } from "../../lib/redirectUtils.js";
-import { AuthShell } from "../AuthShell.js";
+import { AuthLayout } from "../AuthLayout.js";
 import { isLikelyEmail } from "../../lib/validation.js";
+import { InputWrapper, StyledInput, FloatingLabel, NeonButton, ErrorText } from "../Design/System.js";
+
+// --- Icons ---
+const AlertIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="8" x2="12" y2="12"></line>
+    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+  </svg>
+);
 
 function buildLink(path: string, returnTo?: string): string {
 	if (!returnTo) return path;
@@ -30,7 +34,6 @@ export function LoginPage() {
 	const canSubmit = isLikelyEmail(email) && password.length > 0 && !loading;
 
 	const safeReturnTo = useMemo(() => resolveReturnTo(new URLSearchParams(location.search)), [location.search]);
-
 	const returnTo = safeReturnTo?.value;
 
   const handleSubmit = async (e: FormEvent) => {
@@ -46,24 +49,15 @@ export function LoginPage() {
     try {
       await login({ email, password });
 
-      // If we have an external return URL, we need to perform a secure handoff.
-      // The local login established a session on THIS domain (auth.example.com).
-      // Now we need to pass a one-time code to the target domain (app.example.com)
-      // so it can exchange it for its own tokens.
       if (safeReturnTo?.kind === "absolute") {
         try {
           const { code } = await authApi.generateAuthCode({ targetUrl: safeReturnTo.value });
-          
-          // Append code to the return URL
           const url = new URL(safeReturnTo.value);
           url.searchParams.set("code", code);
-          
-          // Redirect to the target app with the code
           window.location.replace(url.toString());
           return;
         } catch (handoffError) {
           console.error("Handoff failed", handoffError);
-          // Fallback: just redirect (user might need to login again or SSO cookie might work)
           redirectToReturnTo(safeReturnTo, navigate);
         }
       } else {
@@ -75,7 +69,7 @@ export function LoginPage() {
   };
 
   return (
-		<AuthShell title="Sign in" subtitle="Access your account securely">
+		<AuthLayout title="Welcome Back" subtitle="Sign in to your dashboard">
 			{(error || localError) ? (
 				<Notification
 					variant="danger"
@@ -88,52 +82,60 @@ export function LoginPage() {
 				/>
 			) : null}
 
-			<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-				<EmailInput
-					label="Email"
-					value={email}
-					onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-					placeholder="you@company.com"
-					autoComplete="email"
-					autoCapitalize="none"
-					spellCheck={false}
-					autoFocus
-					required
-					disabled={loading}
-					showValidation
-				/>
+			<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 0, marginTop: 24 }}>
+				
+        <InputWrapper>
+          <StyledInput
+            id="email"
+            value={email}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+            placeholder=" "
+            autoComplete="email"
+            autoCapitalize="none"
+            spellCheck={false}
+            autoFocus
+            required
+            disabled={loading}
+          />
+          <FloatingLabel htmlFor="email">Email Address</FloatingLabel>
+        </InputWrapper>
 
-				<PasswordInput
-					label="Password"
-					value={password}
-					onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-					placeholder="Your password"
-					autoComplete="current-password"
-					required
-					disabled={loading}
-				/>
+        <InputWrapper>
+          <StyledInput
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+            placeholder=" "
+            autoComplete="current-password"
+            required
+            disabled={loading}
+          />
+          <FloatingLabel htmlFor="password">Password</FloatingLabel>
+          {localError && (
+             <ErrorText><AlertIcon /> check credentials</ErrorText>
+          )}
+        </InputWrapper>
 
-				<Button type="submit" variant="primary" fullWidth loading={loading} disabled={!canSubmit}>
-					Sign in
-				</Button>
+        <div style={{ marginBottom: 24, textAlign: 'right' }}>
+           <Link 
+             to={buildLink("/forgot-password", returnTo)} 
+             style={{ color: '#58A6FF', textDecoration: 'none', fontSize: '0.875rem' }}
+           >
+             Forgot password?
+           </Link>
+        </div>
+
+				<NeonButton type="submit" $variant="primary" disabled={!canSubmit} $loading={loading}>
+					{loading ? "" : "Sign In"}
+				</NeonButton>
 			</form>
 
-			<div style={{ marginTop: 12, display: "flex", justifyContent: "center" }}>
-				<Text variant="caption" color="tertiary" align="center">
-					Use a trusted device. Sessions can be revoked anytime.
+			<div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
+				<Text color="secondary" variant="caption">
+					New to BHC Markets? <Link to={buildLink("/register", returnTo)} style={{ color: '#58A6FF', textDecoration: 'none' }}>Create Account</Link>
 				</Text>
 			</div>
-
-			<div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
-				<Text color="secondary">
-					No account? <Link to={buildLink("/register", returnTo)}>Create one</Link>
-				</Text>
-			</div>
-			<div style={{ marginTop: 8, display: "flex", justifyContent: "center" }}>
-				<Text color="tertiary">
-					<Link to={buildLink("/forgot-password", returnTo)}>Forgot password?</Link>
-				</Text>
-			</div>
-		</AuthShell>
+		</AuthLayout>
   );
 }

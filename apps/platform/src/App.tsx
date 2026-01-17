@@ -6,6 +6,7 @@ import { WalletPage } from './pages/WalletPage';
 import { AssetDetailPage } from './pages/AssetDetailPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AuthCallbackPage } from './pages/AuthCallbackPage';
 // import { AuthOverlay } from './components/AuthOverlay';
 
 /**
@@ -19,6 +20,8 @@ export function App() {
     <BrowserRouter>
       {/* <AuthOverlay /> */}
       <Routes>
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        
         <Route element={<AdaptiveLayout />}>
           <Route path="/trade" element={<TradePage />} />
           <Route path="/markets" element={<MarketsPage />} />

@@ -28,6 +28,8 @@ interface AuthState {
 
 interface AuthActions {
     login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    loginWithRedirect: () => void;
+    handleCallback: (code: string) => Promise<boolean>;
     logout: () => void;
     updateProfile: (data: Partial<User>) => void;
     updateAvatar: (avatar: string) => void;
@@ -65,7 +67,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
     login: async (username, password) => {
         try {
-            const response = await apiClient.post<{ user: User; accessToken: string }>('/auth/login', { username, password });
+            const response = await apiClient.post<{ user: User; accessToken: string; refreshToken: string }>('/auth/login', { email: username, password }); // changed to email as per auth service
             if (typeof window !== 'undefined') {
                 localStorage.setItem(AUTH_STORAGE_KEY, '1');
                 localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
@@ -80,6 +82,31 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
                 return { success: true };
             }
             return { success: false, error: 'Authentication failed' };
+        }
+    },
+
+    loginWithRedirect: () => {
+         if (typeof window === 'undefined') return;
+         // TODO: Make this configurable via env vars
+         const AUTH_APP_URL = 'http://localhost:5174';
+         const returnTo = `${window.location.origin}/auth/callback`;
+         window.location.href = `${AUTH_APP_URL}/login?returnTo=${encodeURIComponent(returnTo)}`;
+    },
+
+    handleCallback: async (code: string) => {
+        try {
+            const response = await apiClient.post<{ user: User; accessToken: string; refreshToken: string }>('/auth/exchange', { code });
+            
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(AUTH_STORAGE_KEY, '1');
+                localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+            }
+            
+            set({ isAuthenticated: true, user: response.user });
+            return true;
+        } catch (error) {
+            console.error('Auth callback failed:', error);
+            return false;
         }
     },
 

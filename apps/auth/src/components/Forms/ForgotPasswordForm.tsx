@@ -1,10 +1,11 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ChangeEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button, EmailInput, Notification, Text } from "@repo/ui";
-import { authApi } from "../../auth/auth.api";
-import { isLikelyEmail } from "../../lib/validation";
-import { resolveReturnTo } from "../../lib/redirectUtils";
-import { AuthShell } from "../AuthShell";
+import { Notification, Text } from "@repo/ui";
+import { authApi } from "../../auth/auth.api.js";
+import { isLikelyEmail } from "../../lib/validation.js";
+import { resolveReturnTo } from "../../lib/redirectUtils.js";
+import { AuthLayout } from "../AuthLayout.js";
+import { InputWrapper, StyledInput, FloatingLabel, NeonButton } from "../Design/System.js";
 
 function buildLink(path: string, returnTo?: string): string {
 	if (!returnTo) return path;
@@ -46,7 +47,7 @@ export default function ForgotPasswordPage() {
 	};
 
 	return (
-		<AuthShell title="Reset password" subtitle="We’ll email you a reset link">
+		<AuthLayout title="Reset Password" subtitle="Enter your email to receive instructions">
 			{error ? (
 				<Notification
 					variant="danger"
@@ -58,46 +59,64 @@ export default function ForgotPasswordPage() {
 
 			{done ? (
 				<>
-					<Notification
-						variant="success"
-						title="Check your email"
-						message="If an account exists for that address, you’ll receive a reset link shortly."
-					/>
+					<div style={{ 
+            background: 'rgba(63, 185, 80, 0.1)', 
+            border: '1px solid rgba(63, 185, 80, 0.2)', 
+            borderRadius: '12px', 
+            padding: '24px',
+            marginBottom: '24px',
+            textAlign: 'center'
+          }}>
+            <Text variant="h3" color="success" style={{ marginBottom: '8px' }}>Check your email</Text>
+            <Text color="secondary">
+              If an account exists for <strong>{email}</strong>, you will receive a reset link shortly.
+            </Text>
+					</div>
+          
 					<div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
-						<Text color="secondary">
-							Back to <Link to={buildLink("/login", returnTo)}>sign in</Link>
-						</Text>
+						<Link 
+              to={buildLink("/login", returnTo)}
+              style={{ 
+                color: '#58A6FF', 
+                textDecoration: 'none',
+                fontWeight: 600
+              }}
+            >
+              Back to sign in
+            </Link>
 					</div>
 				</>
 			) : (
 				<>
-					<form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-						<EmailInput
-							label="Email"
-							value={email}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-							placeholder="you@company.com"
-							autoComplete="email"
-							autoCapitalize="none"
-							spellCheck={false}
-							autoFocus
-							required
-							disabled={loading}
-							showValidation
-						/>
+					<form onSubmit={submit} style={{ display: "flex", flexDirection: "column", marginTop: 24 }}>
+            <InputWrapper>
+              <StyledInput
+                id="email"
+                value={email}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                placeholder=" "
+                autoComplete="email"
+                autoCapitalize="none"
+                spellCheck={false}
+                autoFocus
+                required
+                disabled={loading}
+              />
+              <FloatingLabel htmlFor="email">Email Address</FloatingLabel>
+            </InputWrapper>
 
-						<Button type="submit" variant="primary" fullWidth loading={loading} disabled={!canSubmit}>
-							Send reset link
-						</Button>
+						<NeonButton type="submit" $variant="primary" disabled={!canSubmit} $loading={loading}>
+							{loading ? "" : "Send Reset Link"}
+						</NeonButton>
 					</form>
 
-					<div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+					<div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
 						<Text color="secondary">
-							Remembered it? <Link to={buildLink("/login", returnTo)}>Sign in</Link>
+							Remembered it? <Link to={buildLink("/login", returnTo)} style={{ color: '#58A6FF', textDecoration: 'none' }}>Sign in</Link>
 						</Text>
 					</div>
 				</>
 			)}
-		</AuthShell>
+		</AuthLayout>
 	);
 }

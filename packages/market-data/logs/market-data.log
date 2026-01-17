@@ -20049,3 +20049,444 @@
 {"level":30,"time":1768667823404,"service":"market-data","component":"tick-repository","count":12,"msg":"Candle batch saved"}
 {"level":30,"time":1768667833414,"service":"market-data","component":"tick-repository","count":37,"msg":"Candle batch saved"}
 {"level":30,"time":1768667854632,"service":"market-data","component":"collector-registry","ticksPerMinute":1878,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768668722537,"service":"market-data","env":"development","logLevel":"info","logFilePath":"./logs/market-data.log","msg":"Logger initialized"}
+{"level":30,"time":1768668723309,"service":"market-data","component":"bootstrap","env":"development","msg":"Starting Market Data Service..."}
+{"level":30,"time":1768668723310,"service":"market-data","component":"bootstrap","msg":"Initializing services..."}
+{"level":30,"time":1768668723310,"service":"market-data","component":"bootstrap","msg":"Connecting to database..."}
+{"level":30,"time":1768668724054,"service":"market-data","component":"bootstrap","msg":"Database connected"}
+{"level":30,"time":1768668724054,"service":"market-data","component":"bootstrap","msg":"Connecting to Redis..."}
+{"level":30,"time":1768668724253,"service":"market-data","component":"redis-client","msg":"Redis connected"}
+{"level":30,"time":1768668724726,"service":"market-data","component":"redis-client","msg":"Redis client initialized"}
+{"level":30,"time":1768668725222,"service":"market-data","component":"redis-client","msg":"Redis subscriber client initialized"}
+{"level":30,"time":1768668725222,"service":"market-data","component":"bootstrap","msg":"Redis connected"}
+{"level":30,"time":1768668725228,"service":"market-data","component":"collector-registry","msg":"Initializing collectors..."}
+{"level":30,"time":1768668725233,"service":"market-data","component":"collector-registry","collectors":["binance","yahoo","rabbitforex","fx-commodities"],"msg":"Collectors initialized"}
+{"level":30,"time":1768668725392,"service":"market-data","component":"tick-repository","msg":"Database connection established"}
+{"level":30,"time":1768668725392,"service":"market-data","component":"historical-service","msg":"Historical service initialized"}
+{"level":30,"time":1768668725395,"service":"market-data","component":"bootstrap","msg":"Services initialized"}
+{"level":30,"time":1768668725395,"service":"market-data","component":"bootstrap","msg":"Wiring data pipeline..."}
+{"level":30,"time":1768668725396,"service":"market-data","component":"bootstrap","msg":"Data pipeline wired"}
+{"level":30,"time":1768668725396,"service":"market-data","component":"bootstrap","msg":"Starting servers..."}
+{"level":30,"time":1768668725412,"service":"market-data","component":"websocket-server","port":6060,"msg":"WebSocket server listening"}
+{"level":30,"time":1768668725416,"service":"market-data","component":"bootstrap","port":6000,"msg":"HTTP API server listening"}
+{"level":30,"time":1768668725416,"service":"market-data","component":"bootstrap","msg":"Starting data collection..."}
+{"level":30,"time":1768668725417,"service":"market-data","component":"collector-registry","msg":"Starting all collectors..."}
+{"level":30,"time":1768668725419,"service":"market-data","component":"collector-registry","collector":"binance","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768668725420,"service":"market-data","collector":"binance","msg":"Connecting to Binance WebSocket..."}
+{"level":30,"time":1768668726719,"service":"market-data","collector":"binance","msg":"WebSocket connection established"}
+{"level":30,"time":1768668726720,"service":"market-data","component":"collector-registry","collector":"binance","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768668726721,"service":"market-data","collector":"binance","msg":"Connected successfully"}
+{"level":30,"time":1768668726721,"service":"market-data","component":"collector-registry","collector":"binance","msg":"Collector started"}
+{"level":30,"time":1768668726722,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768668726723,"service":"market-data","collector":"yahoo","msg":"Verifying yfinance-service accessibility (stocks)..."}
+{"level":30,"time":1768668727645,"service":"market-data","collector":"yahoo","testSymbol":"AAPL","price":255.53,"msg":"yfinance-service connection verified"}
+{"level":30,"time":1768668727646,"service":"market-data","component":"collector-registry","collector":"yahoo","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768668727646,"service":"market-data","collector":"yahoo","msg":"Connected successfully"}
+{"level":30,"time":1768668727646,"service":"market-data","component":"collector-registry","collector":"yahoo","msg":"Collector started"}
+{"level":30,"time":1768668727646,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768668727647,"service":"market-data","collector":"rabbitforex","baseUrl":"http://100.100.13.10:3000","msg":"Verifying RabbitForexAPI accessibility..."}
+{"level":30,"time":1768668728285,"service":"market-data","collector":"rabbitforex","fxOk":true,"metalsOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768668728286,"service":"market-data","component":"collector-registry","collector":"rabbitforex","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768668728286,"service":"market-data","collector":"rabbitforex","msg":"Connected successfully"}
+{"level":30,"time":1768668728286,"service":"market-data","component":"collector-registry","collector":"rabbitforex","msg":"Collector started"}
+{"level":30,"time":1768668728286,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"disconnected","to":"connecting","msg":"Collector state changed"}
+{"level":30,"time":1768668728287,"service":"market-data","collector":"fx-commodities","msg":"Verifying yfinance-service accessibility..."}
+{"level":30,"time":1768668728660,"service":"market-data","collector":"fx-commodities","yfinanceOk":true,"msg":"Upstream connectivity verified"}
+{"level":30,"time":1768668728660,"service":"market-data","component":"collector-registry","collector":"fx-commodities","from":"connecting","to":"connected","msg":"Collector state changed"}
+{"level":30,"time":1768668728660,"service":"market-data","collector":"fx-commodities","msg":"Connected successfully"}
+{"level":30,"time":1768668728661,"service":"market-data","component":"collector-registry","collector":"fx-commodities","msg":"Collector started"}
+{"level":30,"time":1768668728663,"service":"market-data","collector":"binance","symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD","ADA/USD","DOGE/USD","DOT/USD","AVAX/USD","LINK/USD","MATIC/USD","LTC/USD","USDC/USD"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768668728664,"service":"market-data","collector":"binance","streams":["btcusdt@ticker","ethusdt@ticker","bnbusdt@ticker","xrpusdt@ticker","solusdt@ticker","adausdt@ticker","dogeusdt@ticker","dotusdt@ticker","avaxusdt@ticker","linkusdt@ticker","maticusdt@ticker","ltcusdt@ticker","usdcusdt@ticker"],"id":1,"msg":"Sending subscription request"}
+{"level":30,"time":1768668728675,"service":"market-data","component":"collector-registry","collector":"binance","symbolCount":13,"symbols":["BTC/USD","ETH/USD","BNB/USD","XRP/USD","SOL/USD"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768668728676,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768668728677,"service":"market-data","collector":"yahoo","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768668728678,"service":"market-data","collector":"yahoo","symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","JPM","V","JNJ","AIR.PA","OR.PA","MC.PA","TTE.PA","SAN.PA"],"msg":"Fetching initial quotes"}
+{"level":30,"time":1768668729641,"service":"market-data","component":"collector-registry","collector":"yahoo","symbolCount":15,"symbols":["AAPL","MSFT","GOOGL","AMZN","NVDA"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768668729642,"service":"market-data","collector":"rabbitforex","symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD","EUR/GBP","EUR/JPY","GBP/JPY","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768668729643,"service":"market-data","collector":"rabbitforex","intervalMs":1000,"msg":"Starting poll loop"}
+{"level":30,"time":1768668729967,"service":"market-data","component":"collector-registry","collector":"rabbitforex","symbolCount":15,"symbols":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768668729967,"service":"market-data","collector":"fx-commodities","symbols":["SPX","NDX","DJI","VIX","FTSE","DAX","N225","XAU/USD","XAG/USD","WTI","BRENT","NATGAS"],"msg":"Subscribing to symbols"}
+{"level":30,"time":1768668729968,"service":"market-data","collector":"fx-commodities","intervalMs":15000,"msg":"Starting poll loop"}
+{"level":30,"time":1768668730505,"service":"market-data","component":"collector-registry","collector":"fx-commodities","symbolCount":12,"symbols":["SPX","NDX","DJI","VIX","FTSE"],"msg":"Subscribed to symbols"}
+{"level":30,"time":1768668730505,"service":"market-data","component":"collector-registry","msg":"All collectors started"}
+{"level":30,"time":1768668730505,"service":"market-data","component":"bootstrap","httpPort":6000,"wsPort":6060,"msg":"✅ Market Data Service started successfully"}
+{"level":30,"time":1768668735720,"service":"market-data","component":"tick-repository","count":2,"msg":"Candle batch saved"}
+{"level":30,"time":1768668785225,"service":"market-data","component":"collector-registry","ticksPerMinute":1355,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768668786446,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768668834329,"service":"market-data","component":"connection-manager","clientId":"client_1768668834329_1","totalClients":1,"msg":"Client connected"}
+{"level":30,"time":1768668834346,"service":"market-data","component":"connection-manager","clientId":"client_1768668834346_2","totalClients":2,"msg":"Client connected"}
+{"level":30,"time":1768668834434,"service":"market-data","component":"connection-manager","clientId":"client_1768668834434_3","totalClients":3,"msg":"Client connected"}
+{"level":30,"time":1768668834445,"service":"market-data","component":"connection-manager","clientId":"client_1768668834445_4","totalClients":4,"msg":"Client connected"}
+{"level":30,"time":1768668834606,"service":"market-data","component":"connection-manager","clientId":"client_1768668834329_1","totalClients":3,"msg":"Client disconnected"}
+{"level":30,"time":1768668834639,"service":"market-data","component":"connection-manager","clientId":"client_1768668834346_2","totalClients":2,"msg":"Client disconnected"}
+{"level":30,"time":1768668834660,"service":"market-data","component":"connection-manager","clientId":"client_1768668834434_3","totalClients":1,"msg":"Client disconnected"}
+{"level":30,"time":1768668842329,"service":"market-data","component":"connection-manager","clientId":"client_1768668834445_4","totalClients":0,"msg":"Client disconnected"}
+{"level":30,"time":1768668842334,"service":"market-data","component":"connection-manager","clientId":"client_1768668842334_5","totalClients":1,"msg":"Client connected"}
+{"level":30,"time":1768668842348,"service":"market-data","component":"connection-manager","clientId":"client_1768668842347_6","totalClients":2,"msg":"Client connected"}
+{"level":30,"time":1768668842491,"service":"market-data","component":"connection-manager","clientId":"client_1768668842334_5","totalClients":1,"msg":"Client disconnected"}
+{"level":30,"time":1768668845225,"service":"market-data","component":"collector-registry","ticksPerMinute":1436,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768668845695,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768668882067,"service":"market-data","component":"connection-manager","clientId":"client_1768668842347_6","totalClients":0,"msg":"Client disconnected"}
+{"level":30,"time":1768668882077,"service":"market-data","component":"connection-manager","clientId":"client_1768668882077_7","totalClients":1,"msg":"Client connected"}
+{"level":30,"time":1768668882094,"service":"market-data","component":"connection-manager","clientId":"client_1768668882094_8","totalClients":2,"msg":"Client connected"}
+{"level":30,"time":1768668882419,"service":"market-data","component":"connection-manager","clientId":"client_1768668882077_7","totalClients":1,"msg":"Client disconnected"}
+{"level":30,"time":1768668883460,"service":"market-data","component":"api","symbol":"SOL/USD","existingCount":34,"msg":"Triggering background backfill"}
+{"level":30,"time":1768668883805,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":386,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668883805,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668884249,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-16T22:59:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668884250,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768604340000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668885930,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668885930,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668886693,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":793,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668886693,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668886982,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-16T06:20:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668886982,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768544400000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668887874,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668887875,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668889090,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":1792,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668889091,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668889366,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-15T13:41:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668889366,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768484460000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668890850,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668890851,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668892796,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":2791,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668892796,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668893097,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-14T21:02:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668893098,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768424520000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668894277,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668894277,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668896705,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":3790,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668896706,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668897011,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-14T04:23:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668897011,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768364580000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668898165,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668898166,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668898863,"service":"market-data","component":"connection-manager","clientId":"client_1768668882094_8","totalClients":0,"msg":"Client disconnected"}
+{"level":30,"time":1768668898876,"service":"market-data","component":"connection-manager","clientId":"client_1768668898876_9","totalClients":1,"msg":"Client connected"}
+{"level":30,"time":1768668898900,"service":"market-data","component":"connection-manager","clientId":"client_1768668898900_10","totalClients":2,"msg":"Client connected"}
+{"level":30,"time":1768668899252,"service":"market-data","component":"connection-manager","clientId":"client_1768668898876_9","totalClients":1,"msg":"Client disconnected"}
+{"level":30,"time":1768668901138,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":4789,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668901139,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668901450,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-13T11:44:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668901450,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768304640000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668902971,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668902972,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668905225,"service":"market-data","component":"collector-registry","ticksPerMinute":1450,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768668905745,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768668908266,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":5788,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668908266,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668908557,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-12T19:05:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668908557,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768244700000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668909770,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668909770,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668919269,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":6788,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668919269,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668919554,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-12T02:26:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668919554,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768184760000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668920789,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668920789,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668929821,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":7787,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668929821,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668930122,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-11T09:47:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668930122,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768124820000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668931342,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668931343,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668940391,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":8786,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668940391,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668940686,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-10T17:08:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668940686,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768064880000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668941887,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668941887,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668941887,"service":"market-data","component":"api","symbol":"SOL/USD","loop":10,"msg":"Backfill progress"}
+{"level":30,"time":1768668950525,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":9785,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668950526,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668950824,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-10T00:29:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668950824,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1768004940000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668951999,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668952000,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668962484,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":10784,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668962485,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668962787,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-09T07:50:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668962788,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767945000000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668963995,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668963995,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668965226,"service":"market-data","component":"collector-registry","ticksPerMinute":1414,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768668965588,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768668974507,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":11783,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668974508,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668974809,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-08T15:11:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668974809,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767885060000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668976112,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668976112,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668982206,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":12783,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668982206,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668982502,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-07T22:32:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668982503,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767825120000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668983799,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668983799,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768668992700,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":13782,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768668992701,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768668993012,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-07T05:53:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768668993013,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767765180000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768668994275,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768668994275,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669006057,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":14781,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669006057,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669006368,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-06T13:14:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669006369,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767705240000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669007621,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669007621,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669021396,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":15780,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669021396,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669021709,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-05T20:35:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669021710,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767645300000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669022988,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669022988,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669025225,"service":"market-data","component":"collector-registry","ticksPerMinute":1427,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669025577,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669030705,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":16779,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669030705,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669030996,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-05T03:56:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669030996,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767585360000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669032262,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669032262,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669050893,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":17779,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669050893,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669051192,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-04T11:17:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669051192,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767525420000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669052963,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669052963,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669067860,"service":"market-data","component":"connection-manager","clientId":"client_1768668898900_10","totalClients":0,"msg":"Client disconnected"}
+{"level":30,"time":1768669075064,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":18778,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669075064,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669075378,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-03T18:38:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669075378,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767465480000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669076536,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669076536,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669076536,"service":"market-data","component":"api","symbol":"SOL/USD","loop":20,"msg":"Backfill progress"}
+{"level":30,"time":1768669083706,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":19777,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669083706,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669084011,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-03T01:59:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669084011,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767405540000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669085155,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669085155,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669085225,"service":"market-data","component":"collector-registry","ticksPerMinute":1449,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669085569,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669094063,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":20776,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669094063,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669094350,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-02T09:20:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669094350,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767345600000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669095502,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669095502,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669106055,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":21776,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669106055,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669106365,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-01T16:41:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669106365,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767285660000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669107505,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669107505,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669125036,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":22775,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669125036,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669125330,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2026-01-01T00:02:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669125330,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767225720000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669126471,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669126471,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669142689,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":23774,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669142689,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669142997,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-31T07:23:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669142997,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767165780000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669144484,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669144484,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669145225,"service":"market-data","component":"collector-registry","ticksPerMinute":1419,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669145587,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669149033,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":24773,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669149033,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669149340,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-30T14:44:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669149340,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767105840000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669150681,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669150681,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669158441,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":25773,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669158441,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669158762,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-29T22:05:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669158762,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1767045900000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669159922,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669159922,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669176970,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":26772,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669176970,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669177270,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-29T05:26:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669177270,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766985960000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669179203,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669179203,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669199131,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":27771,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669199131,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669199442,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-28T12:47:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669199442,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766926020000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669200552,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669200552,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669205225,"service":"market-data","component":"collector-registry","ticksPerMinute":1392,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669205573,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669221469,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":28770,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669221469,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669221769,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-27T20:08:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669221769,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766866080000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669222914,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669222914,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669222914,"service":"market-data","component":"api","symbol":"SOL/USD","loop":30,"msg":"Backfill progress"}
+{"level":30,"time":1768669248453,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":29770,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669248453,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669248765,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-27T03:29:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669248765,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766806140000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669249909,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669249909,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669260568,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":30769,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669260568,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669260886,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-26T10:50:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669260886,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766746200000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669262041,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669262041,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669265225,"service":"market-data","component":"collector-registry","ticksPerMinute":1430,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669265587,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669283041,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":31768,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669283041,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669283351,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-25T18:11:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669283351,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766686260000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669284469,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669284469,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669293959,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":32768,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669293959,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669294244,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-25T01:32:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669294244,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766626320000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669295371,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669295371,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669301607,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":33767,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669301607,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669301929,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-24T08:53:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669301929,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766566380000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669303061,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669303061,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669314558,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":34766,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669314558,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669314871,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-23T16:14:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669314871,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766506440000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669316011,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669316012,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669325225,"service":"market-data","component":"collector-registry","ticksPerMinute":1400,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669325581,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669335739,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":35765,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669335739,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669336055,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-22T23:35:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669336055,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766446500000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669337192,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669337192,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669359165,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":36765,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669359165,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669359472,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-22T06:56:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669359472,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766386560000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669360592,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669360592,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669367068,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":37764,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669367068,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669367377,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-21T14:17:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669367377,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766326620000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669368506,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669368506,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669382718,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":38763,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669382718,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669383028,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-20T21:38:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669383028,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766266680000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669384165,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669384165,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669384165,"service":"market-data","component":"api","symbol":"SOL/USD","loop":40,"msg":"Backfill progress"}
+{"level":30,"time":1768669385225,"service":"market-data","component":"collector-registry","ticksPerMinute":1411,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669385574,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669403981,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":39762,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669403981,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669404306,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-20T04:59:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669404306,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766206740000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669405466,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669405466,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669420705,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":40762,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669420705,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669421021,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-19T12:20:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669421021,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766146800000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669422352,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669422352,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669425474,"service":"market-data","component":"connection-manager","clientId":"client_1768669425474_11","totalClients":1,"msg":"Client connected"}
+{"level":30,"time":1768669425485,"service":"market-data","component":"connection-manager","clientId":"client_1768669425485_12","totalClients":2,"msg":"Client connected"}
+{"level":30,"time":1768669425544,"service":"market-data","component":"connection-manager","clientId":"client_1768669425544_13","totalClients":3,"msg":"Client connected"}
+{"level":30,"time":1768669425555,"service":"market-data","component":"connection-manager","clientId":"client_1768669425555_14","totalClients":4,"msg":"Client connected"}
+{"level":30,"time":1768669425672,"service":"market-data","component":"connection-manager","clientId":"client_1768669425474_11","totalClients":3,"msg":"Client disconnected"}
+{"level":30,"time":1768669425698,"service":"market-data","component":"connection-manager","clientId":"client_1768669425485_12","totalClients":2,"msg":"Client disconnected"}
+{"level":30,"time":1768669425713,"service":"market-data","component":"connection-manager","clientId":"client_1768669425544_13","totalClients":1,"msg":"Client disconnected"}
+{"level":30,"time":1768669443809,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":41761,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669443809,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669444127,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-18T19:41:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669444127,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766086860000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669445225,"service":"market-data","component":"collector-registry","ticksPerMinute":1426,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669445318,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669445318,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669446489,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669451162,"service":"market-data","component":"connection-manager","clientId":"client_1768669425555_14","totalClients":0,"msg":"Client disconnected"}
+{"level":30,"time":1768669451165,"service":"market-data","component":"connection-manager","clientId":"client_1768669451165_15","totalClients":1,"msg":"Client connected"}
+{"level":30,"time":1768669451177,"service":"market-data","component":"connection-manager","clientId":"client_1768669451177_16","totalClients":2,"msg":"Client connected"}
+{"level":30,"time":1768669451242,"service":"market-data","component":"connection-manager","clientId":"client_1768669451165_15","totalClients":1,"msg":"Client disconnected"}
+{"level":30,"time":1768669460467,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":42760,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669460467,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669460934,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-18T03:02:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669460934,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1766026920000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669462094,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669462094,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669496413,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":43760,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669496413,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669496981,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-17T10:23:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669496981,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1765966980000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669498209,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669498209,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669505225,"service":"market-data","component":"collector-registry","ticksPerMinute":1424,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669506448,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669517187,"service":"market-data","component":"connection-manager","clientId":"client_1768669451177_16","totalClients":0,"msg":"Client disconnected"}
+{"level":30,"time":1768669517205,"service":"market-data","component":"connection-manager","clientId":"client_1768669517205_17","totalClients":1,"msg":"Client connected"}
+{"level":30,"time":1768669517219,"service":"market-data","component":"connection-manager","clientId":"client_1768669517219_18","totalClients":2,"msg":"Client connected"}
+{"level":30,"time":1768669517564,"service":"market-data","component":"connection-manager","clientId":"client_1768669517205_17","totalClients":1,"msg":"Client disconnected"}
+{"level":30,"time":1768669526320,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":44759,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669526320,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669526711,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-16T17:44:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669526711,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1765907040000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669528278,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669528278,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669565225,"service":"market-data","component":"collector-registry","ticksPerMinute":1429,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669566482,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669569844,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":45759,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669569844,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669570402,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-16T01:05:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669570402,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1765847100000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669571826,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669571826,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669608449,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":46759,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669608449,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669608806,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-15T08:26:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669608806,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1765787160000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669610033,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669610033,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669625226,"service":"market-data","component":"collector-registry","ticksPerMinute":1388,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669625598,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669638782,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":47758,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669638782,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669639171,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-14T15:47:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669639172,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1765727220000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669640434,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669640434,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669652195,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":48758,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669652195,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669652505,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-13T23:08:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669652505,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1765667280000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669653735,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669653735,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}
+{"level":30,"time":1768669653735,"service":"market-data","component":"api","symbol":"SOL/USD","loop":50,"msg":"Backfill progress"}
+{"level":30,"time":1768669685226,"service":"market-data","component":"collector-registry","ticksPerMinute":1396,"validationErrors":0,"msg":"Tick rate summary"}
+{"level":30,"time":1768669687819,"service":"market-data","component":"tick-repository","count":49,"msg":"Candle batch saved"}
+{"level":30,"time":1768669689847,"service":"market-data","component":"historical-service","symbol":"SOL/USD","existingCount":49757,"limit":1000,"maxCandles":100000,"msg":"Backfill check"}
+{"level":30,"time":1768669689847,"service":"market-data","component":"historical-service","symbol":"SOL/USD","kind":"crypto","binance":"solusdt","yahoo":"SOL-USD","msg":"Symbol definition found"}
+{"level":30,"time":1768669690332,"service":"market-data","component":"historical-service","symbol":"SOL/USD","endTime":"2025-12-13T06:29:00.000Z","msg":"Fetching historical data before earliest candle"}
+{"level":30,"time":1768669690332,"service":"market-data","component":"historical-service","symbol":"SOL/USD","binanceSymbol":"solusdt","limit":1000,"endTime":1765607340000,"msg":"Backfilling from Binance"}
+{"level":30,"time":1768669691565,"service":"market-data","component":"tick-repository","count":1000,"msg":"Candle batch saved"}
+{"level":30,"time":1768669691565,"service":"market-data","component":"historical-service","symbol":"SOL/USD","count":1000,"msg":"Backfilled from Binance"}

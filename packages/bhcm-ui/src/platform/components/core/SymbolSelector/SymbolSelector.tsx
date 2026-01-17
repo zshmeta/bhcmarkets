@@ -17,6 +17,27 @@ import {
 } from './SymbolSelector.styles';
 
 
+ const useAutoClose = (setIsOpen: (open: boolean) => void, delay = 3000) => {
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+    };
+
+    const handleMouseLeave = () => {
+        timeoutRef.current = setTimeout(() => setIsOpen(false), delay);
+    };
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
+
+    return { handleMouseEnter, handleMouseLeave };
+};
 
 
 const SymbolSelector = ({
@@ -50,14 +71,10 @@ const SymbolSelector = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const { handleMouseEnter, handleMouseLeave } = useAutoClose(setIsOpen);
+
     const toggleCategory = (id: string) => {
-        const newExpanded = new Set(expandedCategories);
-        if (newExpanded.has(id)) {
-            newExpanded.delete(id);
-        } else {
-            newExpanded.add(id);
-        }
-        setExpandedCategories(newExpanded);
+        setExpandedCategories((prev) => (prev.has(id) ? new Set() : new Set([id])));
     };
 
     const handleSelect = (symbol: string) => {
@@ -109,7 +126,8 @@ const SymbolSelector = ({
                         </div>
                     </SearchBar>
 
-                    <CategoryList>
+
+                    <CategoryList onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                         {filteredCategories.map(category => (
                             <div key={category.id}>
                                 <CategoryHeader

@@ -1,10 +1,11 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ChangeEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, Notification, PasswordInput, Text } from "@repo/ui";
-import { AuthShell } from "../AuthShell";
-import { authApi } from "../../auth/auth.api";
-import { isAcceptablePassword } from "../../lib/validation";
-import { resolveReturnTo } from "../../lib/redirectUtils";
+import { Notification, Text } from "@repo/ui";
+import { AuthLayout } from "../AuthLayout.js";
+import { authApi } from "../../auth/auth.api.js";
+import { isAcceptablePassword } from "../../lib/validation.js";
+import { resolveReturnTo } from "../../lib/redirectUtils.js";
+import { InputWrapper, StyledInput, FloatingLabel, NeonButton, ErrorText } from "../Design/System.js";
 
 function buildLink(path: string, returnTo?: string): string {
 	if (!returnTo) return path;
@@ -67,7 +68,7 @@ export default function ResetPasswordPage() {
 	};
 
 	return (
-		<AuthShell title="Choose a new password" subtitle="Make it strong and unique">
+		<AuthLayout title="Choose a new password" subtitle="Make it strong and unique">
 			{error ? (
 				<Notification
 					variant="danger"
@@ -79,56 +80,76 @@ export default function ResetPasswordPage() {
 
 			{done ? (
 				<>
-					<Notification
-						variant="success"
-						title="Password updated"
-						message="You can now sign in with your new password."
-					/>
+          <div style={{ 
+            background: 'rgba(63, 185, 80, 0.1)', 
+            border: '1px solid rgba(63, 185, 80, 0.2)', 
+            borderRadius: '12px', 
+            padding: '24px',
+            marginBottom: '24px',
+            textAlign: 'center'
+          }}>
+            <Text variant="h3" color="success" style={{ marginBottom: '8px' }}>Password Updated</Text>
+            <Text color="secondary">
+              Your password has been reset successfully. You can now sign in with your new credentials.
+            </Text>
+					</div>
+
 					<div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
-						<Button
+						<NeonButton
 							type="button"
-							variant="primary"
+							$variant="primary"
 							onClick={() => navigate(buildLink("/login", returnTo), { replace: true })}
 						>
-							Go to sign in
-						</Button>
+							Go to Sign In
+						</NeonButton>
 					</div>
 				</>
 			) : (
 				<>
-					<form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-						<PasswordInput
-							label="New password"
-							value={password}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-							placeholder="Minimum 12 characters"
-							autoComplete="new-password"
-							required
-							disabled={loading}
-							showStrength
-						/>
-						<PasswordInput
-							label="Confirm new password"
-							value={confirmPassword}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
-							placeholder="Re-enter password"
-							autoComplete="new-password"
-							required
-							disabled={loading}
-						/>
+					<form onSubmit={submit} style={{ display: "flex", flexDirection: "column", marginTop: 24 }}>
+            <InputWrapper>
+              <StyledInput
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                placeholder=" "
+                autoComplete="new-password"
+                required
+                disabled={loading}
+              />
+              <FloatingLabel htmlFor="password">New Password (Min 12 chars)</FloatingLabel>
+            </InputWrapper>
 
-						<Button type="submit" variant="primary" fullWidth loading={loading} disabled={!canSubmit}>
-							Update password
-						</Button>
+            <InputWrapper>
+              <StyledInput
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
+                placeholder=" "
+                autoComplete="new-password"
+                required
+                disabled={loading}
+              />
+              <FloatingLabel htmlFor="confirmPassword">Confirm New Password</FloatingLabel>
+              {confirmPassword && password !== confirmPassword && (
+                <ErrorText>Passwords do not match</ErrorText>
+              )}
+            </InputWrapper>
+
+						<NeonButton type="submit" $variant="primary" disabled={!canSubmit} $loading={loading}>
+							{loading ? "" : "Update Password"}
+						</NeonButton>
 					</form>
 
-					<div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+					<div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
 						<Text color="secondary">
-							Back to <Link to={buildModeLink("login", returnTo)}>sign in</Link>
+							Back to <Link to={buildLink("/login", returnTo)} style={{ color: '#58A6FF', textDecoration: 'none' }}>sign in</Link>
 						</Text>
 					</div>
 				</>
 			)}
-		</AuthShell>
+		</AuthLayout>
 	);
 }
