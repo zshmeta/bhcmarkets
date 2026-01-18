@@ -15,6 +15,9 @@
 		"lint": "eslint src/",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"@repo/sdk": "*"
+	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "catalog:",
 		"typescript": "catalog:",

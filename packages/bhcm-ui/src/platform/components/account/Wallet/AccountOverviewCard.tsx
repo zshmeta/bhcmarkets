@@ -34,7 +34,7 @@ import {
  */
 
 const ASSET_COLORS: Record<string, string> = {
-  USDT: 'var(--color-price-up)',
+  USD: 'var(--color-price-up)',
   BTC: '#F7931A',
   ETH: '#627EEA',
   BNB: '#F3BA2F',
@@ -91,10 +91,10 @@ const AccountOverviewCard = () => {
       if (qty.lte(0)) continue;
 
       let usdValue: number;
-      if (balance.asset === 'USDT') {
+      if (balance.asset === 'USD') {
         usdValue = qty.toNumber();
       } else {
-        const symbol = `${balance.asset}USDT`;
+        const symbol = `${balance.asset}USD`;
         const price = prices[symbol];
         if (!price) continue;
         usdValue = qty.mul(new Decimal(price)).toNumber();

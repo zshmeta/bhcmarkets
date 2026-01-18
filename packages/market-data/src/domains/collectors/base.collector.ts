@@ -34,7 +34,7 @@ import type {
   TickHandler,
   ErrorHandler,
   StateChangeHandler,
-} from './collector.types.js';
+} from '@repo/sdk';
 import { logger } from '../../utils/logger.js';
 
 /**

@@ -43,7 +43,8 @@
     "public/walletStore_BASE_3375.ts",
     "public/walletStore_LOCAL_3375.ts",
     "public/walletStore_REMOTE_3375.ts",
-    "public/walletStore.ts"
+    "public/walletStore.ts",
+    "../mobile/src/pages"
   ],
   "exclude": [
     "src/pages"

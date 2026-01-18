@@ -25,7 +25,7 @@
  * {
  *   "e": "24hrMiniTicker",  // Event type
  *   "E": 1672515782136,     // Event time
- *   "s": "BTCUSDT",         // Symbol
+ *   "s": "BTCUSD",         // Symbol
  *   "c": "16500.00",        // Close price (last)
  *   "o": "16400.00",        // Open price
  *   "h": "16600.00",        // High price
@@ -38,7 +38,7 @@
 import { WebSocket } from 'ws';
 import { BaseCollector } from './base.collector.js';
 import { CRYPTO_SYMBOLS, getSymbolDef, type AssetKind } from '../../config/index.js';
-import type { NormalizedTick, CollectorConfig } from './collector.types.js';
+import type { NormalizedTick, CollectorConfig } from '@repo/sdk';
 
 /** Binance WebSocket base URL */
 const BINANCE_WS_URL = 'wss://stream.binance.com:9443/stream';
@@ -47,7 +47,7 @@ const BINANCE_WS_URL = 'wss://stream.binance.com:9443/stream';
  * Map from Binance symbol (lowercase) to our internal symbol.
  * Pre-computed for O(1) lookup during message processing.
  *
- * Example: "btcusdt" -> "BTC/USD"
+ * Example: "btcUSD" -> "BTC/USD"
  */
 const BINANCE_TO_INTERNAL = new Map<string, string>(
   CRYPTO_SYMBOLS
@@ -59,7 +59,7 @@ const BINANCE_TO_INTERNAL = new Map<string, string>(
  * Map from internal symbol to Binance symbol.
  * Used when subscribing to streams.
  *
- * Example: "BTC/USD" -> "btcusdt"
+ * Example: "BTC/USD" -> "btcUSD"
  */
 const INTERNAL_TO_BINANCE = new Map<string, string>(
   CRYPTO_SYMBOLS
@@ -74,7 +74,7 @@ const INTERNAL_TO_BINANCE = new Map<string, string>(
 interface BinanceMiniTicker {
   e: '24hrMiniTicker';
   E: number;    // Event timestamp (ms)
-  s: string;    // Symbol (e.g., "BTCUSDT")
+  s: string;    // Symbol (e.g., "BTCUSD")
   c: string;    // Close/last price
   o: string;    // Open price (24h)
   h: string;    // High (24h)
@@ -231,7 +231,7 @@ export class BinanceCollector extends BaseCollector {
    * Subscribe to symbol streams.
    *
    * Binance uses a JSON-RPC style subscription model:
-   * { "method": "SUBSCRIBE", "params": ["btcusdt@miniTicker"], "id": 1 }
+   * { "method": "SUBSCRIBE", "params": ["btcUSD@miniTicker"], "id": 1 }
    */
   protected async doSubscribe(symbols: string[]): Promise<void> {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {

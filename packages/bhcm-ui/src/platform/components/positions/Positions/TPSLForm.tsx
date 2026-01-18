@@ -82,7 +82,7 @@ const TPSLForm = ({ symbol, translations, onClose, onSave }: TPSLFormProps) => {
                             onChange={(e) => setTpPrice(e.target.value)}
                             placeholder={translations.triggerPrice}
                         />
-                        <Suffix>USDT</Suffix>
+                        <Suffix>USD</Suffix>
                     </InputWrapper>
                 </Field>
 
@@ -96,7 +96,7 @@ const TPSLForm = ({ symbol, translations, onClose, onSave }: TPSLFormProps) => {
                             onChange={(e) => setSlPrice(e.target.value)}
                             placeholder={translations.triggerPrice}
                         />
-                        <Suffix>USDT</Suffix>
+                        <Suffix>USD</Suffix>
                     </InputWrapper>
                 </Field>
 

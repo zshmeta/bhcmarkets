@@ -4,7 +4,7 @@
  * Listens to position change events and sends trade opened/closed email notifications.
  */
 
-import type { PositionChangeEvent, PositionSnapshot } from './position.types.js';
+import type { PositionChangeEvent, PositionSnapshot } from '@repo/sdk';
 import type { PositionManager } from './position-manager.js';
 
 /**

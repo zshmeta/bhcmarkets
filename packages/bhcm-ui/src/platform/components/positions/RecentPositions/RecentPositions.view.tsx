@@ -1,7 +1,7 @@
 import { memo, useCallback } from 'react';
 import { Icons } from '../Icons';
 import { formatPrice, formatQuantity, formatTime } from '../../../../../../sdk/utils';
-import type { Trade } from '../../types/market';
+import type { Trade } from '../../../../../../sdk/utils/types/market';
 import {
     Container,
     Header,

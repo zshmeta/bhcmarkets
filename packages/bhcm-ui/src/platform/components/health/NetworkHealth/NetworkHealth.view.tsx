@@ -1,6 +1,6 @@
 import { Icons } from '../Icons';
 import type { HealthCheck, StatItem, NetworkHealthData, DiagnosticsTranslations } from './useNetworkHealth';
-import type { NetworkEvent, NetworkEventType } from '../../types/market';
+import type { NetworkEvent, NetworkEventType } from '../../../../../../sdk/utils/types/market';
 import {
     Overlay, Drawer, Header, Title, CloseBtn, Content, Section, SectionTitle,
     ChecksGrid, CheckItem as CheckItemStyled, CheckIcons, CheckLabel, CheckStatus,
@@ -140,4 +140,4 @@ const NetworkHealthView = ({
     );
 }
 
-export { NetworkHealthView }  ;
+export { NetworkHealthView };

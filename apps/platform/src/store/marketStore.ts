@@ -3,7 +3,7 @@ import type { DataConfidenceLevel, Level2BookData, MarketMetrics, Trade } from '
 import type { NetworkEvent } from '../../../../packages/bhcm-ui/src/types/market';
 import { generateUUID } from '../../../../packages/sdk/utils/uuid';
 import { useWatchlistStore } from './watchlistStore';
-import { toCanonicalSymbol } from '@repo/types/symbols';
+import { toCanonicalSymbol } from '@repo/sdk/symbols';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 

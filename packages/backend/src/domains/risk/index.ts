@@ -61,7 +61,7 @@ export type {
   CircuitBreakerEvent,
   RiskService,
   RiskRepository,
-} from "./core/risk.types.js";
+} from "@repo/sdk";
 
 // Error class
 export { RiskError, type RiskErrorCode } from "./core/risk.errors.js";

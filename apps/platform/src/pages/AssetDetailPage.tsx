@@ -6,6 +6,7 @@ import { useWatchlistStore } from '@repo/sdk';
 import { useAutomationStore } from '@repo/sdk';
 import { useI18n } from '@repo/bhcm-ui/i18n';
 import { Icons } from '@repo/bhcm-ui/core';
+import { AuthOverlay } from '@repo/bhcm-ui/account';
 import type { IconsName } from '@repo/bhcm-ui/core';
 import { LineChart } from '@repo/bhcm-ui/market';
 import Decimal from 'decimal.js';
@@ -391,8 +392,8 @@ export const AssetDetailPage = () => {
 
   const assetList = useMemo(() => {
     if (!balances) return [];
-    return balances.filter(b => new Decimal(b.total || 0).gt(0) || b.asset === 'USDT').map(balance => {
-      const symbol = `${balance.asset}USDT`;
+    return balances.filter(b => new Decimal(b.total || 0).gt(0) || b.asset === 'USD').map(balance => {
+      const symbol = `${balance.asset}USD`;
       const position = getPosition(symbol);
       const marketInfo = symbols?.find(s => s.symbol === symbol);
 
@@ -409,7 +410,7 @@ export const AssetDetailPage = () => {
         unrealizedPnlPercent = new Decimal(currentPrice).minus(avgPrice).div(avgPrice).times(100);
       }
 
-      const value = new Decimal(balance.total || 0).times(balance.asset === 'USDT' ? 1 : currentPrice);
+      const value = new Decimal(balance.total || 0).times(balance.asset === 'USD' ? 1 : currentPrice);
 
       const LineChartData = Array.from({ length: 24 }, (_, i) => {
         const base = parseFloat(currentPrice) || 100;
@@ -458,12 +459,12 @@ export const AssetDetailPage = () => {
     }
 
     const totalPnl = totalRealizedPnl + totalUnrealizedPnl;
-    const usdtBalance = balances?.find(b => b.asset === 'USDT');
-    const availableBalance = parseFloat(usdtBalance?.available || '0');
-    const usdtValue = parseFloat(usdtBalance?.total || '0');
-    const positionValue = totalValue - usdtValue;
+    const USDBalance = balances?.find(b => b.asset === 'USD');
+    const availableBalance = parseFloat(USDBalance?.available || '0');
+    const USDValue = parseFloat(USDBalance?.total || '0');
+    const positionValue = totalValue - USDValue;
 
-    const initialCapital = ledger.filter(entry => entry.type === 'DEPOSIT' && entry.asset === 'USDT').reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
+    const initialCapital = ledger.filter(entry => entry.type === 'DEPOSIT' && entry.asset === 'USD').reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
     const baseCapital = initialCapital > 0 ? initialCapital : 400000;
     const roi = baseCapital > 0 ? ((totalValue - baseCapital) / baseCapital) * 100 : 0;
     const pnlPercent = totalValue > 0 ? (totalPnl / (totalValue - totalPnl)) * 100 : 0;
@@ -518,7 +519,7 @@ export const AssetDetailPage = () => {
       const value = o.fills.reduce((sum, f) => sum + parseFloat(f.price) * parseFloat(f.quantity), 0);
       activities.push({
         type: 'trade',
-        title: `${o.side.toUpperCase()} ${o.symbol.replace('USDT', '')}`,
+        title: `${o.side.toUpperCase()} ${o.symbol.replace('USD', '')}`,
         description: `${parseFloat(o.filledQty).toFixed(6)} @ ${formatNumber(parseFloat(o.avgPrice || '0'))}`,
         time: o.updatedAt,
         value: formatNumber(value),
@@ -532,203 +533,205 @@ export const AssetDetailPage = () => {
   }, [orders, executionLogs]);
 
   const marketData = useMemo(() => {
-    const btc = symbols?.find(s => s.symbol === 'BTCUSDT');
-    const eth = symbols?.find(s => s.symbol === 'ETHUSDT');
+    const btc = symbols?.find(s => s.symbol === 'BTCUSD');
+    const eth = symbols?.find(s => s.symbol === 'ETHUSD');
     return {
       btc: { price: btc?.price || '0', change: btc?.change24h || 0, LineChart: Array.from({ length: 24 }, () => parseFloat(btc?.price || '95000') * (1 + (Math.random() - 0.5) * 0.02)) },
       eth: { price: eth?.price || '0', change: eth?.change24h || 0, LineChart: Array.from({ length: 24 }, () => parseFloat(eth?.price || '3400') * (1 + (Math.random() - 0.5) * 0.02)) },
     };
   }, [symbols]);
 
-  const handleTrade = (asset: string) => { setSelectedSymbol(`${asset}USDT`); navigate('/trade'); };
+  const handleTrade = (asset: string) => { setSelectedSymbol(`${asset}USD`); navigate('/trade'); };
   const handleSort = (field: SortField) => { if (sortField === field) setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc'); else { setSortField(field); setSortOrder('desc'); } };
   const formatTimeAgo = (timestamp: number) => { const diff = Date.now() - timestamp; const m = Math.floor(diff / 60000); const h = Math.floor(diff / 3600000); const d = Math.floor(diff / 86400000); if (d > 0) return `${d}d ago`; if (h > 0) return `${h}h ago`; if (m > 0) return `${m}m ago`; return 'Just now'; };
 
   const activityColors: Record<string, string> = { trade: 'var(--color-info)', order: 'var(--color-success)', trigger: '#8b5cf6', deposit: 'var(--color-warning)' };
 
   return (
-    <Container>
-      {/* Hero Section */}
-      <HeroSection>
-        <HeroMain>
-          <PortfolioHeader>
-            <PortfolioLabel><Icons name="briefcase" size="sm" /><span>Portfolio Value</span></PortfolioLabel>
-            <AccountBadge><span>ID: {account?.accountId || 'PTT-DEMO'}</span><SimulatedTag>Paper Trading</SimulatedTag></AccountBadge>
-          </PortfolioHeader>
+    <AuthOverlay variant="page" title="Portfolio Overview" description="Sign in to view your portfolio">
+      <Container>
+        {/* Hero Section */}
+        <HeroSection>
+          <HeroMain>
+            <PortfolioHeader>
+              <PortfolioLabel><Icons name="briefcase" size="sm" /><span>Portfolio Value</span></PortfolioLabel>
+              <AccountBadge><span>ID: {account?.accountId || 'PTT-DEMO'}</span><SimulatedTag>Paper Trading</SimulatedTag></AccountBadge>
+            </PortfolioHeader>
 
-          <PortfolioValue>
-            <Currency>$</Currency>
-            <Amount>{totals.totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Amount>
-          </PortfolioValue>
+            <PortfolioValue>
+              <Currency>$</Currency>
+              <Amount>{totals.totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Amount>
+            </PortfolioValue>
 
-          <PortfolioMeta>
-            <ChangeIndicator $positive={totals.totalChange24h >= 0} $negative={totals.totalChange24h < 0}>
-              <Icons name={totals.totalChange24h >= 0 ? 'trending-up' : 'trending-down'} size="xs" />
-              <span>{formatPercent(totals.totalChange24h)}</span>
-              <ChangeLabel>24h</ChangeLabel>
-            </ChangeIndicator>
-            <PnLIndicator>
-              <PnLValue $positive={totals.totalPnl >= 0} $negative={totals.totalPnl < 0}>{totals.totalPnl >= 0 ? '+' : ''}${totals.totalPnl.toFixed(2)}</PnLValue>
-              <PnLLabel>Total P&L</PnLLabel>
-            </PnLIndicator>
-            <RoiIndicator><RoiValue $positive={totals.roi >= 0} $negative={totals.roi < 0}>{totals.roi >= 0 ? '+' : ''}{totals.roi.toFixed(2)}%</RoiValue><RoiLabel>ROI</RoiLabel></RoiIndicator>
-          </PortfolioMeta>
+            <PortfolioMeta>
+              <ChangeIndicator $positive={totals.totalChange24h >= 0} $negative={totals.totalChange24h < 0}>
+                <Icons name={totals.totalChange24h >= 0 ? 'trending-up' : 'trending-down'} size="xs" />
+                <span>{formatPercent(totals.totalChange24h)}</span>
+                <ChangeLabel>24h</ChangeLabel>
+              </ChangeIndicator>
+              <PnLIndicator>
+                <PnLValue $positive={totals.totalPnl >= 0} $negative={totals.totalPnl < 0}>{totals.totalPnl >= 0 ? '+' : ''}${totals.totalPnl.toFixed(2)}</PnLValue>
+                <PnLLabel>Total P&L</PnLLabel>
+              </PnLIndicator>
+              <RoiIndicator><RoiValue $positive={totals.roi >= 0} $negative={totals.roi < 0}>{totals.roi >= 0 ? '+' : ''}{totals.roi.toFixed(2)}%</RoiValue><RoiLabel>ROI</RoiLabel></RoiIndicator>
+            </PortfolioMeta>
 
-          <MetricsGrid>
-            <MetricItem><MetricIcons><Icons name="wallet" size="xs" /></MetricIcons><MetricContent><MetricValue>${totals.availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MetricValue><MetricLabel>Available Balance</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="layers" size="xs" /></MetricIcons><MetricContent><MetricValue>${totals.positionValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MetricValue><MetricLabel>Position Value</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="check-circle" size="xs" /></MetricIcons><MetricContent><MetricValue $positive={totals.totalRealizedPnl >= 0} $negative={totals.totalRealizedPnl < 0}>{totals.totalRealizedPnl >= 0 ? '+' : ''}${totals.totalRealizedPnl.toFixed(2)}</MetricValue><MetricLabel>Realized P&L</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="activity" size="xs" /></MetricIcons><MetricContent><MetricValue $positive={totals.totalUnrealizedPnl >= 0} $negative={totals.totalUnrealizedPnl < 0}>{totals.totalUnrealizedPnl >= 0 ? '+' : ''}${totals.totalUnrealizedPnl.toFixed(2)}</MetricValue><MetricLabel>Unrealized P&L</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="target" size="xs" /></MetricIcons><MetricContent><MetricValue>{tradingStats.winRate.toFixed(1)}%</MetricValue><MetricLabel>Win Rate</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="bar-chart-2" size="xs" /></MetricIcons><MetricContent><MetricValue>{(performanceMetrics?.profitFactor ?? 0).toFixed(2)}</MetricValue><MetricLabel>Profit Factor</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="trending-down" size="xs" /></MetricIcons><MetricContent><MetricValue $negative={(performanceMetrics?.maxDrawdown ?? 0) > 0}>{(performanceMetrics?.maxDrawdown ?? 0).toFixed(2)}%</MetricValue><MetricLabel>Max Drawdown</MetricLabel></MetricContent></MetricItem>
-            <MetricItem><MetricIcons><Icons name="repeat" size="xs" /></MetricIcons><MetricContent><MetricValue>{tradingStats.totalTrades}</MetricValue><MetricLabel>Total Trades</MetricLabel></MetricContent></MetricItem>
-          </MetricsGrid>
-        </HeroMain>
+            <MetricsGrid>
+              <MetricItem><MetricIcons><Icons name="wallet" size="xs" /></MetricIcons><MetricContent><MetricValue>${totals.availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MetricValue><MetricLabel>Available Balance</MetricLabel></MetricContent></MetricItem>
+              <MetricItem><MetricIcons><Icons name="layers" size="xs" /></MetricIcons><MetricContent><MetricValue>${totals.positionValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MetricValue><MetricLabel>Position Value</MetricLabel></MetricContent></MetricItem>
+              <MetricItem><MetricIcons><Icons name="check-circle" size="xs" /></MetricIcons><MetricContent><MetricValue $positive={totals.totalRealizedPnl >= 0} $negative={totals.totalRealizedPnl < 0}>{totals.totalRealizedPnl >= 0 ? '+' : ''}${totals.totalRealizedPnl.toFixed(2)}</MetricValue><MetricLabel>Realized P&L</MetricLabel></MetricContent></MetricItem>
+              <MetricItem><MetricIcons><Icons name="activity" size="xs" /></MetricIcons><MetricContent><MetricValue $positive={totals.totalUnrealizedPnl >= 0} $negative={totals.totalUnrealizedPnl < 0}>{totals.totalUnrealizedPnl >= 0 ? '+' : ''}${totals.totalUnrealizedPnl.toFixed(2)}</MetricValue><MetricLabel>Unrealized P&L</MetricLabel></MetricContent></MetricItem>
+              <MetricItem><MetricIcons><Icons name="target" size="xs" /></MetricIcons><MetricContent><MetricValue>{tradingStats.winRate.toFixed(1)}%</MetricValue><MetricLabel>Win Rate</MetricLabel></MetricContent></MetricItem>
+              <MetricItem><MetricIcons><Icons name="bar-chart-2" size="xs" /></MetricIcons><MetricContent><MetricValue>{(performanceMetrics?.profitFactor ?? 0).toFixed(2)}</MetricValue><MetricLabel>Profit Factor</MetricLabel></MetricContent></MetricItem>
+              <MetricItem><MetricIcons><Icons name="trending-down" size="xs" /></MetricIcons><MetricContent><MetricValue $negative={(performanceMetrics?.maxDrawdown ?? 0) > 0}>{(performanceMetrics?.maxDrawdown ?? 0).toFixed(2)}%</MetricValue><MetricLabel>Max Drawdown</MetricLabel></MetricContent></MetricItem>
+              <MetricItem><MetricIcons><Icons name="repeat" size="xs" /></MetricIcons><MetricContent><MetricValue>{tradingStats.totalTrades}</MetricValue><MetricLabel>Total Trades</MetricLabel></MetricContent></MetricItem>
+            </MetricsGrid>
+          </HeroMain>
 
-        <HeroChart>
-          <ChartHeader>
-            <ChartTitle>Portfolio Growth</ChartTitle>
-            <TimeRangeSelector>
-              {(['1D', '7D', '30D', 'ALL'] as TimeRange[]).map(range => (
-                <TimeRangeBtn key={range} $active={timeRange === range} onClick={() => setTimeRange(range)}>{range}</TimeRangeBtn>
-              ))}
-            </TimeRangeSelector>
-          </ChartHeader>
-          <ChartContainer>
-            <PortfolioChartComponent data={portfolioHistoryData} color={totals.totalPnl >= 0 ? 'var(--color-success)' : 'var(--color-error)'} height={120} timeRange={timeRange} />
-          </ChartContainer>
-        </HeroChart>
+          <HeroChart>
+            <ChartHeader>
+              <ChartTitle>Portfolio Growth</ChartTitle>
+              <TimeRangeSelector>
+                {(['1D', '7D', '30D', 'ALL'] as TimeRange[]).map(range => (
+                  <TimeRangeBtn key={range} $active={timeRange === range} onClick={() => setTimeRange(range)}>{range}</TimeRangeBtn>
+                ))}
+              </TimeRangeSelector>
+            </ChartHeader>
+            <ChartContainer>
+              <PortfolioChartComponent data={portfolioHistoryData} color={totals.totalPnl >= 0 ? 'var(--color-success)' : 'var(--color-error)'} height={120} timeRange={timeRange} />
+            </ChartContainer>
+          </HeroChart>
 
-        <HeroActions>
-          <PrimaryAction onClick={() => navigate('/wallet')}><Icons name="download" size="sm" /><span>Deposit</span></PrimaryAction>
-          <SecondaryAction onClick={() => navigate('/trade')}><Icons name="activity" size="sm" /><span>Trade</span></SecondaryAction>
-          <TertiaryAction onClick={() => navigate('/orders')}><Icons name="layers" size="sm" /><span>Orders</span></TertiaryAction>
-        </HeroActions>
-      </HeroSection>
+          <HeroActions>
+            <PrimaryAction onClick={() => navigate('/wallet')}><Icons name="download" size="sm" /><span>Deposit</span></PrimaryAction>
+            <SecondaryAction onClick={() => navigate('/trade')}><Icons name="activity" size="sm" /><span>Trade</span></SecondaryAction>
+            <TertiaryAction onClick={() => navigate('/orders')}><Icons name="layers" size="sm" /><span>Orders</span></TertiaryAction>
+          </HeroActions>
+        </HeroSection>
 
-      {/* Market Section */}
-      <MarketSection>
-        <SectionHeader>
-          <SectionTitle>Market Overview</SectionTitle>
-          <ViewAllBtn onClick={() => navigate('/markets')}>View All Markets<Icons name="chevron-right" size="xs" /></ViewAllBtn>
-        </SectionHeader>
-        <MarketCards>
-          <MarketCard onClick={() => handleTrade('BTC')}>
-            <MarketCardHeader><MarketCardIcons>B</MarketCardIcons><MarketCardInfo><MarketCardSymbol>BTC</MarketCardSymbol><MarketCardName>Bitcoin</MarketCardName></MarketCardInfo></MarketCardHeader>
-            <MarketCardBody><MarketCardPrice>${parseFloat(marketData.btc.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MarketCardPrice><MarketCardChange $positive={parseFloat(String(marketData.btc.change)) >= 0} $negative={parseFloat(String(marketData.btc.change)) < 0}><Icons name={parseFloat(String(marketData.btc.change)) >= 0 ? 'trending-up' : 'trending-down'} size="xs" />{formatPercent(parseFloat(String(marketData.btc.change)))}</MarketCardChange></MarketCardBody>
-            <MarketCardChart><LineChart data={marketData.btc.LineChart} width={100} height={32} lineWidth={1.5} /></MarketCardChart>
-          </MarketCard>
-          <MarketCard onClick={() => handleTrade('ETH')}>
-            <MarketCardHeader><MarketCardIcons>E</MarketCardIcons><MarketCardInfo><MarketCardSymbol>ETH</MarketCardSymbol><MarketCardName>Ethereum</MarketCardName></MarketCardInfo></MarketCardHeader>
-            <MarketCardBody><MarketCardPrice>${parseFloat(marketData.eth.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MarketCardPrice><MarketCardChange $positive={parseFloat(String(marketData.eth.change)) >= 0} $negative={parseFloat(String(marketData.eth.change)) < 0}><Icons name={parseFloat(String(marketData.eth.change)) >= 0 ? 'trending-up' : 'trending-down'} size="xs" />{formatPercent(parseFloat(String(marketData.eth.change)))}</MarketCardChange></MarketCardBody>
-            <MarketCardChart><LineChart data={marketData.eth.LineChart} width={100} height={32} lineWidth={1.5} /></MarketCardChart>
-          </MarketCard>
-        </MarketCards>
-      </MarketSection>
-
-      {/* Stats Section */}
-      <StatsSection>
-        <StatsGrid>
-          <StatCard onClick={() => navigate('/trade')}><StatCardIcons style={{ background: 'rgba(59, 130, 246, 0.15)' }}><Icons name="briefcase" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.positionCount}</StatCardValue><StatCardLabel>Open Positions</StatCardLabel></StatCardContent></StatCard>
-          <StatCard onClick={() => navigate('/orders')}><StatCardIcons style={{ background: 'rgba(245, 158, 11, 0.15)' }}><Icons name="list" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.openOrderCount}</StatCardValue><StatCardLabel>Open Orders</StatCardLabel></StatCardContent></StatCard>
-          <StatCard onClick={() => navigate('/orders')}><StatCardIcons style={{ background: 'rgba(139, 92, 246, 0.15)' }}><Icons name="zap" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.activeTriggerCount}</StatCardValue><StatCardLabel>Active Triggers</StatCardLabel></StatCardContent></StatCard>
-          <StatCard><StatCardIcons style={{ background: 'rgba(34, 197, 94, 0.15)' }}><Icons name="bar-chart-2" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{formatNumber(tradingStats.volume24h)}</StatCardValue><StatCardLabel>24h Volume</StatCardLabel></StatCardContent></StatCard>
-          <StatCard><StatCardIcons style={{ background: 'rgba(59, 130, 246, 0.15)' }}><Icons name="repeat" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.totalTrades}</StatCardValue><StatCardLabel>Total Trades</StatCardLabel></StatCardContent></StatCard>
-          <StatCard><StatCardIcons style={{ background: tradingStats.winRate >= 50 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)' }}><Icons name="target" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.winRate.toFixed(0)}%</StatCardValue><StatCardLabel>Win Rate</StatCardLabel><StatCardSub>{tradingStats.winRate >= 50 ? 'Above average' : 'Below average'}</StatCardSub></StatCardContent></StatCard>
-        </StatsGrid>
-      </StatsSection>
-
-      {/* Main Grid */}
-      <MainGrid>
-        <AssetsSection>
+        {/* Market Section */}
+        <MarketSection>
           <SectionHeader>
-            <SectionTitle><Icons name="wallet" size="sm" />Asset Holdings</SectionTitle>
-            <TableControls>
-              <SearchBox><Icons name="search" size="xs" /><input type="text" placeholder="Search assets..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></SearchBox>
-            </TableControls>
+            <SectionTitle>Market Overview</SectionTitle>
+            <ViewAllBtn onClick={() => navigate('/markets')}>View All Markets<Icons name="chevron-right" size="xs" /></ViewAllBtn>
           </SectionHeader>
+          <MarketCards>
+            <MarketCard onClick={() => handleTrade('BTC')}>
+              <MarketCardHeader><MarketCardIcons>B</MarketCardIcons><MarketCardInfo><MarketCardSymbol>BTC</MarketCardSymbol><MarketCardName>Bitcoin</MarketCardName></MarketCardInfo></MarketCardHeader>
+              <MarketCardBody><MarketCardPrice>${parseFloat(marketData.btc.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MarketCardPrice><MarketCardChange $positive={parseFloat(String(marketData.btc.change)) >= 0} $negative={parseFloat(String(marketData.btc.change)) < 0}><Icons name={parseFloat(String(marketData.btc.change)) >= 0 ? 'trending-up' : 'trending-down'} size="xs" />{formatPercent(parseFloat(String(marketData.btc.change)))}</MarketCardChange></MarketCardBody>
+              <MarketCardChart><LineChart data={marketData.btc.LineChart} width={100} height={32} lineWidth={1.5} /></MarketCardChart>
+            </MarketCard>
+            <MarketCard onClick={() => handleTrade('ETH')}>
+              <MarketCardHeader><MarketCardIcons>E</MarketCardIcons><MarketCardInfo><MarketCardSymbol>ETH</MarketCardSymbol><MarketCardName>Ethereum</MarketCardName></MarketCardInfo></MarketCardHeader>
+              <MarketCardBody><MarketCardPrice>${parseFloat(marketData.eth.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</MarketCardPrice><MarketCardChange $positive={parseFloat(String(marketData.eth.change)) >= 0} $negative={parseFloat(String(marketData.eth.change)) < 0}><Icons name={parseFloat(String(marketData.eth.change)) >= 0 ? 'trending-up' : 'trending-down'} size="xs" />{formatPercent(parseFloat(String(marketData.eth.change)))}</MarketCardChange></MarketCardBody>
+              <MarketCardChart><LineChart data={marketData.eth.LineChart} width={100} height={32} lineWidth={1.5} /></MarketCardChart>
+            </MarketCard>
+          </MarketCards>
+        </MarketSection>
 
-          <TableWrapper>
-            <AssetTable>
-              <thead>
-                <tr>
-                  <th>Asset</th>
-                  <SortableHeader onClick={() => handleSort('balance')}>Balance{sortField === 'balance' && <Icons name={sortOrder === 'desc' ? 'chevron-down' : 'chevron-up'} size="xs" />}</SortableHeader>
-                  <SortableHeader onClick={() => handleSort('value')}>Value{sortField === 'value' && <Icons name={sortOrder === 'desc' ? 'chevron-down' : 'chevron-up'} size="xs" />}</SortableHeader>
-                  <th>Price</th>
-                  <SortableHeader onClick={() => handleSort('pnl')}>P&L{sortField === 'pnl' && <Icons name={sortOrder === 'desc' ? 'chevron-down' : 'chevron-up'} size="xs" />}</SortableHeader>
-                  <th>24h</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAssets.map(asset => {
-                  const allocation = totals.totalValue > 0 ? (asset.value / totals.totalValue) * 100 : 0;
+        {/* Stats Section */}
+        <StatsSection>
+          <StatsGrid>
+            <StatCard onClick={() => navigate('/trade')}><StatCardIcons style={{ background: 'rgba(59, 130, 246, 0.15)' }}><Icons name="briefcase" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.positionCount}</StatCardValue><StatCardLabel>Open Positions</StatCardLabel></StatCardContent></StatCard>
+            <StatCard onClick={() => navigate('/orders')}><StatCardIcons style={{ background: 'rgba(245, 158, 11, 0.15)' }}><Icons name="list" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.openOrderCount}</StatCardValue><StatCardLabel>Open Orders</StatCardLabel></StatCardContent></StatCard>
+            <StatCard onClick={() => navigate('/orders')}><StatCardIcons style={{ background: 'rgba(139, 92, 246, 0.15)' }}><Icons name="zap" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.activeTriggerCount}</StatCardValue><StatCardLabel>Active Triggers</StatCardLabel></StatCardContent></StatCard>
+            <StatCard><StatCardIcons style={{ background: 'rgba(34, 197, 94, 0.15)' }}><Icons name="bar-chart-2" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{formatNumber(tradingStats.volume24h)}</StatCardValue><StatCardLabel>24h Volume</StatCardLabel></StatCardContent></StatCard>
+            <StatCard><StatCardIcons style={{ background: 'rgba(59, 130, 246, 0.15)' }}><Icons name="repeat" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.totalTrades}</StatCardValue><StatCardLabel>Total Trades</StatCardLabel></StatCardContent></StatCard>
+            <StatCard><StatCardIcons style={{ background: tradingStats.winRate >= 50 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)' }}><Icons name="target" size="sm" /></StatCardIcons><StatCardContent><StatCardValue>{tradingStats.winRate.toFixed(0)}%</StatCardValue><StatCardLabel>Win Rate</StatCardLabel><StatCardSub>{tradingStats.winRate >= 50 ? 'Above average' : 'Below average'}</StatCardSub></StatCardContent></StatCard>
+          </StatsGrid>
+        </StatsSection>
+
+        {/* Main Grid */}
+        <MainGrid>
+          <AssetsSection>
+            <SectionHeader>
+              <SectionTitle><Icons name="wallet" size="sm" />Asset Holdings</SectionTitle>
+              <TableControls>
+                <SearchBox><Icons name="search" size="xs" /><input type="text" placeholder="Search assets..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></SearchBox>
+              </TableControls>
+            </SectionHeader>
+
+            <TableWrapper>
+              <AssetTable>
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <SortableHeader onClick={() => handleSort('balance')}>Balance{sortField === 'balance' && <Icons name={sortOrder === 'desc' ? 'chevron-down' : 'chevron-up'} size="xs" />}</SortableHeader>
+                    <SortableHeader onClick={() => handleSort('value')}>Value{sortField === 'value' && <Icons name={sortOrder === 'desc' ? 'chevron-down' : 'chevron-up'} size="xs" />}</SortableHeader>
+                    <th>Price</th>
+                    <SortableHeader onClick={() => handleSort('pnl')}>P&L{sortField === 'pnl' && <Icons name={sortOrder === 'desc' ? 'chevron-down' : 'chevron-up'} size="xs" />}</SortableHeader>
+                    <th>24h</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAssets.map(asset => {
+                    const allocation = totals.totalValue > 0 ? (asset.value / totals.totalValue) * 100 : 0;
+                    return (
+                      <tr key={asset.asset}>
+                        <td><AssetCell><AssetIconsCircle>{asset.asset[0]}</AssetIconsCircle><AssetInfo><AssetSymbolText>{asset.asset}</AssetSymbolText><AssetAlloc>{allocation.toFixed(1)}% of portfolio</AssetAlloc></AssetInfo></AssetCell></td>
+                        <NumericCell><BalanceValue>{parseFloat(asset.total).toFixed(asset.asset === 'USD' ? 2 : 6)}</BalanceValue></NumericCell>
+                        <NumericCell><ValueAmount>${asset.value.toFixed(2)}</ValueAmount></NumericCell>
+                        <NumericCell>{asset.asset !== 'USD' ? <PriceValueText>${parseFloat(asset.currentPrice).toFixed(2)}</PriceValueText> : '—'}</NumericCell>
+                        <NumericCell>{asset.unrealizedPnl !== 0 ? <PnLCell $positive={asset.unrealizedPnl >= 0} $negative={asset.unrealizedPnl < 0}><span>{asset.unrealizedPnl >= 0 ? '+' : ''}${asset.unrealizedPnl.toFixed(2)}</span><PnLPercent>{formatPercent(asset.unrealizedPnlPercent)}</PnLPercent></PnLCell> : '—'}</NumericCell>
+                        <td>{asset.asset !== 'USD' && <LineChartCell><LineChart data={asset.LineChartData} width={60} height={24} lineWidth={1} /></LineChartCell>}</td>
+                        <td>{asset.asset !== 'USD' && <TradeBtn onClick={() => handleTrade(asset.asset)}>Trade</TradeBtn>}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </AssetTable>
+            </TableWrapper>
+          </AssetsSection>
+
+          <SidePanel>
+            <AllocationCard>
+              <CardTitle>Portfolio Allocation</CardTitle>
+              <AllocationList>
+                {filteredAssets.slice(0, 5).map((asset, i) => {
+                  const ratio = totals.totalValue > 0 ? (asset.value / totals.totalValue) * 100 : 0;
+                  const colors = ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#ef4444'];
                   return (
-                    <tr key={asset.asset}>
-                      <td><AssetCell><AssetIconsCircle>{asset.asset[0]}</AssetIconsCircle><AssetInfo><AssetSymbolText>{asset.asset}</AssetSymbolText><AssetAlloc>{allocation.toFixed(1)}% of portfolio</AssetAlloc></AssetInfo></AssetCell></td>
-                      <NumericCell><BalanceValue>{parseFloat(asset.total).toFixed(asset.asset === 'USDT' ? 2 : 6)}</BalanceValue></NumericCell>
-                      <NumericCell><ValueAmount>${asset.value.toFixed(2)}</ValueAmount></NumericCell>
-                      <NumericCell>{asset.asset !== 'USDT' ? <PriceValueText>${parseFloat(asset.currentPrice).toFixed(2)}</PriceValueText> : '—'}</NumericCell>
-                      <NumericCell>{asset.unrealizedPnl !== 0 ? <PnLCell $positive={asset.unrealizedPnl >= 0} $negative={asset.unrealizedPnl < 0}><span>{asset.unrealizedPnl >= 0 ? '+' : ''}${asset.unrealizedPnl.toFixed(2)}</span><PnLPercent>{formatPercent(asset.unrealizedPnlPercent)}</PnLPercent></PnLCell> : '—'}</NumericCell>
-                      <td>{asset.asset !== 'USDT' && <LineChartCell><LineChart data={asset.LineChartData} width={60} height={24} lineWidth={1} /></LineChartCell>}</td>
-                      <td>{asset.asset !== 'USDT' && <TradeBtn onClick={() => handleTrade(asset.asset)}>Trade</TradeBtn>}</td>
-                    </tr>
+                    <AllocItem key={asset.asset}>
+                      <AllocHeader><AllocBullet style={{ backgroundColor: colors[i % colors.length] }} /><AllocSymbol>{asset.asset}</AllocSymbol><AllocPercent>{ratio.toFixed(1)}%</AllocPercent></AllocHeader>
+                      <AllocBar><AllocBarFill style={{ width: `${ratio}%`, backgroundColor: colors[i % colors.length] }} /></AllocBar>
+                    </AllocItem>
                   );
                 })}
-              </tbody>
-            </AssetTable>
-          </TableWrapper>
-        </AssetsSection>
+              </AllocationList>
+            </AllocationCard>
 
-        <SidePanel>
-          <AllocationCard>
-            <CardTitle>Portfolio Allocation</CardTitle>
-            <AllocationList>
-              {filteredAssets.slice(0, 5).map((asset, i) => {
-                const ratio = totals.totalValue > 0 ? (asset.value / totals.totalValue) * 100 : 0;
-                const colors = ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#ef4444'];
-                return (
-                  <AllocItem key={asset.asset}>
-                    <AllocHeader><AllocBullet style={{ backgroundColor: colors[i % colors.length] }} /><AllocSymbol>{asset.asset}</AllocSymbol><AllocPercent>{ratio.toFixed(1)}%</AllocPercent></AllocHeader>
-                    <AllocBar><AllocBarFill style={{ width: `${ratio}%`, backgroundColor: colors[i % colors.length] }} /></AllocBar>
-                  </AllocItem>
-                );
-              })}
-            </AllocationList>
-          </AllocationCard>
+            <ActivityCard>
+              <ActivityHeader><CardTitle>Recent Activity</CardTitle><ViewAllBtn onClick={() => navigate('/orders')}>View All<Icons name="chevron-right" size="xs" /></ViewAllBtn></ActivityHeader>
+              <ActivityList>
+                {recentActivity.length > 0 ? recentActivity.map((activity, i) => (
+                  <ActivityItem key={i}>
+                    <ActivityItemIcons style={{ background: activityColors[activity.type] }}><Icons name={activity.type === 'trade' ? 'repeat' : activity.type === 'trigger' ? 'zap' : 'check-circle'} size="xs" /></ActivityItemIcons>
+                    <ActivityContent>
+                      <ActivityItemHeader><ActivityItemTitle>{activity.title}</ActivityItemTitle><ActivityTime>{formatTimeAgo(activity.time)}</ActivityTime></ActivityItemHeader>
+                      <ActivityDesc>{activity.description}</ActivityDesc>
+                    </ActivityContent>
+                    {activity.value && <ActivityValue $positive={activity.isPositive === true} $negative={activity.isPositive === false}>{activity.value}</ActivityValue>}
+                  </ActivityItem>
+                )) : (
+                  <EmptyActivity><Icons name="clock" size="lg" /><p>No recent activity</p><button onClick={() => navigate('/trade')}>Start Trading</button></EmptyActivity>
+                )}
+              </ActivityList>
+            </ActivityCard>
 
-          <ActivityCard>
-            <ActivityHeader><CardTitle>Recent Activity</CardTitle><ViewAllBtn onClick={() => navigate('/orders')}>View All<Icons name="chevron-right" size="xs" /></ViewAllBtn></ActivityHeader>
-            <ActivityList>
-              {recentActivity.length > 0 ? recentActivity.map((activity, i) => (
-                <ActivityItem key={i}>
-                  <ActivityItemIcons style={{ background: activityColors[activity.type] }}><Icons name={activity.type === 'trade' ? 'repeat' : activity.type === 'trigger' ? 'zap' : 'check-circle'} size="xs" /></ActivityItemIcons>
-                  <ActivityContent>
-                    <ActivityItemHeader><ActivityItemTitle>{activity.title}</ActivityItemTitle><ActivityTime>{formatTimeAgo(activity.time)}</ActivityTime></ActivityItemHeader>
-                    <ActivityDesc>{activity.description}</ActivityDesc>
-                  </ActivityContent>
-                  {activity.value && <ActivityValue $positive={activity.isPositive === true} $negative={activity.isPositive === false}>{activity.value}</ActivityValue>}
-                </ActivityItem>
-              )) : (
-                <EmptyActivity><Icons name="clock" size="lg" /><p>No recent activity</p><button onClick={() => navigate('/trade')}>Start Trading</button></EmptyActivity>
-              )}
-            </ActivityList>
-          </ActivityCard>
-
-          {tradingStats.bestAsset && (
-            <PerformerCard>
-              <CardTitle>Top Performer</CardTitle>
-              <PerformerContent>
-                <PerformerIcons>{tradingStats.bestAsset.asset[0]}</PerformerIcons>
-                <PerformerInfo><PerformerSymbol>{tradingStats.bestAsset.asset}</PerformerSymbol><PerformerPnL $positive={tradingStats.bestAsset.unrealizedPnlPercent >= 0} $negative={tradingStats.bestAsset.unrealizedPnlPercent < 0}>{formatPercent(tradingStats.bestAsset.unrealizedPnlPercent)}</PerformerPnL></PerformerInfo>
-                <PerformerTradeBtn onClick={() => handleTrade(tradingStats.bestAsset!.asset)}>Trade</PerformerTradeBtn>
-              </PerformerContent>
-            </PerformerCard>
-          )}
-        </SidePanel>
-      </MainGrid>
-    </Container>
+            {tradingStats.bestAsset && (
+              <PerformerCard>
+                <CardTitle>Top Performer</CardTitle>
+                <PerformerContent>
+                  <PerformerIcons>{tradingStats.bestAsset.asset[0]}</PerformerIcons>
+                  <PerformerInfo><PerformerSymbol>{tradingStats.bestAsset.asset}</PerformerSymbol><PerformerPnL $positive={tradingStats.bestAsset.unrealizedPnlPercent >= 0} $negative={tradingStats.bestAsset.unrealizedPnlPercent < 0}>{formatPercent(tradingStats.bestAsset.unrealizedPnlPercent)}</PerformerPnL></PerformerInfo>
+                  <PerformerTradeBtn onClick={() => handleTrade(tradingStats.bestAsset!.asset)}>Trade</PerformerTradeBtn>
+                </PerformerContent>
+              </PerformerCard>
+            )}
+          </SidePanel>
+        </MainGrid>
+      </Container>
+    </AuthOverlay>
   );
 }

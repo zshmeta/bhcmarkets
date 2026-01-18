@@ -13,7 +13,7 @@ import type {
   SubscribedMessage,
   UnsubscribedMessage,
   ErrorMessage,
-} from './stream.types.js';
+} from '@repo/sdk';
 
 const log = logger.child({ component: 'subscription-manager' });
 

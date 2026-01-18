@@ -1,9 +1,9 @@
 {
-    "extends": "@repo/typescript-config/vite.json",
+    "extends": "../../typescript-config/vite.json",
     "compilerOptions": {
         "composite": true,
         "incremental": true,
-        "ignoreDeprecations": "6.0",
+        "ignoreDeprecations": "5.0",
         "paths": {
             "@/*": [
                 "./src/*"

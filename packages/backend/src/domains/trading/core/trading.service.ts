@@ -1,5 +1,5 @@
 
-import { AccountServiceInterface, CurrencyCode } from '../../account/core/account.types.js';
+import { AccountServiceInterface, CurrencyCode } from '@repo/sdk';
 import { EngineClient, PlaceOrderInput, EnginePlaceOrderResponse } from './engine.client.js';
 import { getSymbolDef } from '@repo/market-data/config/symbols.js';
 

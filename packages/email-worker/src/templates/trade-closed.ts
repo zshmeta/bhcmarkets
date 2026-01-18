@@ -2,7 +2,7 @@
  * Trade Closed Email Template
  */
 
-import type { TradeClosedPayload, TemplateContext, RenderedEmail } from '../types';
+import type { TradeClosedPayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderTradeClosed(

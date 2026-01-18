@@ -18,7 +18,7 @@
  */
 
 import { logger } from '../../utils/logger.js';
-import type { Metrics } from './health.types.js';
+import type { Metrics } from '@repo/sdk';
 
 const log = logger.child({ component: 'metrics' });
 

@@ -37,8 +37,8 @@ import type {
     LedgerRepositoryInterface,
     TradeSettlementInput,
     AccountSummary,
-} from './ledger.types.js';
-import { LedgerRepository } from './ledger.repository.js';
+} from '@repo/sdk';
+import { LedgerRepository } from '@repo/ledger';
 import type { Sql } from 'postgres';
 
 // =============================================================================

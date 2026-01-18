@@ -2,7 +2,7 @@
  * Welcome Email Template
  */
 
-import type { WelcomePayload, TemplateContext, RenderedEmail } from '../types';
+import type { WelcomePayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderWelcome(

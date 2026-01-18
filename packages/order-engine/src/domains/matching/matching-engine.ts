@@ -31,9 +31,9 @@ import type {
   OrderType,
   TimeInForce,
   PlaceOrderInput,
-} from '../../types/order.types.js';
+} from '@repo/sdk';
 import { OrderBook, type OrderBookUpdate } from './order-book.js';
-import { logger } from '../../utils/logger.js';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'matching-engine' });
 

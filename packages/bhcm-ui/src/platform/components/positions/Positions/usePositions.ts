@@ -16,7 +16,7 @@ import { useI18n } from '../../i18n';
  * - Modal state management
  */
 
-import type { Position, PositionPnL, BalanceInfo, PositionsTranslations } from './Positions.types';
+import type { Position, PositionPnL, BalanceInfo, PositionsTranslations } from '@repo/sdk';
 
 export interface UsePositionsReturn {
     /** List of active positions [symbol, position] */
@@ -27,8 +27,8 @@ export interface UsePositionsReturn {
     currentPrice: number;
     /** Total unrealized P&L */
     totalPnL: number;
-    /** USDT balance info */
-    usdtBalance: BalanceInfo | undefined;
+    /** USD balance info */
+    USDBalance: BalanceInfo | undefined;
     /** Translations */
     translations: PositionsTranslations;
 
@@ -92,10 +92,10 @@ const usePositions = (): UsePositionsReturn => {
     const calculatePnL = useCallback((pos: Position): PositionPnL => {
         const qty = new Decimal(pos.quantity);
         const entry = new Decimal(pos.avgEntryPrice);
-        
+
         // Use the price from the map (all symbols), fallback to currentPrice if active symbol, or 0
         let marketPrice = priceMap.get(pos.symbol) || 0;
-        
+
         // Fallback for the active symbol if it hasn't updated in the watchlist store yet
         if (marketPrice === 0 && pos.symbol === currentSymbol) {
             marketPrice = currentPrice;
@@ -141,8 +141,8 @@ const usePositions = (): UsePositionsReturn => {
     }, []);
 
     // Balance info - use 'frozen' from WalletBalance, map to 'locked' for display
-    const usdtBalance = useMemo(() => {
-        const balance = balances.find((b) => b.asset === 'USDT');
+    const USDBalance = useMemo(() => {
+        const balance = balances.find((b) => b.asset === 'USD');
         return balance ? {
             asset: balance.asset,
             available: balance.available,
@@ -177,7 +177,7 @@ const usePositions = (): UsePositionsReturn => {
         currentSymbol,
         currentPrice,
         totalPnL,
-        usdtBalance,
+        USDBalance,
         translations,
         confirmClose,
         tpslSymbol,

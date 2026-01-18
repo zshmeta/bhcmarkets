@@ -75,7 +75,7 @@ describe('BinanceCollector', () => {
       await collector.subscribe(['BTC/USD', 'ETH/USD']);
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      // Symbols should be in our internal format (BTC/USD not BTCUSDT)
+      // Symbols should be in our internal format (BTC/USD not BTCUSD)
       const symbols = new Set(ticks.map((t) => t.symbol));
       for (const symbol of symbols) {
         expect(symbol).toMatch(/^[A-Z]+\/[A-Z]+$/);

@@ -7,7 +7,7 @@
 
 import { logger } from '../../utils/logger.js';
 import { metrics } from './metrics.collector.js';
-import type { ServiceHealth } from './health.types.js';
+import type { ServiceHealth } from '@repo/sdk';
 
 const log = logger.child({ component: 'health-service' });
 

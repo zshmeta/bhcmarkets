@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import styled, { keyframes } from "styled-components";
-import Page404 from "@repo/ui"; // Renamed to avoid collision with component
-// import VideoSrc from "../../assets/Page404.mp4"; // Renamed to avoid collision with component
+import defaultVideoSrc from "../../assets/Page404.mp4"; // Default video asset
 
 
 export type Page404Props = {
-  videoSrc?: string; // Made optional for default fallback
+  videosrc?: string; // Made optional for default fallback
   posterSrc?: string;
   headline?: string;
   message?: string;
+
   onGoHome?: () => void; // Added handler for navigation
 } & React.HTMLAttributes<HTMLElement>;
 
@@ -114,36 +114,36 @@ function useWaveNodes(text: string, startIndex: number) {
 }
 
 export function Page404({
-    videoSrc = VideoSrc,
-    posterSrc,
-    headline = "404",
-    message = "Page Not Found",
-    onGoHome,
-    ...rest
+  videosrc = defaultVideoSrc,
+  posterSrc,
+  headline = "404",
+  message = "Page Not Found",
+  onGoHome,
+  ...rest
 }: Page404Props) {
-    // Determine distinct delay start times so the wave flows from top line to bottom line
-    const headlineNodes = useWaveNodes(headline, 0);
-    const messageNodes = useWaveNodes(message, headline.replace(/\s/g, "").length);
+  // Determine distinct delay start times so the wave flows from top line to bottom line
+  const headlineNodes = useWaveNodes(headline, 0);
+  const messageNodes = useWaveNodes(message, headline.replace(/\s/g, "").length);
 
-    return (
+  return (
     <Root {...rest}>
       {/* Layer 1: The Video */}
       <VideoFrame autoPlay muted loop playsInline poster={posterSrc}>
-        <source src={videoSrc} type="video/mp4" />
+        <source src={videosrc} type="video/mp4" />
       </VideoFrame>
 
       {/* Layer 2: The Solid Background with "Holes" for text */}
       <KnockoutContainer>
-          <CutoutText>
-              <Headline>
-                  <SrOnly>{headline}</SrOnly>
-                  {headlineNodes}
-              </Headline>
-              <Message>
-                  <SrOnly>{message}</SrOnly>
-                  {messageNodes}
-              </Message>
-          </CutoutText>
+        <CutoutText>
+          <Headline>
+            <SrOnly>{headline}</SrOnly>
+            {headlineNodes}
+          </Headline>
+          <Message>
+            <SrOnly>{message}</SrOnly>
+            {messageNodes}
+          </Message>
+        </CutoutText>
       </KnockoutContainer>
     </Root>
   );

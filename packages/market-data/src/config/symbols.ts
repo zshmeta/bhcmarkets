@@ -1,1 +1,1 @@
-export * from '@repo/types/symbols';
+export * from '@repo/sdk/symbols';

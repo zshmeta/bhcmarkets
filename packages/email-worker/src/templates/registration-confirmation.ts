@@ -2,7 +2,7 @@
  * Registration Confirmation Email Template
  */
 
-import type { RegistrationConfirmationPayload, TemplateContext, RenderedEmail } from '../types';
+import type { RegistrationConfirmationPayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderRegistrationConfirmation(

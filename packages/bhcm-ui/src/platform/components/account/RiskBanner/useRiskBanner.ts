@@ -102,8 +102,8 @@ const useRiskBanner = (): UseRiskBannerReturn => {
     const riskMetrics = useMemo((): RiskMetrics | null => {
         if (!metrics) return null;
 
-        const usdtBalance = balances.find((b) => b.asset === 'USDT');
-        const usdtTotal = parseFloat(usdtBalance?.total ?? '0');
+        const USDBalance = balances.find((b) => b.asset === 'USD');
+        const USDTotal = parseFloat(USDBalance?.total ?? '0');
 
         let positionEntries: [string, any][] = [];
         if (positions instanceof Map) {
@@ -135,7 +135,7 @@ const useRiskBanner = (): UseRiskBannerReturn => {
         const currentPrice = parseFloat(metrics.mid);
 
         const positionValue = qty * currentPrice;
-        const totalValue = usdtTotal + positionValue;
+        const totalValue = USDTotal + positionValue;
         const positionSizePercent = totalValue > 0 ? (positionValue / totalValue) * 100 : 0;
         const unrealizedPnlPercent = avgEntry > 0 ? ((currentPrice - avgEntry) / avgEntry) * 100 : 0;
         const volatility = metrics.microVolatility;

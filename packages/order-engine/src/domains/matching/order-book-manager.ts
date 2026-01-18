@@ -14,8 +14,8 @@
 
 import { MatchingEngine, type MatchResult, type MatchingEvent, type MatchingEventHandler } from './matching-engine.js';
 import { OrderBook, type OrderBookUpdate } from './order-book.js';
-import type { EngineOrder, TimeInForce, OrderBookSnapshot } from '../../types/order.types.js';
-import { logger } from '../../utils/logger.js';
+import type { EngineOrder, TimeInForce, OrderBookSnapshot } from '@repo/sdk';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'order-book-manager' });
 

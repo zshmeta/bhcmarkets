@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useMarketStore, selectConnectionStatus, selectDataConfidence, selectNetworkHealth } from '@repo/sdk';
 import { useI18n, type Locale } from '../../i18n';
-import type { NetworkEvent, NetworkEventType } from '../../types/market';
+import type { NetworkEvent, NetworkEventType } from '../../../../../../sdk/utils/types/market';
 
 /* ═══════════════════════════════════════════════════════════
  * useNetworkHealth Hook

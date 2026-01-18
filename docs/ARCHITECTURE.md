@@ -205,11 +205,11 @@ BHC Markets is a distributed trading platform built as a Bun monorepo with multi
 ### Market Data Flow
 
 ```
-1. Binance WebSocket emits BTC/USDT tick
+1. Binance WebSocket emits BTC/USD tick
    │
    ▼
 2. Binance Collector receives and normalizes
-   - Convert USDT to USD
+   - Convert USD to USD
    - Add symbol metadata
    │
    ▼

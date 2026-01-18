@@ -8,7 +8,7 @@ export { registerTradingRoutes, type TradingRouteDependencies } from "./routes/t
 export { TradingService } from "./core/trading.service.js";
 import { TradingService } from "./core/trading.service.js";
 import { HttpEngineClient } from "./core/engine.client.js";
-import { AccountServiceInterface } from "../account/core/account.types.js";
+import { AccountServiceInterface } from "@repo/sdk";
 
 export interface TradingServiceDependencies {
   accountService: AccountServiceInterface;

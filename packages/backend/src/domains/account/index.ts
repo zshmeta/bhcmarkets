@@ -44,9 +44,9 @@ export type {
   // Interface types
   AccountRepository,
   AccountServiceInterface,
-} from "./core/account.types.js";
+} from "@repo/sdk";
 
-export { SUPPORTED_CURRENCIES } from "./core/account.types.js";
+export { SUPPORTED_CURRENCIES } from "@repo/sdk";
 
 // =============================================================================
 // CORE - Service

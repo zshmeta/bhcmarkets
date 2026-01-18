@@ -1,13 +1,11 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { Icons } from '../Icons';
-import type { SymbolSelectorProps } from './SymbolSelector.types';
+import type { SymbolSelectorProps } from '@repo/sdk';
 import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import {
     Container,
     TriggerButton,
     Dropdown,
-    Tabs,
-    Tab,
     SearchBar,
     SearchInput,
     CategoryList,
@@ -17,7 +15,7 @@ import {
 } from './SymbolSelector.styles';
 
 
- const useAutoClose = (setIsOpen: (open: boolean) => void, delay = 3000) => {
+const useAutoClose = (setIsOpen: (open: boolean) => void, delay = 3000) => {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleMouseEnter = () => {
@@ -55,7 +53,6 @@ const SymbolSelector = ({
     }, [onSelect, storeSetSelectedSymbol]);
 
     const [isOpen, setIsOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState<'watchlists' | 'all'>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
     const containerRef = useRef<HTMLDivElement>(null);

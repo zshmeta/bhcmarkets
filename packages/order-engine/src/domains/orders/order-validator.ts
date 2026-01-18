@@ -3,15 +3,6 @@
  * ========================
  *
  * Validates incoming orders before they reach the matching engine.
- *
- * VALIDATION CHECKS:
- * 1. Required fields present
- * 2. Valid order type and side
- * 3. Price/quantity within limits
- * 4. Account has sufficient balance
- * 5. Symbol is tradeable
- * 6. Rate limiting per account
- * 7. Market hours (if applicable)
  */
 
 import { z } from 'zod';
@@ -21,11 +12,20 @@ import type {
   OrderSide,
   OrderType,
   TimeInForce,
-} from '../../types/order.types.js';
+} from '@repo/sdk';
+import { logger } from '@repo/sdk';
 import { env } from '../../config/env.js';
-import { logger } from '../../utils/logger.js';
 
 const log = logger.child({ component: 'order-validator' });
+
+// ============================================================================
+// VALIDATION RESULT INTERFACE
+// ============================================================================
+
+// Local extension to include the sanitized order
+export interface ValidatorResult extends OrderValidationResult {
+  order?: PlaceOrderInput;
+}
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -37,11 +37,7 @@ const TimeInForceSchema = z.enum(['GTC', 'IOC', 'FOK', 'GTD']);
 
 const PlaceOrderSchema = z.object({
   accountId: z.string().uuid('Invalid account ID'),
-  // Canonical symbols across the repo use formats like:
-  // - BTC/USD (crypto/forex)
-  // - AIR.PA (equities)
-  // - SPX (indices)
-  // Keep this permissive but still URL/DB safe.
+  userId: z.string().optional(),
   symbol: z.string().min(1).max(64).regex(/^[A-Z0-9][A-Z0-9./_-]*$/i, 'Invalid symbol format'),
   side: OrderSideSchema,
   type: OrderTypeSchema,
@@ -52,18 +48,9 @@ const PlaceOrderSchema = z.object({
   clientOrderId: z.string().max(64).optional(),
 }).refine(
   (data) => {
-    // Limit orders require price
-    if (data.type === 'limit' && !data.price) {
-      return false;
-    }
-    // Stop orders require stopPrice
-    if ((data.type === 'stop' || data.type === 'stop_limit') && !data.stopPrice) {
-      return false;
-    }
-    // Stop-limit requires both
-    if (data.type === 'stop_limit' && !data.price) {
-      return false;
-    }
+    if (data.type === 'limit' && !data.price) return false;
+    if ((data.type === 'stop' || data.type === 'stop_limit') && !data.stopPrice) return false;
+    if (data.type === 'stop_limit' && !data.price) return false;
     return true;
   },
   {
@@ -110,7 +97,6 @@ class RateLimiter {
     return { allowed: true };
   }
 
-  // Periodic cleanup of old buckets
   cleanup(): void {
     const now = Date.now();
     for (const [key, bucket] of this.buckets) {
@@ -130,7 +116,7 @@ export interface ValidationConfig {
   maxQuantity: number;
   minPrice: number;
   maxPrice: number;
-  priceDeviationTolerance: number; // Max deviation from market price (0.1 = 10%)
+  priceDeviationTolerance: number;
   allowedSymbols?: Set<string>;
   tradingEnabled?: boolean;
 }
@@ -140,24 +126,23 @@ export class OrderValidator {
   private config: ValidationConfig;
   private marketPrices: Map<string, number> = new Map();
   private cleanupInterval: NodeJS.Timeout | null = null;
-
+  
   constructor(config?: Partial<ValidationConfig>) {
-    this.config = {
+     this.config = {
       minQuantity: 0.00000001,
       maxQuantity: 1_000_000_000,
       minPrice: 0.00000001,
       maxPrice: 100_000_000,
-      priceDeviationTolerance: env.PRICE_DEVIATION_TOLERANCE,
+      priceDeviationTolerance: env.PRICE_DEVIATION_TOLERANCE || 0.1,
       tradingEnabled: true,
       ...config,
     };
 
     this.rateLimiter = new RateLimiter(
-      env.RATE_LIMIT_ORDERS_PER_SECOND,
-      env.RATE_LIMIT_BURST
+      env.RATE_LIMIT_ORDERS_PER_SECOND || 10,
+      env.RATE_LIMIT_BURST || 50
     );
 
-    // Start cleanup interval
     this.cleanupInterval = setInterval(() => {
       this.rateLimiter.cleanup();
     }, 60000);
@@ -166,14 +151,14 @@ export class OrderValidator {
   /**
    * Validate an incoming order.
    */
-  validate(input: unknown): OrderValidationResult {
+  validate(input: unknown): ValidatorResult {
     const errors: string[] = [];
 
     // 1. Check if trading is enabled
     if (!this.config.tradingEnabled) {
       return {
         valid: false,
-        errors: ['Trading is currently disabled'],
+        error: 'Trading is currently disabled',
       };
     }
 
@@ -182,7 +167,7 @@ export class OrderValidator {
     if (!parseResult.success) {
       return {
         valid: false,
-        errors: parseResult.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`),
+        error: parseResult.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(', '),
       };
     }
 
@@ -193,7 +178,7 @@ export class OrderValidator {
     if (!rateLimit.allowed) {
       return {
         valid: false,
-        errors: [`Rate limit exceeded. Retry after ${rateLimit.retryAfter}ms`],
+        error: `Rate limit exceeded. Retry after ${rateLimit.retryAfter}ms`,
       };
     }
 
@@ -210,7 +195,7 @@ export class OrderValidator {
       errors.push(`Quantity ${order.quantity} exceeds maximum ${this.config.maxQuantity}`);
     }
 
-    // 6. Price validation (for limit orders)
+    // 6. Price validation
     if (order.price !== undefined) {
       if (order.price < this.config.minPrice) {
         errors.push(`Price ${order.price} below minimum ${this.config.minPrice}`);
@@ -219,7 +204,6 @@ export class OrderValidator {
         errors.push(`Price ${order.price} exceeds maximum ${this.config.maxPrice}`);
       }
 
-      // Check price deviation from market
       const marketPrice = this.marketPrices.get(order.symbol);
       if (marketPrice && this.config.priceDeviationTolerance > 0) {
         const deviation = Math.abs(order.price - marketPrice) / marketPrice;
@@ -243,13 +227,22 @@ export class OrderValidator {
 
     if (errors.length > 0) {
       log.warn({ errors, accountId: order.accountId }, 'Order validation failed');
-      return { valid: false, errors };
+      return { valid: false, error: errors.join(', ') };
     }
 
     log.debug({ accountId: order.accountId, symbol: order.symbol }, 'Order validated');
+    
+    const sdkOrder: PlaceOrderInput = {
+        ...order,
+        userId: order.userId || order.accountId,
+        quantity: order.quantity.toString(),
+        price: order.price?.toString(),
+        stopPrice: order.stopPrice?.toString(),
+    };
+
     return {
       valid: true,
-      order: order as PlaceOrderInput,
+      order: sdkOrder,
     };
   }
 
@@ -286,9 +279,6 @@ export class OrderValidator {
   }
 }
 
-/**
- * Create a singleton validator.
- */
 let validatorInstance: OrderValidator | null = null;
 
 export function getOrderValidator(config?: Partial<ValidationConfig>): OrderValidator {

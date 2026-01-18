@@ -15,8 +15,7 @@ import type { AccountServiceInterface } from "../../account/index.js";
 import type { RiskService } from "../../risk/index.js";
 import { createAdminService } from "../core/admin.service.js";
 import { createAdminRepositoryPg } from "../repositories/admin.repository.pg.js";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { sql } from "drizzle-orm";
+import { type NodePgDatabase, sql } from "@repo/database";
 import type { IncomingMessage, ServerResponse } from "http";
 import {
   listUsersSchema,
@@ -263,7 +262,13 @@ export function registerAdminApiRoutes(
     logger,
   });
 
-  type AuthContext = { userId: string; email: string; role: "user" | "admin" | "support" };
+  type AuthContext = { userId: string; role: "user" | "admin" | "support" };
+
+  async function getAdminAuth(req: any, deps: any): Promise<AuthContext | null> {
+    const claims = await getAuthUser(req, deps);
+    if (!claims) return null;
+    return { userId: claims.sub, role: claims.role as any };
+  }
 
   // Helper to check admin permission
   function requireAdminPermission(
@@ -290,7 +295,7 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/users", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "user:list");
 
     try {
@@ -304,7 +309,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/users/suspend", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "user:suspend");
 
     try {
@@ -320,7 +325,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/users/unsuspend", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "user:unsuspend");
 
     try {
@@ -335,7 +340,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/users/role", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "user:update_role");
 
     try {
@@ -354,7 +359,7 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/accounts", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "account:list");
 
     try {
@@ -368,7 +373,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/accounts/deposit", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "account:deposit");
 
     try {
@@ -387,7 +392,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/accounts/withdraw", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "account:withdraw");
 
     try {
@@ -406,7 +411,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/accounts/freeze", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "account:freeze");
 
     try {
@@ -421,7 +426,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/accounts/unfreeze", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "account:unfreeze");
 
     try {
@@ -440,7 +445,7 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/risk/dashboard", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "risk:read");
 
     try {
@@ -453,7 +458,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/risk/circuit-breaker/activate", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "risk:circuit_breaker_activate");
 
     try {
@@ -476,7 +481,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/risk/circuit-breaker/deactivate", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "risk:circuit_breaker_deactivate");
 
     try {
@@ -503,7 +508,7 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/symbols", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "symbol:list");
 
     try {
@@ -516,7 +521,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/symbols", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "symbol:create");
 
     try {
@@ -531,7 +536,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/symbols/enable", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "symbol:enable");
 
     try {
@@ -546,7 +551,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/symbols/disable", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "symbol:disable");
 
     try {
@@ -565,7 +570,7 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/audit", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "audit:read");
 
     try {
@@ -575,6 +580,7 @@ export function registerAdminApiRoutes(
         ...filter,
         startDate: filter.startDate ? new Date(filter.startDate) : undefined,
         endDate: filter.endDate ? new Date(filter.endDate) : undefined,
+        action: filter.action as any,
       };
       const entries = await adminService.getAuditLog(parsedFilter);
       return { status: 200, body: { data: entries } };
@@ -589,12 +595,17 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/orders", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "order:list");
 
     try {
       const filter = listOrdersSchema.parse(req.query || {});
-      const orders = await adminService.listOrders(filter);
+      const parsedFilter = {
+        ...filter,
+        startDate: filter.startDate ? new Date(filter.startDate) : undefined,
+        endDate: filter.endDate ? new Date(filter.endDate) : undefined,
+      };
+      const orders = await adminService.listOrders(parsedFilter);
       return { status: 200, body: { data: orders } };
     } catch (e: any) {
       if (e.status) return { status: e.status, body: { error: e.error } };
@@ -603,7 +614,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("GET", "/admin/orders/:id", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "order:read");
 
     try {
@@ -620,7 +631,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/orders/cancel", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "order:cancel");
 
     try {
@@ -635,7 +646,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/orders/cancel-all", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "order:cancel_all");
 
     try {
@@ -661,7 +672,7 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/positions", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "position:list");
 
     try {
@@ -675,7 +686,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("GET", "/admin/positions/:id", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "position:read");
 
     try {
@@ -692,7 +703,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("POST", "/admin/positions/force-close", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "position:force_close");
 
     try {
@@ -711,7 +722,7 @@ export function registerAdminApiRoutes(
   // ==========================================================================
 
   router.route("GET", "/admin/reports/trading", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "report:generate");
 
     try {
@@ -725,7 +736,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("GET", "/admin/reports/users", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "report:generate");
 
     try {
@@ -739,7 +750,7 @@ export function registerAdminApiRoutes(
   });
 
   router.route("GET", "/admin/reports/pnl", async (req: any) => {
-    const auth = await getAuthUser(req, deps);
+    const auth = await getAdminAuth(req, deps);
     requireAdminPermission(auth, "report:generate");
 
     try {

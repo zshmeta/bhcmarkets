@@ -1,6 +1,6 @@
 import { useTradingStore } from '@repo/sdk';
 import { useI18n } from '../../i18n';
-import type { PaperOrder } from '../../types/trading';
+import type { PaperOrder } from '../../../../../../sdk/utils/types/trading';
 
 /* ═══════════════════════════════════════════════════════════
  * useCurrentOrders Hook

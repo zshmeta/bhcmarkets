@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Icons } from '../Icons';
-import type { DataConfidenceLevel } from '../../types/market';
+import type { DataConfidenceLevel } from '../../../../../../sdk/utils/types/market';
 import type { MetricItem, HealthBoardTranslations } from './useHealthBoard';
 import {
     Container,

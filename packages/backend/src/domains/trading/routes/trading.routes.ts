@@ -13,8 +13,8 @@
 
 import type { Router, RouteContext } from "../../../api/types.js";
 import type { TokenManager } from "../../auth/tokens/tokens.js";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { sql } from "drizzle-orm";
+import { DrizzleClient } from "@repo/database";
+import { sql } from "@repo/database";
 import { extractBearerToken, verifyAccessToken } from "../../../api/middleware.js";
 import type { TradingService } from "../core/trading.service.js";
 
@@ -23,7 +23,7 @@ import type { TradingService } from "../core/trading.service.js";
 // =============================================================================
 
 export interface TradingRouteDependencies {
-  db: NodePgDatabase<Record<string, unknown>>;
+  db: DrizzleClient;
   tokenManager: TokenManager;
   tradingService: TradingService;
 }
@@ -142,7 +142,7 @@ export function registerTradingRoutes(
       if (!body || typeof body !== 'object') {
         return { status: 400, body: { error: "Invalid request body" } };
       }
-      
+
       const { accountId } = body;
       if (!accountId) {
         return { status: 400, body: { error: "accountId is required" } };
@@ -169,10 +169,10 @@ export function registerTradingRoutes(
       if (typeof error === 'object' && error !== null && 'status' in error) {
         return error as { status: number; body: unknown };
       }
-      
+
       const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error("order_place_error", { error: errorMessage });
-      
+
       // Assume service errors are validation/business logic errors (400)
       // Internal errors should be caught differently ideally, but for now 400/500 distinction is loose
       return { status: 400, body: { error: errorMessage } };

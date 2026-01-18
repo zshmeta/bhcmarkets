@@ -9,8 +9,8 @@ import type { Position, PositionPnL } from './usePositions';
  */
 
 const mockPositions: [string, Position][] = [
-  ['BTCUSDT', { symbol: 'BTCUSDT', side: 'long', quantity: '0.5', avgEntryPrice: '50000' }],
-  ['ETHUSDT', { symbol: 'ETHUSDT', side: 'long', quantity: '2.5', avgEntryPrice: '3000' }],
+  ['BTCUSD', { symbol: 'BTCUSD', side: 'long', quantity: '0.5', avgEntryPrice: '50000' }],
+  ['ETHUSD', { symbol: 'ETHUSD', side: 'long', quantity: '2.5', avgEntryPrice: '3000' }],
 ];
 
 const calculatePnL = (pos: Position): PositionPnL => {
@@ -26,10 +26,10 @@ const calculatePnL = (pos: Position): PositionPnL => {
 
 const defaultProps: PositionsViewProps = {
   positions: mockPositions,
-  currentSymbol: 'BTCUSDT',
+  currentSymbol: 'BTCUSD',
   currentPrice: 52500,
   totalPnL: 1124.50,
-  usdtBalance: { asset: 'USDT', available: '10000.00', locked: '500.00' },
+  USDBalance: { asset: 'USD', available: '10000.00', locked: '500.00' },
   translations: {
     title: 'Positions',
     noPositions: 'No open positions',
@@ -115,7 +115,7 @@ export const WithLoss: Story = {
 };
 
 export const ConfirmCloseModal: Story = {
-  args: { ...defaultProps, confirmClose: 'BTCUSDT' },
+  args: { ...defaultProps, confirmClose: 'BTCUSD' },
   decorators: [(Story) => <div style={{ width: 700 }}><Story /></div>],
 };
 

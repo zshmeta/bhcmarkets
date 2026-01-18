@@ -2,7 +2,7 @@
  * Reset Password Email Template
  */
 
-import type { ResetPasswordPayload, TemplateContext, RenderedEmail } from '../types';
+import type { ResetPasswordPayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderResetPassword(

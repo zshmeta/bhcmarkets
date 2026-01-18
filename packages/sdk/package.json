@@ -1,35 +1,39 @@
 {
   "name": "@repo/sdk",
-  "private": true,
   "version": "0.0.1",
-  "type": "module",
   "main": "./index.ts",
-  "exports": {
-    ".": "./index.ts"
-  },
-  "scripts": {
-    "test": "vitest",
-    "build": "tsc -b && vite build",
-    "lint": "eslint . && bun run typecheck"
-  },
   "dependencies": {
-    "@repo/types": "*",
+    "@types/react": "^19.2.8",
+    "decimal.js": "catalog:",
+    "pino": "catalog:",
     "uuid": "catalog:",
     "zustand": "catalog:"
   },
-  "peerDependencies": {
-    "react": "catalog:"
-  },
   "devDependencies": {
-    "react": "catalog:",
     "@eslint/js": "catalog:",
     "@types/node": "catalog:",
     "@types/uuid": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "globals": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vite": "catalog:",
-    "@vitest/coverage-v8": "catalog:",
     "vitest": "catalog:"
-  }
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./context": "./context/index.ts",
+    "./types": "./types/index.ts",
+    "./utils": "./utils/index.ts",
+    "./symbols": "./types/symbols.types.ts",
+    "./api": "./api/index.ts"
+  },
+  "private": true,
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && bun run typecheck"
+  },
+  "type": "module"
 }

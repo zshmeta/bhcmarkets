@@ -124,13 +124,13 @@ const SymbolRowItem = memo(({
                 )}
             </SparklineCell>
 
-            <BidAskCell $type="bid" className="tabular-nums">
+            {/* <BidAskCell $type="bid" className="tabular-nums">
                 {symbol.bidPrice || symbol.price || '--'}
             </BidAskCell>
 
             <BidAskCell $type="ask" className="tabular-nums">
                 {symbol.askPrice || symbol.price || '--'}
-            </BidAskCell>
+            </BidAskCell> */}
         </SymbolRow>
     );
 });
@@ -315,8 +315,8 @@ const WatchlistView = ({
     return (
         <Container className="card">
             {/* Header with title */}
-            <div className="card-header" style={{ padding: '0.25rem 0.25rem' }}>
-                <span className="card-title" style={{ color: 'var(--buy, #3FB950)', fontWeight: 400 }}>
+            <div className="card-header" style={{ padding: '0.3rem 0.25rem' }}>
+                <span className="card-title" style={{ color:  '#3B82F6', fontWeight: 400 }}>
                     <Icons name="bar-chart-3" size="sm" style={{ marginRight: '0.5rem' }} />
                     {t.title || 'Trade'}
                 </span>

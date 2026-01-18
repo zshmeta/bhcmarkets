@@ -5,8 +5,15 @@
  * This module provides functions to send emails after auth operations.
  */
 
-import type { IEmailClient } from '../../services/email/index.js';
-import type { User } from './auth.types.js';
+import type { User } from '@repo/sdk';
+
+export interface IEmailClient {
+  sendWelcome(email: string, userId: string, data: any): Promise<void>;
+  sendRegistrationConfirmation(email: string, userId: string, data: any): Promise<void>;
+  send2FA(email: string, userId: string, data: any): Promise<void>;
+  sendPasswordReset(email: string, userId: string, data: any): Promise<void>;
+  sendEmailChange(email: string, userId: string, data: any): Promise<void>;
+}
 
 export interface AuthEmailConfig {
   platformUrl: string;

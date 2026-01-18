@@ -13,14 +13,14 @@
  * - Circuit breaker events create audit trail
  */
 
-import { eq, and, sql, gte, isNull, desc, lt } from "drizzle-orm";
+import { eq, and, sql, gte, isNull, desc, lt } from "@repo/database";
 import type {
   RiskRepository,
   SymbolRiskLimits,
   UserRiskLimits,
   UUID,
   CircuitBreakerEvent,
-} from "../core/risk.types.js";
+} from "@repo/sdk";
 import type { DrizzleClient } from "@repo/database";
 
 // Import schema tables from shared database package
@@ -104,7 +104,7 @@ export function createRiskRepository(db: DrizzleClient): RiskRepository {
     async getAllSymbolLimits(): Promise<SymbolRiskLimits[]> {
       const rows = await db.select().from(symbolRiskLimits);
 
-      return rows.map((row) => ({
+      return rows.map((row: any) => ({
         symbol: row.symbol,
         tradingEnabled: row.tradingEnabled,
         minOrderSize: parseFloat(row.minOrderSize),

@@ -13,8 +13,7 @@ export type {
   FeeCalculation,
   TradeStats,
   TradeEvent,
-} from './trade.types.js';
-
+} from '@repo/sdk'
 export { FeeCalculator, type FeeTier, type FeeOverride } from './fee-calculator.js';
 export { TradeProcessor, type TradeProcessorConfig } from './trade-processor.js';
 

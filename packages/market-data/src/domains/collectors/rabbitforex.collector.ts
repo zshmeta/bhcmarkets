@@ -22,7 +22,7 @@ import {
   type SymbolDefinition,
 } from '../../config/symbols.js';
 import { env } from '../../config/env.js';
-import type { CollectorConfig, NormalizedTick } from './collector.types.js';
+import type { CollectorConfig, NormalizedTick } from '@repo/sdk';
 
 type RabbitRatesResponse = {
   base?: string;
@@ -199,22 +199,22 @@ export class RabbitForexCollector extends BaseCollector {
   private async pollForexRates(internalSymbols: string[]): Promise<void> {
     const { rates, timestamp } = await this.fetchRates();
 
-    const usdToUsd = rates.USD ?? 1;
+    const USDoUsd = rates.USD ?? 1;
     const ts = safeTickTimestamp(timestamp);
 
     for (const symbol of internalSymbols) {
       const def = getSymbolDef(symbol);
       if (!def) continue;
 
-      const usdToBase = def.base === 'USD' ? usdToUsd : rates[def.base];
-      const usdToQuote = def.quote === 'USD' ? usdToUsd : rates[def.quote];
+      const USDoBase = def.base === 'USD' ? USDoUsd : rates[def.base];
+      const USDoQuote = def.quote === 'USD' ? USDoUsd : rates[def.quote];
 
-      if (!usdToBase || !usdToQuote) {
+      if (!USDoBase || !USDoQuote) {
         this.log.debug({ symbol, base: def.base, quote: def.quote }, 'Missing Rabbit FX rate for currency');
         continue;
       }
 
-      const last = usdToQuote / usdToBase;
+      const last = USDoQuote / USDoBase;
 
       const tick: NormalizedTick = {
         symbol,
@@ -230,22 +230,22 @@ export class RabbitForexCollector extends BaseCollector {
   private async pollMetalRates(internalSymbols: string[]): Promise<void> {
     const { rates, timestamp } = await this.fetchMetals();
 
-    const usdToUsd = rates.USD ?? 1;
+    const USDoUsd = rates.USD ?? 1;
     const ts = safeTickTimestamp(timestamp);
 
     for (const symbol of internalSymbols) {
       const def = getSymbolDef(symbol);
       if (!def) continue;
 
-      const usdToBase = def.base === 'USD' ? usdToUsd : rates[def.base];
-      const usdToQuote = def.quote === 'USD' ? usdToUsd : rates[def.quote];
+      const USDoBase = def.base === 'USD' ? USDoUsd : rates[def.base];
+      const USDoQuote = def.quote === 'USD' ? USDoUsd : rates[def.quote];
 
-      if (!usdToBase || !usdToQuote) {
+      if (!USDoBase || !USDoQuote) {
         this.log.debug({ symbol, base: def.base, quote: def.quote }, 'Missing Rabbit metals rate');
         continue;
       }
 
-      const last = usdToQuote / usdToBase;
+      const last = USDoQuote / USDoBase;
 
       const tick: NormalizedTick = {
         symbol,

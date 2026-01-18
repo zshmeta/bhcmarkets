@@ -30,13 +30,13 @@ This is written as a sequence of small PRs that can ship independently.
 
 ### Why
 Even if we standardize on `BTC/USD`, we still must interface with:
-- external feeds (`BTC-USD`, `btcusdt`)
+- external feeds (`BTC-USD`, `btcUSD`)
 - URL path params (encoded)
 - storage/query conventions
 
 ### Deliverables
-Add `@repo/types` helpers (or a new tiny `@repo/symbols` package) like:
-- `toCanonicalSymbol(input: string): string | null` (accepts `BTC/USD`, `BTC-USD`, maybe `BTCUSDT` if needed)
+Add `@repo/sdk` helpers (or a new tiny `@repo/symbols` package) like:
+- `toCanonicalSymbol(input: string): string | null` (accepts `BTC/USD`, `BTC-USD`, maybe `BTCUSD` if needed)
 - `toUrlSymbol(canonical: string): string` (e.g. `encodeURIComponent(canonical)`)
 - `isCanonicalSymbol(s: string): boolean`
 

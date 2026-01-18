@@ -474,11 +474,11 @@ interface TabProps {
 export const Tab = styled.button<TabProps>`
   flex: 1;
   padding: 4px 8px;
-  font-size: 10px;
+  font-size: 0.6rem;
   font-weight: 500;
   color: var(--text-tertiary, #6E7681);
   background: transparent;
-  border: none;
+  border: 1px solid var(--border, #30363D);
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;

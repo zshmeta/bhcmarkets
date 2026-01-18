@@ -5,7 +5,7 @@
  * coupling to a specific implementation (JWT, PASETO, etc.).
  */
 
-import type { UUID, UserRole } from "../core/auth.types.js";
+import type { UUID, UserRole } from "@repo/sdk";
 
 /**
  * Claims contained in an access token.
@@ -14,19 +14,19 @@ import type { UUID, UserRole } from "../core/auth.types.js";
 export interface AccessTokenClaims {
   /** User ID (subject) */
   sub: UUID;
-  
+
   /** Session ID */
   sessionId: UUID;
-  
+
   /** User role for authorization */
   role: UserRole;
-  
+
   /** Token version (for invalidation) */
   version: number;
-  
+
   /** Issued at timestamp */
   issuedAt: string;
-  
+
   /** Expiration timestamp */
   expiresAt: string;
 }
@@ -38,19 +38,19 @@ export interface AccessTokenClaims {
 export interface RefreshTokenClaims {
   /** User ID (subject) */
   sub: UUID;
-  
+
   /** Session ID */
   sessionId: UUID;
-  
+
   /** Session version (incremented on rotation) */
   sessionVersion: number;
-  
+
   /** Password version (for invalidation on password change) */
   passwordVersion: number;
-  
+
   /** Issued at timestamp */
   issuedAt: string;
-  
+
   /** Expiration timestamp */
   expiresAt: string;
 }
@@ -67,7 +67,7 @@ export interface TokenManager {
    * @returns Signed token string
    */
   issueAccessToken(claims: AccessTokenClaims, ttlSeconds: number): Promise<string>;
-  
+
   /**
    * Issue a new refresh token.
    * @param claims - Token claims
@@ -75,14 +75,14 @@ export interface TokenManager {
    * @returns Signed token string
    */
   issueRefreshToken(claims: RefreshTokenClaims, ttlSeconds: number): Promise<string>;
-  
+
   /**
    * Parse and validate an access token.
    * @param token - Token string
    * @returns Token claims if valid, null otherwise
    */
   parseAccessToken(token: string): Promise<AccessTokenClaims | null>;
-  
+
   /**
    * Parse and validate a refresh token.
    * @param token - Token string
@@ -97,13 +97,13 @@ export interface TokenManager {
 export interface TokenValidationResult<T> {
   /** Whether the token is valid */
   valid: boolean;
-  
+
   /** Token claims (if valid) */
   claims?: T;
-  
+
   /** Error message (if invalid) */
   error?: string;
-  
+
   /** Error code */
   errorCode?: "EXPIRED" | "INVALID_SIGNATURE" | "MALFORMED" | "NOT_YET_VALID";
 }

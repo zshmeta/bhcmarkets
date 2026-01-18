@@ -1,6 +1,6 @@
 import { useMarketStore, selectRecentPositions } from '../../store/marketStore';
 import { useI18n } from '../../i18n';
-import type { Trade } from '../../types/market';
+import type { Trade } from '../../../../../../sdk/utils/types/market';
 
 /* ═══════════════════════════════════════════════════════════
  * useRecentPositions Hook

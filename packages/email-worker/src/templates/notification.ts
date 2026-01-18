@@ -2,7 +2,7 @@
  * Notification Email Template (Fallback/General)
  */
 
-import type { NotificationPayload, TemplateContext, RenderedEmail } from '../types';
+import type { NotificationPayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderNotification(

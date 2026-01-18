@@ -2,7 +2,7 @@
  * Email Change Confirmation Template
  */
 
-import type { EmailChangePayload, TemplateContext, RenderedEmail } from '../types';
+import type { EmailChangePayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderEmailChange(

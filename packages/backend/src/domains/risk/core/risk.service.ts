@@ -45,7 +45,7 @@ import type {
   RiskRepository,
   PlatformRiskLimits,
   UUID,
-} from "./risk.types.js";
+} from "@repo/sdk";
 import { RiskError } from "./risk.errors.js";
 import {
   getDefaultSymbolLimits,

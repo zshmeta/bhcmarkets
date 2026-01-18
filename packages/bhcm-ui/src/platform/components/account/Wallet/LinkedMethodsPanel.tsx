@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useWalletStore, selectPaymentMethods, selectCryptoAddresses } from '@repo/sdk';
 import { useI18n } from '../../i18n';
-import { truncateAddress } from '../../../../../../sdk/utils';
+import { truncateAddress } from '@repo/sdk';
 import { Icons } from '../Icons';
-import type { ChainType } from '../../types/wallet';
+import type { ChainType } from '@repo/sdk';
 import {
   Container,
   Content,

@@ -3,7 +3,7 @@
  * https://documentation.mailgun.com/en/latest/api-sending-messages.html
  */
 
-import type { IEmailProvider, EmailMessage, ProviderSendResult } from '../types';
+import type { IEmailProvider, EmailMessage, ProviderSendResult } from '@repo/sdk';
 
 export class MailgunProvider implements IEmailProvider {
   name = 'mailgun' as const;

@@ -1,6 +1,6 @@
 
 import { TradingService } from './trading.service.js';
-import { AccountServiceInterface } from '../../account/core/account.types.js';
+import { AccountServiceInterface } from '@repo/sdk';
 import { EngineClient } from './engine.client.js';
 import { getSymbolDef } from '@repo/market-data/config/symbols.js';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -37,7 +37,7 @@ describe('TradingService', () => {
       };
 
       const result = service.calculateLockAmount(input);
-      
+
       expect(result).toEqual({
         currency: 'BTC',
         amount: '1.5000000000',
@@ -56,7 +56,7 @@ describe('TradingService', () => {
       };
 
       const result = service.calculateLockAmount(input);
-      
+
       expect(result).toEqual({
         currency: 'USD',
         amount: '75000.0000000000', // 1.5 * 50000
@@ -75,7 +75,7 @@ describe('TradingService', () => {
       };
 
       const result = service.calculateLockAmount(input);
-      
+
       expect(result).toEqual({
         currency: 'USD',
         amount: '76500.0000000000', // 1.5 * 51000
@@ -107,108 +107,108 @@ describe('TradingService', () => {
       expect(() => service.calculateLockAmount(input)).toThrow('Invalid symbol: INVALID/PAIR');
     });
 
-  describe('placeOrder', () => {
-    const orderInput = {
-      accountId: 'provided-acc-id',
-      symbol: 'BTC/USD',
-      side: 'buy' as const,
-      type: 'limit' as const,
-      quantity: 1,
-      price: 50000,
-      clientOrderId: 'order-123',
-    };
+    describe('placeOrder', () => {
+      const orderInput = {
+        accountId: 'provided-acc-id',
+        symbol: 'BTC/USD',
+        side: 'buy' as const,
+        type: 'limit' as const,
+        quantity: 1,
+        price: 50000,
+        clientOrderId: 'order-123',
+      };
 
-    const mockAccount = {
-      id: 'acc-usd-1',
-      userId: 'u1',
-      currency: 'USD',
-      balance: '100000',
-      locked: '0',
-    };
+      const mockAccount = {
+        id: 'acc-usd-1',
+        userId: 'u1',
+        currency: 'USD',
+        balance: '100000',
+        locked: '0',
+      };
 
-    beforeEach(() => {
-      mockAccountService.getAccount.mockResolvedValue(mockAccount as any);
-      mockAccountService.lockFunds.mockResolvedValue({ ...mockAccount, locked: '50000' } as any);
-      mockEngineClient.placeOrder.mockResolvedValue({ success: true, orderId: 'eng-1' });
-    });
-
-    it('should successfully place an order', async () => {
-      const result = await service.placeOrder('u1', orderInput);
-
-      // 1. Calculate lock amount: 1 * 50000 = 50000 USD
-      // 2. Get account
-      expect(mockAccountService.getAccount).toHaveBeenCalledWith('u1', 'USD');
-      
-      // 3. Lock funds
-      expect(mockAccountService.lockFunds).toHaveBeenCalledWith({
-        accountId: 'acc-usd-1',
-        amount: '50000.0000000000',
+      beforeEach(() => {
+        (mockAccountService.getAccount as any).mockResolvedValue(mockAccount as any);
+        (mockAccountService.lockFunds as any).mockResolvedValue({ ...mockAccount, locked: '50000' } as any);
+        (mockEngineClient.placeOrder as any).mockResolvedValue({ success: true, orderId: 'eng-1' });
       });
 
-      // 4. Call engine
-      expect(mockEngineClient.placeOrder).toHaveBeenCalledWith({
-        ...orderInput,
-        accountId: 'acc-usd-1',
+      it('should successfully place an order', async () => {
+        const result = await service.placeOrder('u1', orderInput);
+
+        // 1. Calculate lock amount: 1 * 50000 = 50000 USD
+        // 2. Get account
+        expect(mockAccountService.getAccount).toHaveBeenCalledWith('u1', 'USD');
+
+        // 3. Lock funds
+        expect(mockAccountService.lockFunds).toHaveBeenCalledWith({
+          accountId: 'acc-usd-1',
+          amount: '50000.0000000000',
+        });
+
+        // 4. Call engine
+        expect(mockEngineClient.placeOrder).toHaveBeenCalledWith({
+          ...orderInput,
+          accountId: 'acc-usd-1',
+        });
+
+        // 5. Return success
+        expect(result).toEqual({ success: true, orderId: 'eng-1' });
       });
 
-      // 5. Return success
-      expect(result).toEqual({ success: true, orderId: 'eng-1' });
-    });
+      it('should unlock funds if engine fails', async () => {
+        // Setup engine failure
+        (mockEngineClient.placeOrder as any).mockResolvedValue({ success: false, error: 'Engine error' });
 
-    it('should unlock funds if engine fails', async () => {
-      // Setup engine failure
-      mockEngineClient.placeOrder.mockResolvedValue({ success: false, error: 'Engine error' });
+        const result = await service.placeOrder('u1', orderInput);
 
-      const result = await service.placeOrder('u1', orderInput);
+        // Verify lock happened
+        expect(mockAccountService.lockFunds).toHaveBeenCalled();
 
-      // Verify lock happened
-      expect(mockAccountService.lockFunds).toHaveBeenCalled();
+        // Verify unlock happened
+        expect(mockAccountService.unlockFunds).toHaveBeenCalledWith({
+          accountId: 'acc-usd-1',
+          amount: '50000.0000000000',
+        });
 
-      // Verify unlock happened
-      expect(mockAccountService.unlockFunds).toHaveBeenCalledWith({
-        accountId: 'acc-usd-1',
-        amount: '50000.0000000000',
+        // Verify result
+        expect(result).toEqual({ success: false, error: 'Engine error' });
       });
 
-      // Verify result
-      expect(result).toEqual({ success: false, error: 'Engine error' });
-    });
+      it('should throw if account fetch fails', async () => {
+        (mockAccountService.getAccount as any).mockRejectedValue(new Error('Account not found'));
 
-    it('should throw if account fetch fails', async () => {
-      mockAccountService.getAccount.mockRejectedValue(new Error('Account not found'));
+        await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Account not found');
 
-      await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Account not found');
-      
-      // Verify no lock or engine call
-      expect(mockAccountService.lockFunds).not.toHaveBeenCalled();
-      expect(mockEngineClient.placeOrder).not.toHaveBeenCalled();
-    });
+        // Verify no lock or engine call
+        expect(mockAccountService.lockFunds).not.toHaveBeenCalled();
+        expect(mockEngineClient.placeOrder).not.toHaveBeenCalled();
+      });
 
-    it('should throw if lock funds fails', async () => {
-      mockAccountService.lockFunds.mockRejectedValue(new Error('Insufficient balance'));
+      it('should throw if lock funds fails', async () => {
+        (mockAccountService.lockFunds as any).mockRejectedValue(new Error('Insufficient balance'));
 
-      await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Insufficient balance');
+        await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Insufficient balance');
 
-      // Verify no engine call
-      expect(mockEngineClient.placeOrder).not.toHaveBeenCalled();
-    });
+        // Verify no engine call
+        expect(mockEngineClient.placeOrder).not.toHaveBeenCalled();
+      });
 
-    it('should unlock funds and rethrow if engine throws network error', async () => {
-      // Setup engine network error
-      const networkError = new Error('Network timeout');
-      mockEngineClient.placeOrder.mockRejectedValue(networkError);
+      it('should unlock funds and rethrow if engine throws network error', async () => {
+        // Setup engine network error
+        const networkError = new Error('Network timeout');
+        (mockEngineClient.placeOrder as any).mockRejectedValue(networkError);
 
-      await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Network timeout');
+        await expect(service.placeOrder('u1', orderInput)).rejects.toThrow('Network timeout');
 
-      // Verify lock happened
-      expect(mockAccountService.lockFunds).toHaveBeenCalled();
+        // Verify lock happened
+        expect(mockAccountService.lockFunds).toHaveBeenCalled();
 
-      // Verify unlock happened
-      expect(mockAccountService.unlockFunds).toHaveBeenCalledWith({
-        accountId: 'acc-usd-1',
-        amount: '50000.0000000000',
+        // Verify unlock happened
+        expect(mockAccountService.unlockFunds).toHaveBeenCalledWith({
+          accountId: 'acc-usd-1',
+          amount: '50000.0000000000',
+        });
       });
     });
   });
-});
 });

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Level2BookView } from './Level2Book.view';
 import type { Level2BookViewProps } from './Level2Book.view';
-import type { Level2BookLevel } from '@repo/types/market';
+import type { Level2BookLevel } from '@repo/sdk/market';
 
 /* ═══════════════════════════════════════════════════════════
  * Level2BookView Stories

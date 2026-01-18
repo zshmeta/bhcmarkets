@@ -6,26 +6,14 @@
  * - Order book updates
  * - Trade notifications
  * - Order status updates
- *
- * PROTOCOL:
- * - Client sends: subscribe/unsubscribe messages
- * - Server sends: incremental updates, snapshots
- *
- * CHANNELS:
- * - orderbook:{symbol} - Order book depth updates
- * - trades:{symbol} - Real-time trade feed
- * - orders:{accountId} - Private order updates
  */
 
 import { WebSocketServer, WebSocket, type RawData } from 'ws';
-import { createServer, type Server as HttpServer } from 'http';
-// Note: the current WS protocol in this service is more permissive than the
-// shared `ServerMessage` union. To avoid fighting type mismatches (and to keep
-// backwards compatibility with existing clients), we treat WS payloads as
-// "wire messages" and validate/shape them at the edges.
-import type { OrderBookSnapshot } from '../../types/order.types.js';
+import { createServer, type IncomingMessage, Server } from 'http';
+import { OrderManager } from '../orders/order-manager.js';
+import type { OrderBookSnapshot } from '@repo/sdk';
 import type { OrderBookUpdate } from '../matching/order-book.js';
-import { logger } from '../../utils/logger.js';
+import { logger } from '@repo/sdk';
 import { env } from '../../config/env.js';
 
 const log = logger.child({ component: 'websocket-server' });
@@ -54,7 +42,7 @@ interface BroadcastMetrics {
 
 export class OrderEngineWebSocket {
   private wss: WebSocketServer | null = null;
-  private httpServer: HttpServer | null = null;
+  private httpServer: Server | null = null;
   private clients: Map<WebSocket, ClientConnection> = new Map();
   private channelSubscribers: Map<string, Set<WebSocket>> = new Map();
   private heartbeatInterval: NodeJS.Timeout | null = null;
@@ -64,23 +52,14 @@ export class OrderEngineWebSocket {
     lastBroadcast: 0,
   };
 
-  // Callbacks for getting data
   private getOrderBookSnapshot?: (symbol: string, depth?: number) => OrderBookSnapshot | null;
 
   constructor() {}
 
-  // ===========================================================================
-  // LIFECYCLE
-  // ===========================================================================
-
-  /**
-   * Start the WebSocket server.
-   */
   async start(port: number = env.ORDER_ENGINE_WS_PORT): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         this.httpServer = createServer((req, res) => {
-          // Simple health check endpoint
           if (req.url === '/health') {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
@@ -104,7 +83,6 @@ export class OrderEngineWebSocket {
         this.httpServer.listen(port, () => {
           log.info({ port }, 'WebSocket server started');
 
-          // Start heartbeat
           this.heartbeatInterval = setInterval(() => {
             this.checkHeartbeats();
           }, 30000);
@@ -122,16 +100,12 @@ export class OrderEngineWebSocket {
     });
   }
 
-  /**
-   * Stop the WebSocket server.
-   */
   async stop(): Promise<void> {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
       this.heartbeatInterval = null;
     }
 
-    // Close all client connections
     for (const [ws, client] of this.clients) {
       ws.close(1001, 'Server shutting down');
     }
@@ -156,26 +130,12 @@ export class OrderEngineWebSocket {
     });
   }
 
-  // ===========================================================================
-  // CONFIGURATION
-  // ===========================================================================
-
-  /**
-   * Set callback for getting order book snapshots.
-   */
   setSnapshotProvider(
     provider: (symbol: string, depth?: number) => OrderBookSnapshot | null
   ): void {
     this.getOrderBookSnapshot = provider;
   }
 
-  // ===========================================================================
-  // BROADCASTING
-  // ===========================================================================
-
-  /**
-   * Broadcast order book update to subscribers.
-   */
   broadcastOrderBookUpdate(symbol: string, update: OrderBookUpdate): void {
     const channel = `orderbook:${symbol}`;
     const message = {
@@ -188,9 +148,6 @@ export class OrderEngineWebSocket {
     this.broadcastToChannel(channel, message);
   }
 
-  /**
-   * Broadcast full order book snapshot.
-   */
   broadcastOrderBookSnapshot(symbol: string, snapshot: OrderBookSnapshot): void {
     const channel = `orderbook:${symbol}`;
     const message = {
@@ -203,9 +160,6 @@ export class OrderEngineWebSocket {
     this.broadcastToChannel(channel, message);
   }
 
-  /**
-   * Broadcast trade to subscribers.
-   */
   broadcastTrade(symbol: string, trade: {
     price: number;
     quantity: number;
@@ -223,9 +177,6 @@ export class OrderEngineWebSocket {
     this.broadcastToChannel(channel, message);
   }
 
-  /**
-   * Send private order update to specific account.
-   */
   sendOrderUpdate(accountId: string, update: {
     orderId: string;
     status: string;
@@ -242,25 +193,11 @@ export class OrderEngineWebSocket {
     this.broadcastToChannel(channel, message);
   }
 
-  // ===========================================================================
-  // METRICS
-  // ===========================================================================
-
-  /**
-   * Get server statistics.
-   */
-  getStats(): {
-    clients: number;
-    channels: number;
-    metrics: BroadcastMetrics;
-    subscriptions: Record<string, number>;
-  } {
+  getStats() {
     const subscriptions: Record<string, number> = {};
-
     for (const [channel, subscribers] of this.channelSubscribers) {
       subscriptions[channel] = subscribers.size;
     }
-
     return {
       clients: this.clients.size,
       channels: this.channelSubscribers.size,
@@ -269,11 +206,7 @@ export class OrderEngineWebSocket {
     };
   }
 
-  // ===========================================================================
-  // PRIVATE METHODS
-  // ===========================================================================
-
-  private handleConnection(ws: WebSocket, request: any): void {
+  private handleConnection(ws: WebSocket, request: IncomingMessage): void {
     const clientIp = request.socket.remoteAddress;
 
     const client: ClientConnection = {
@@ -286,7 +219,6 @@ export class OrderEngineWebSocket {
     this.clients.set(ws, client);
     log.info({ clientIp, total: this.clients.size }, 'Client connected');
 
-    // Send welcome message
     this.send(ws, {
       type: 'connected',
       data: { message: 'Connected to Order Engine WebSocket' },
@@ -309,15 +241,12 @@ export class OrderEngineWebSocket {
         case 'subscribe':
           this.handleSubscribe(ws, client, message);
           break;
-
         case 'unsubscribe':
           this.handleUnsubscribe(ws, client, message);
           break;
-
         case 'ping':
           this.send(ws, { type: 'pong', timestamp: Date.now() });
           break;
-
         default:
           this.send(ws, {
             type: 'error',
@@ -337,44 +266,27 @@ export class OrderEngineWebSocket {
 
   private handleSubscribe(ws: WebSocket, client: ClientConnection, message: any): void {
     const { channel, symbol, accountId } = message;
-
-    // Build channel name
     let channelName: string;
 
     if (channel === 'orderbook' || channel === 'trades') {
       if (!symbol) {
-        this.send(ws, {
-          type: 'error',
-          data: { message: 'Symbol required for channel subscription' },
-          timestamp: Date.now(),
-        });
+        this.send(ws, { type: 'error', data: { message: 'Symbol required' }, timestamp: Date.now() });
         return;
       }
       channelName = `${channel}:${symbol}`;
     } else if (channel === 'orders') {
       if (!accountId) {
-        this.send(ws, {
-          type: 'error',
-          data: { message: 'Account ID required for orders channel' },
-          timestamp: Date.now(),
-        });
+        this.send(ws, { type: 'error', data: { message: 'AccountId required' }, timestamp: Date.now() });
         return;
       }
       channelName = `orders:${accountId}`;
       client.accountId = accountId;
     } else {
-      this.send(ws, {
-        type: 'error',
-        data: { message: `Unknown channel: ${channel}` },
-        timestamp: Date.now(),
-      });
+      this.send(ws, { type: 'error', data: { message: `Unknown channel: ${channel}` }, timestamp: Date.now() });
       return;
     }
 
-    // Add to subscriptions
     client.subscriptions.add(channelName);
-
-    // Add to channel subscribers
     let subscribers = this.channelSubscribers.get(channelName);
     if (!subscribers) {
       subscribers = new Set();
@@ -382,32 +294,18 @@ export class OrderEngineWebSocket {
     }
     subscribers.add(ws);
 
-    log.debug({ channelName, total: subscribers.size }, 'Client subscribed');
+    this.send(ws, { type: 'subscribed', channel: channelName, timestamp: Date.now() });
 
-    // Send confirmation
-    this.send(ws, {
-      type: 'subscribed',
-      channel: channelName,
-      timestamp: Date.now(),
-    });
-
-    // Send initial snapshot for orderbook
     if (channel === 'orderbook' && symbol && this.getOrderBookSnapshot) {
       const snapshot = this.getOrderBookSnapshot(symbol);
       if (snapshot) {
-        this.send(ws, {
-          type: 'orderbook_snapshot',
-          symbol,
-          data: snapshot,
-          timestamp: Date.now(),
-        });
+        this.send(ws, { type: 'orderbook_snapshot', symbol, data: snapshot, timestamp: Date.now() });
       }
     }
   }
 
   private handleUnsubscribe(ws: WebSocket, client: ClientConnection, message: any): void {
     const { channel, symbol, accountId } = message;
-
     let channelName: string;
     if (channel === 'orderbook' || channel === 'trades') {
       channelName = `${channel}:${symbol}`;
@@ -417,10 +315,7 @@ export class OrderEngineWebSocket {
       return;
     }
 
-    // Remove from subscriptions
     client.subscriptions.delete(channelName);
-
-    // Remove from channel subscribers
     const subscribers = this.channelSubscribers.get(channelName);
     if (subscribers) {
       subscribers.delete(ws);
@@ -428,18 +323,10 @@ export class OrderEngineWebSocket {
         this.channelSubscribers.delete(channelName);
       }
     }
-
-    log.debug({ channelName }, 'Client unsubscribed');
-
-    this.send(ws, {
-      type: 'unsubscribed',
-      channel: channelName,
-      timestamp: Date.now(),
-    });
+    this.send(ws, { type: 'unsubscribed', channel: channelName, timestamp: Date.now() });
   }
 
   private handleClose(ws: WebSocket, client: ClientConnection): void {
-    // Remove from all channels
     for (const channelName of client.subscriptions) {
       const subscribers = this.channelSubscribers.get(channelName);
       if (subscribers) {
@@ -449,7 +336,6 @@ export class OrderEngineWebSocket {
         }
       }
     }
-
     this.clients.delete(ws);
     log.debug({ total: this.clients.size }, 'Client disconnected');
   }
@@ -494,7 +380,6 @@ export class OrderEngineWebSocket {
         ws.terminate();
         continue;
       }
-
       client.isAlive = false;
       ws.ping();
     }

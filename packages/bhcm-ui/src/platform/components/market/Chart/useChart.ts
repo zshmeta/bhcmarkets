@@ -163,7 +163,7 @@ const useChart = (): UseChartReturn => {
 
         try {
             // Use local market-data service (proxied via /market)
-            // This handles symbol resolution (BTC/USD -> BTCUSDT) and auto-backfilling
+            // This handles symbol resolution (BTC/USD -> BTCUSD) and auto-backfilling
             const url = `/market/candles/${encodeURIComponent(symbol)}?timeframe=${interval}&limit=500`;
             const response = await fetch(url);
             if (!response.ok) throw response;

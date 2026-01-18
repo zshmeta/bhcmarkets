@@ -17,7 +17,11 @@
     "./store": "./src/platform/components/store/index.ts",
     "./automation": "./src/platform/components/automation/index.ts",
     "./i18n": "./src/i18n/index.ts",
-    "./theme": "./src/platform/components/theme/index.ts"
+    "./theme": "./src/platform/components/theme/index.ts",
+    "./mobile": "./src/mobile/index.ts",
+    "./mobile/layouts": "./src/mobile/layouts/index.ts",
+    "./mobile/components": "./src/mobile/components/index.ts",
+    "./mobile/pages": "./src/mobile/pages/index.ts"
   },
   "scripts": {
     "dev": "vite",
@@ -31,7 +35,6 @@
   },
   "dependencies": {
     "@repo/sdk": "*",
-    "@repo/types": "*",
     "decimal.js": "catalog:",
     "lightweight-charts": "^5.1.0",
     "lucide-react": "catalog:",
@@ -57,7 +60,6 @@
     "@types/react-dom": "catalog:",
     "@types/styled-components": "catalog:",
     "@types/uuid": "catalog:",
-
     "@vitejs/plugin-react-swc": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

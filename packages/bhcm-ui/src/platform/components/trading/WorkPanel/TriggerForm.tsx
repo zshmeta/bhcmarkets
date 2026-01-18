@@ -3,8 +3,8 @@ import { useI18n } from '../../i18n';
 import { useAutomationStore } from '@repo/sdk';
 import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
 import { toast } from '../Toast';
-import { TriggerType, TriggerOperator, CrossDirection, QuantityMode, TriggerCondition, TriggerAction } from '@repo/types/triggers';
-import { OrderSide, OrderType } from '@repo/types/trading';
+import { TriggerType, TriggerOperator, CrossDirection, QuantityMode, TriggerCondition, TriggerAction } from '@repo/sdk/triggers';
+import { OrderSide, OrderType } from '@repo/sdk/trading';
 import {
   Container, Form, FieldGroup, Label, InputRow, InputWrapper, InputSuffix, Toggle, ToggleBtn,
   CheckboxGroup, CheckboxLabel, Checkbox, SubmitBtn, CancelBtn,
@@ -41,8 +41,8 @@ const TriggerForm = ({ onSuccess, onCancel, compact = false }: TriggerFormProps)
   const [cooldown, setCooldown] = useState('60');
 
   const direction: CrossDirection = operator === 'gte' ? 'up' : 'down';
-  const quoteAsset = 'USDT';
-  const baseAsset = selectedSymbol.replace('USDT', '');
+  const quoteAsset = 'USD';
+  const baseAsset = selectedSymbol.replace('USD', '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

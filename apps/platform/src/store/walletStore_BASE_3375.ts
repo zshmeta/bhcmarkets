@@ -102,7 +102,7 @@ const addLedger = (ledger: LedgerEntry[], entry: Omit<LedgerEntry, 'entryId'>) =
 export const useWalletStore = create<WalletState & WalletActions>((set, get) => ({
 	account: null,
 	balances: [
-		{ asset: 'USDT', available: '0', frozen: '0', total: '0' },
+		{ asset: 'USD', available: '0', frozen: '0', total: '0' },
 		{ asset: 'BTC', available: '0', frozen: '0', total: '0' },
 		{ asset: 'ETH', available: '0', frozen: '0', total: '0' },
 	],
@@ -119,7 +119,7 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 			const account: WalletAccount = { id: `acct_${createdAt}`, createdAt };
 			addLedger(state.ledger, {
 				type: 'DEPOSIT',
-				asset: 'USDT',
+				asset: 'USD',
 				amount: '0',
 				fee: '0',
 				direction: '+',
@@ -134,8 +134,8 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 		const { account, paymentMethods, cryptoAddresses, balances } = get();
 		if (!account) return 'not_created';
 		if (paymentMethods.length === 0 && cryptoAddresses.length === 0) return 'no_payment_method';
-		const usdt = balances.find((b) => b.asset === 'USDT');
-		const hasFunds = usdt ? new Decimal(usdt.total).gt(0) : false;
+		const USD = balances.find((b) => b.asset === 'USD');
+		const hasFunds = USD ? new Decimal(USD.total).gt(0) : false;
 		if (!hasFunds) return 'no_funds';
 		return 'ready';
 	},
@@ -146,7 +146,7 @@ export const useWalletStore = create<WalletState & WalletActions>((set, get) => 
 			const qty = new Decimal(b.total || '0');
 			if (qty.lte(0)) return acc;
 			const px = prices[b.asset];
-			const price = new Decimal(px === undefined ? (b.asset === 'USDT' ? 1 : 0) : px);
+			const price = new Decimal(px === undefined ? (b.asset === 'USD' ? 1 : 0) : px);
 			return acc.plus(qty.times(price));
 		}, new Decimal(0));
 		return total.toFixed(2);
@@ -333,8 +333,8 @@ export const selectDeposits = (state: WalletState) => state.deposits;
 export const selectWithdraws = (state: WalletState) => state.withdraws;
 
 export const selectTotalBalance = (state: WalletState) => {
-	const usdt = state.balances.find((b) => b.asset === 'USDT');
-	const total = usdt ? parseFloat(usdt.total) : 0;
-	const available = usdt ? parseFloat(usdt.available) : 0;
+	const USD = state.balances.find((b) => b.asset === 'USD');
+	const total = USD ? parseFloat(USD.total) : 0;
+	const available = USD ? parseFloat(USD.available) : 0;
 	return { total, available };
 };

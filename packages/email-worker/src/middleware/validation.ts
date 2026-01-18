@@ -3,7 +3,7 @@
  * Validates incoming email send requests
  */
 
-import { EMAIL_TYPES, type SendEmailRequest, type EmailType } from '../types';
+import { EMAIL_TYPES, type SendEmailRequest, type EmailType } from '@repo/sdk';
 
 export interface ValidationResult {
   valid: boolean;

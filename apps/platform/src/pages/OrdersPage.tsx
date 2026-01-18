@@ -3,8 +3,9 @@ import { useTradingStore } from '@repo/sdk';
 import { useAutomationStore } from '@repo/sdk';
 import { useI18n } from '@repo/bhcm-ui/i18n';
 import { Icons, IconsName } from '@repo/bhcm-ui/core';
+import { AuthOverlay } from '@repo/bhcm-ui/account';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { MobileOrdersPage } from './mobile';
+import { MobileOrdersPage } from '../../../mobile/src/pages';
 import { TriggerList, ExecutionLogList } from '@repo/bhcm-ui/trading';
 import type { PaperOrder, OrderStatus } from '../types/trading';
 import {
@@ -171,7 +172,7 @@ function OrderRow({ order, onCancel, onView, locale }: { order: PaperOrder; onCa
   return (
     <tr>
       <TimeCell>{formatTime(order.createdAt, true, locale)}</TimeCell>
-      <SymbolCell><SymbolWrapper><SymbolName>{order.symbol.replace('USDT', '')}</SymbolName><SymbolQuote>/USDT</SymbolQuote></SymbolWrapper></SymbolCell>
+      <SymbolCell><SymbolWrapper><SymbolName>{order.symbol.replace('USD', '')}</SymbolName><SymbolQuote>/USD</SymbolQuote></SymbolWrapper></SymbolCell>
       <td><SideBadge $side={isBuy ? 'buy' : 'sell'}>{isBuy ? 'BUY' : 'SELL'}</SideBadge></td>
       <td><TypeBadge>{order.type === 'limit' ? 'LIMIT' : 'MARKET'}</TypeBadge></td>
       <td className="tabular-nums">{formatPrice(order.price)}</td>
@@ -197,7 +198,7 @@ function TradeRow({ fill, order, locale }: { fill: PaperOrder['fills'][0]; order
   return (
     <tr>
       <TimeCell>{formatTime(fill.time, true, locale)}</TimeCell>
-      <SymbolCell><SymbolWrapper><SymbolName>{order.symbol.replace('USDT', '')}</SymbolName><SymbolQuote>/USDT</SymbolQuote></SymbolWrapper></SymbolCell>
+      <SymbolCell><SymbolWrapper><SymbolName>{order.symbol.replace('USD', '')}</SymbolName><SymbolQuote>/USD</SymbolQuote></SymbolWrapper></SymbolCell>
       <td><SideBadge $side={isBuy ? 'buy' : 'sell'}>{isBuy ? 'BUY' : 'SELL'}</SideBadge></td>
       <td className="tabular-nums">{formatPrice(fill.price)}</td>
       <td className="tabular-nums">{formatQuantity(fill.quantity)}</td>
@@ -314,7 +315,7 @@ function AnalyticsPanelComponent({ orders, trades }: { orders: PaperOrder[]; tra
           <AnalyticsCardTitle>Volume by Asset</AnalyticsCardTitle>
           <SymbolList>
             {bySymbol.slice(0, 5).map(([symbol, data]) => (
-              <SymbolItem key={symbol}><SymbolInfo><SymbolName>{symbol.replace('USDT', '')}</SymbolName><SymbolTrades>{data.trades} trades</SymbolTrades></SymbolInfo><SymbolVolume>{formatUSD(data.volume)}</SymbolVolume></SymbolItem>
+              <SymbolItem key={symbol}><SymbolInfo><SymbolName>{symbol.replace('USD', '')}</SymbolName><SymbolTrades>{data.trades} trades</SymbolTrades></SymbolInfo><SymbolVolume>{formatUSD(data.volume)}</SymbolVolume></SymbolItem>
             ))}
             {bySymbol.length === 0 && <EmptyState>No trading data</EmptyState>}
           </SymbolList>
@@ -399,78 +400,80 @@ export const OrdersPage = () => {
   }, [orders, allTrades, CurrentOrders.length, triggers]);
 
   return (
-    <Container>
-      <Header>
-        <HeaderTop>
-          <TitleSection><PageTitle><Icons name="layers" size="lg" />Order Management</PageTitle><SimulatedBadge>Paper Trading</SimulatedBadge></TitleSection>
-          <HeaderActions><ExportBtn><Icons name="download" size="sm" />Export</ExportBtn></HeaderActions>
-        </HeaderTop>
-        <StatsGrid>
-          <StatCard $highlight={stats.openCount > 0}><StatHeader><StatIcons><Icons name="list" size="sm" /></StatIcons><StatLabel>Open Orders</StatLabel></StatHeader><StatBody><StatValue>{stats.openCount}</StatValue></StatBody></StatCard>
-          <StatCard><StatHeader><StatIcons><Icons name="check-circle" size="sm" /></StatIcons><StatLabel>Filled Orders</StatLabel></StatHeader><StatBody><StatValue>{stats.filled}</StatValue></StatBody></StatCard>
-          <StatCard><StatHeader><StatIcons><Icons name="activity" size="sm" /></StatIcons><StatLabel>Total Trades</StatLabel></StatHeader><StatBody><StatValue>{stats.totalTrades}</StatValue></StatBody></StatCard>
-          <StatCard><StatHeader><StatIcons><Icons name="bar-chart-2" size="sm" /></StatIcons><StatLabel>Total Volume</StatLabel></StatHeader><StatBody><StatValue>{formatUSD(stats.totalVolume)}</StatValue></StatBody></StatCard>
-          <StatCard><StatHeader><StatIcons><Icons name="clock" size="sm" /></StatIcons><StatLabel>1H Volume</StatLabel></StatHeader><StatBody><StatValue>{formatUSD(stats.recentVolume)}</StatValue></StatBody></StatCard>
-          <StatCard><StatHeader><StatIcons><Icons name="percent" size="sm" /></StatIcons><StatLabel>Total Fees</StatLabel></StatHeader><StatBody><StatValue>${stats.totalFees.toFixed(2)}</StatValue></StatBody></StatCard>
-          <StatCard $highlight={stats.triggerCount > 0}><StatHeader><StatIcons><Icons name="zap" size="sm" /></StatIcons><StatLabel>Active Triggers</StatLabel></StatHeader><StatBody><StatValue>{stats.triggerCount}</StatValue></StatBody></StatCard>
-        </StatsGrid>
-      </Header>
+    <AuthOverlay variant="page" title="Orders" description="Sign in to view your orders and trade history">
+      <Container>
+        <Header>
+          <HeaderTop>
+            <TitleSection><PageTitle><Icons name="layers" size="lg" />Order Management</PageTitle><SimulatedBadge>Paper Trading</SimulatedBadge></TitleSection>
+            <HeaderActions><ExportBtn><Icons name="download" size="sm" />Export</ExportBtn></HeaderActions>
+          </HeaderTop>
+          <StatsGrid>
+            <StatCard $highlight={stats.openCount > 0}><StatHeader><StatIcons><Icons name="list" size="sm" /></StatIcons><StatLabel>Open Orders</StatLabel></StatHeader><StatBody><StatValue>{stats.openCount}</StatValue></StatBody></StatCard>
+            <StatCard><StatHeader><StatIcons><Icons name="check-circle" size="sm" /></StatIcons><StatLabel>Filled Orders</StatLabel></StatHeader><StatBody><StatValue>{stats.filled}</StatValue></StatBody></StatCard>
+            <StatCard><StatHeader><StatIcons><Icons name="activity" size="sm" /></StatIcons><StatLabel>Total Trades</StatLabel></StatHeader><StatBody><StatValue>{stats.totalTrades}</StatValue></StatBody></StatCard>
+            <StatCard><StatHeader><StatIcons><Icons name="bar-chart-2" size="sm" /></StatIcons><StatLabel>Total Volume</StatLabel></StatHeader><StatBody><StatValue>{formatUSD(stats.totalVolume)}</StatValue></StatBody></StatCard>
+            <StatCard><StatHeader><StatIcons><Icons name="clock" size="sm" /></StatIcons><StatLabel>1H Volume</StatLabel></StatHeader><StatBody><StatValue>{formatUSD(stats.recentVolume)}</StatValue></StatBody></StatCard>
+            <StatCard><StatHeader><StatIcons><Icons name="percent" size="sm" /></StatIcons><StatLabel>Total Fees</StatLabel></StatHeader><StatBody><StatValue>${stats.totalFees.toFixed(2)}</StatValue></StatBody></StatCard>
+            <StatCard $highlight={stats.triggerCount > 0}><StatHeader><StatIcons><Icons name="zap" size="sm" /></StatIcons><StatLabel>Active Triggers</StatLabel></StatHeader><StatBody><StatValue>{stats.triggerCount}</StatValue></StatBody></StatCard>
+          </StatsGrid>
+        </Header>
 
-      <Toolbar>
-        <Tabs>
-          <Tab $active={activeTab === 'open'} onClick={() => setActiveTab('open')}><Icons name="list" size="xs" />Open Orders{stats.openCount > 0 && <TabBadge>{stats.openCount}</TabBadge>}</Tab>
-          <Tab $active={activeTab === 'history'} onClick={() => setActiveTab('history')}><Icons name="history" size="xs" />Order History</Tab>
-          <Tab $active={activeTab === 'trades'} onClick={() => setActiveTab('trades')}><Icons name="repeat" size="xs" />Trade History</Tab>
-          <Tab $active={activeTab === 'automation'} onClick={() => setActiveTab('automation')}><Icons name="zap" size="xs" />Automation{stats.triggerCount > 0 && <TabBadge>{stats.triggerCount}</TabBadge>}</Tab>
-          <Tab $active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')}><Icons name="pie-chart" size="xs" />Analytics</Tab>
-        </Tabs>
+        <Toolbar>
+          <Tabs>
+            <Tab $active={activeTab === 'open'} onClick={() => setActiveTab('open')}><Icons name="list" size="xs" />Open Orders{stats.openCount > 0 && <TabBadge>{stats.openCount}</TabBadge>}</Tab>
+            <Tab $active={activeTab === 'history'} onClick={() => setActiveTab('history')}><Icons name="history" size="xs" />Order History</Tab>
+            <Tab $active={activeTab === 'trades'} onClick={() => setActiveTab('trades')}><Icons name="repeat" size="xs" />Trade History</Tab>
+            <Tab $active={activeTab === 'automation'} onClick={() => setActiveTab('automation')}><Icons name="zap" size="xs" />Automation{stats.triggerCount > 0 && <TabBadge>{stats.triggerCount}</TabBadge>}</Tab>
+            <Tab $active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')}><Icons name="pie-chart" size="xs" />Analytics</Tab>
+          </Tabs>
 
-        {activeTab !== 'automation' && activeTab !== 'analytics' && (
-          <Filters>
-            <SearchWrapper><SearchIcons><Icons name="search" size="xs" /></SearchIcons><SearchInput type="text" placeholder="Search symbol..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></SearchWrapper>
-            <FilterSelect value={symbolFilter} onChange={e => setSymbolFilter(e.target.value)}><option value="all">All Assets</option>{uniqueSymbols.map(s => <option key={s} value={s}>{s.replace('USDT', '')}/USDT</option>)}</FilterSelect>
-            <FilterSelect value={sideFilter} onChange={e => setSideFilter(e.target.value as any)}><option value="all">All Sides</option><option value="buy">Buy Only</option><option value="sell">Sell Only</option></FilterSelect>
-            <TimeFilters>{(['all', '1d', '7d', '30d'] as TimeFilterType[]).map(tf => <TimeFilter key={tf} $active={timeFilter === tf} onClick={() => setTimeFilter(tf)}>{tf === 'all' ? 'All' : tf.toUpperCase()}</TimeFilter>)}</TimeFilters>
-          </Filters>
-        )}
-      </Toolbar>
+          {activeTab !== 'automation' && activeTab !== 'analytics' && (
+            <Filters>
+              <SearchWrapper><SearchIcons><Icons name="search" size="xs" /></SearchIcons><SearchInput type="text" placeholder="Search symbol..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} /></SearchWrapper>
+              <FilterSelect value={symbolFilter} onChange={e => setSymbolFilter(e.target.value)}><option value="all">All Assets</option>{uniqueSymbols.map(s => <option key={s} value={s}>{s.replace('USD', '')}/USD</option>)}</FilterSelect>
+              <FilterSelect value={sideFilter} onChange={e => setSideFilter(e.target.value as any)}><option value="all">All Sides</option><option value="buy">Buy Only</option><option value="sell">Sell Only</option></FilterSelect>
+              <TimeFilters>{(['all', '1d', '7d', '30d'] as TimeFilterType[]).map(tf => <TimeFilter key={tf} $active={timeFilter === tf} onClick={() => setTimeFilter(tf)}>{tf === 'all' ? 'All' : tf.toUpperCase()}</TimeFilter>)}</TimeFilters>
+            </Filters>
+          )}
+        </Toolbar>
 
-      <Content>
-        {activeTab === 'open' && (
-          <TableContainer>
-            {CurrentOrders.length === 0 ? (<Empty><Icons name="inbox" size="xl" /><h3>No Open Orders</h3><p>Your active orders will appear here</p></Empty>) : (
-              <Table><TableHead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Type</th><th>Price</th><th>Filled / Amount</th><th>Avg Price</th><th>Value</th><th>Status</th><th>Actions</th></tr></TableHead><TableBody>{CurrentOrders.map(order => <OrderRow key={order.clientOrderId} order={order} onCancel={cancelOrder} onView={setSelectedOrder} locale={locale} />)}</TableBody></Table>
-            )}
-          </TableContainer>
-        )}
+        <Content>
+          {activeTab === 'open' && (
+            <TableContainer>
+              {CurrentOrders.length === 0 ? (<Empty><Icons name="inbox" size="xl" /><h3>No Open Orders</h3><p>Your active orders will appear here</p></Empty>) : (
+                <Table><TableHead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Type</th><th>Price</th><th>Filled / Amount</th><th>Avg Price</th><th>Value</th><th>Status</th><th>Actions</th></tr></TableHead><TableBody>{CurrentOrders.map(order => <OrderRow key={order.clientOrderId} order={order} onCancel={cancelOrder} onView={setSelectedOrder} locale={locale} />)}</TableBody></Table>
+              )}
+            </TableContainer>
+          )}
 
-        {activeTab === 'history' && (
-          <TableContainer>
-            {historyOrders.length === 0 ? (<Empty><Icons name="archive" size="xl" /><h3>No Order History</h3><p>Your completed orders will appear here</p></Empty>) : (
-              <Table><TableHead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Type</th><th>Price</th><th>Filled / Amount</th><th>Avg Price</th><th>Value</th><th>Status</th><th>Actions</th></tr></TableHead><TableBody>{historyOrders.map(order => <OrderRow key={order.clientOrderId} order={order} onView={setSelectedOrder} locale={locale} />)}</TableBody></Table>
-            )}
-          </TableContainer>
-        )}
+          {activeTab === 'history' && (
+            <TableContainer>
+              {historyOrders.length === 0 ? (<Empty><Icons name="archive" size="xl" /><h3>No Order History</h3><p>Your completed orders will appear here</p></Empty>) : (
+                <Table><TableHead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Type</th><th>Price</th><th>Filled / Amount</th><th>Avg Price</th><th>Value</th><th>Status</th><th>Actions</th></tr></TableHead><TableBody>{historyOrders.map(order => <OrderRow key={order.clientOrderId} order={order} onView={setSelectedOrder} locale={locale} />)}</TableBody></Table>
+              )}
+            </TableContainer>
+          )}
 
-        {activeTab === 'trades' && (
-          <TableContainer>
-            {allTrades.length === 0 ? (<Empty><Icons name="activity" size="xl" /><h3>No Trade History</h3><p>Your executed trades will appear here</p></Empty>) : (
-              <Table><TableHead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Price</th><th>Amount</th><th>Value</th><th>Fee</th></tr></TableHead><TableBody>{allTrades.map(({ fill, order }, index) => <TradeRow key={`${order.clientOrderId}-${fill.time}-${index}`} fill={fill} order={order} locale={locale} />)}</TableBody></Table>
-            )}
-          </TableContainer>
-        )}
+          {activeTab === 'trades' && (
+            <TableContainer>
+              {allTrades.length === 0 ? (<Empty><Icons name="activity" size="xl" /><h3>No Trade History</h3><p>Your executed trades will appear here</p></Empty>) : (
+                <Table><TableHead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Price</th><th>Amount</th><th>Value</th><th>Fee</th></tr></TableHead><TableBody>{allTrades.map(({ fill, order }, index) => <TradeRow key={`${order.clientOrderId}-${fill.time}-${index}`} fill={fill} order={order} locale={locale} />)}</TableBody></Table>
+              )}
+            </TableContainer>
+          )}
 
-        {activeTab === 'automation' && (
-          <AutomationLayout>
-            <AutomationMain><AutomationSection><AutomationSectionHeader><AutomationSectionTitle><Icons name="zap" size="sm" />Active Triggers</AutomationSectionTitle><SectionCount>{triggers.length}</SectionCount></AutomationSectionHeader><TriggerList /></AutomationSection></AutomationMain>
-            <AutomationSidebar><AutomationSection><AutomationSectionHeader><AutomationSectionTitle><Icons name="scroll" size="sm" />Execution Log</AutomationSectionTitle></AutomationSectionHeader><ExecutionLogList /></AutomationSection></AutomationSidebar>
-          </AutomationLayout>
-        )}
+          {activeTab === 'automation' && (
+            <AutomationLayout>
+              <AutomationMain><AutomationSection><AutomationSectionHeader><AutomationSectionTitle><Icons name="zap" size="sm" />Active Triggers</AutomationSectionTitle><SectionCount>{triggers.length}</SectionCount></AutomationSectionHeader><TriggerList /></AutomationSection></AutomationMain>
+              <AutomationSidebar><AutomationSection><AutomationSectionHeader><AutomationSectionTitle><Icons name="scroll" size="sm" />Execution Log</AutomationSectionTitle></AutomationSectionHeader><ExecutionLogList /></AutomationSection></AutomationSidebar>
+            </AutomationLayout>
+          )}
 
-        {activeTab === 'analytics' && <AnalyticsPanelComponent orders={orders} trades={allTrades} />}
-      </Content>
+          {activeTab === 'analytics' && <AnalyticsPanelComponent orders={orders} trades={allTrades} />}
+        </Content>
 
-      <OrderDetailDrawerComponent order={selectedOrder} onClose={() => setSelectedOrder(null)} locale={locale} />
-    </Container>
+        <OrderDetailDrawerComponent order={selectedOrder} onClose={() => setSelectedOrder(null)} locale={locale} />
+      </Container>
+    </AuthOverlay>
   );
 }

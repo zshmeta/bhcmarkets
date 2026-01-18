@@ -3,7 +3,7 @@ import { useWalletStore } from '@repo/sdk';
 import { useAuthStore } from '@repo/sdk';
 import { useI18n, formatMessage } from '../../i18n';
 import { Icons } from '../Icons';
-import type { OnboardingStage } from '../../types/wallet';
+import type { OnboardingStage } from '@repo/sdk';
 import {
   FullScreenGuide,
   GuideCard,

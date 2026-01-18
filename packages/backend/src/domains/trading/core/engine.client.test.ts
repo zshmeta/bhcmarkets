@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { HttpEngineClient, PlaceOrderInput } from './engine.client';
+import { HttpEngineClient, type PlaceOrderInput } from './engine.client.js';
 
 describe('HttpEngineClient', () => {
     let client: HttpEngineClient;
     const baseUrl = 'http://test-engine:4000';
-    
+
     beforeEach(() => {
         client = new HttpEngineClient(baseUrl);
         global.fetch = vi.fn();
@@ -43,18 +43,18 @@ describe('HttpEngineClient', () => {
     });
 
     it('should handle place order error (network)', async () => {
-         const input: PlaceOrderInput = {
+        const input: PlaceOrderInput = {
             accountId: 'acc-1',
             symbol: 'BTC-USD',
             side: 'buy',
             type: 'market',
             quantity: 1.5
         };
-        
+
         (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
         const result = await client.placeOrder(input);
-        
+
         expect(result).toEqual({ success: false, error: 'Engine unavailable' });
     });
 
@@ -78,9 +78,9 @@ describe('HttpEngineClient', () => {
         });
         expect(result).toEqual({ success: true });
     });
-    
-     it('should handle non-200 responses from engine', async () => {
-         const input: PlaceOrderInput = {
+
+    it('should handle non-200 responses from engine', async () => {
+        const input: PlaceOrderInput = {
             accountId: 'acc-1',
             symbol: 'BTC-USD',
             side: 'buy',
@@ -91,13 +91,13 @@ describe('HttpEngineClient', () => {
         const mockResponse = {
             ok: false,
             status: 400,
-            json: async () => ({ success: false, message: 'Invalid quantity' }) 
+            json: async () => ({ success: false, message: 'Invalid quantity' })
         };
         (global.fetch as any).mockResolvedValue(mockResponse);
 
         const result = await client.placeOrder(input);
 
-         expect(result).toEqual({ success: false, error: 'Invalid quantity' });
+        expect(result).toEqual({ success: false, error: 'Invalid quantity' });
     });
 
     it('should handle cancel order error', async () => {

@@ -27,8 +27,8 @@
 import { EventEmitter } from 'events';
 import { logger } from '../../utils/logger.js';
 import { getCandleStart, TIMEFRAME_MS, type Timeframe } from '../normalizer/data.validators.js';
-import type { EnrichedTick } from '../normalizer/normalizer.types.js';
-import type { Candle, CandleBuilder } from './historical.types.js';
+import type { EnrichedTick } from '@repo/sdk';
+import type { Candle, CandleBuilder } from  '@repo/sdk';
 
 /**
  * Handler for completed candles.

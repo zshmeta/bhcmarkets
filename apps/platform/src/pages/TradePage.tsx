@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { Level2Book } from '@repo/bhcm-ui/market';
-import { HealthBoard } from '@repo/bhcm-ui/health';
-import { OrderForm, WorkPanel } from '@repo/bhcm-ui/trading';
+import { OrderForm } from '@repo/bhcm-ui/trading';
+import { WorkPanel } from '@repo/bhcm-ui/trading';
 import { Chart } from '@repo/bhcm-ui/market';
 import { Watchlist } from '@repo/bhcm-ui/market';
 import { Tabs } from '@repo/bhcm-ui/layout';
 import { CatchError } from '@repo/bhcm-ui/core';
+import { AuthOverlay } from '@repo/bhcm-ui/account';
 import { useMarketStore, selectLevel2Book } from '@repo/sdk';
 import { useTradingStore } from '@repo/sdk';
 import { useWatchlistStore, selectSelectedSymbol } from '@repo/sdk';
@@ -109,9 +110,11 @@ export const TradePage = () => {
                                 <Watchlist onSymbolChange={handleSymbolChange} isCollapsed={isSidebarCollapsed} />
                             </CatchError>
                             {!isSidebarCollapsed && (
-                                <CatchError name="OrderBook" fallback={<PanelFallback name="ORDER_BOOK" />}>
-                                    <Level2Book onPriceClick={(price: string) => handlePriceClick(price)} />
-                                </CatchError>
+                                <AuthOverlay variant="component" title="Order Book" description="Sign in to view live order book">
+                                    <CatchError name="OrderBook" fallback={<PanelFallback name="ORDER_BOOK" />}>
+                                        <Level2Book onPriceClick={(price: string) => handlePriceClick(price)} />
+                                    </CatchError>
+                                </AuthOverlay>
                             )}
                         </SidebarContent>
                     </LeftPanel>
@@ -138,9 +141,11 @@ export const TradePage = () => {
                             <ResizeHandle orientation="vertical" />
 
                             <Panel defaultSize={36} minSize={15}>
-                                <CatchError name="Tabs" fallback={<PanelFallback name="BOTTOM_TABS" />}>
-                                    <Tabs onPriceClick={handlePriceClick} />
-                                </CatchError>
+                                <AuthOverlay variant="component" title="Positions & History" description="Sign in to view your positions">
+                                    <CatchError name="Tabs" fallback={<PanelFallback name="BOTTOM_TABS" />}>
+                                        <Tabs onPriceClick={handlePriceClick} />
+                                    </CatchError>
+                                </AuthOverlay>
                             </Panel>
                         </PanelGroup>
                     </CenterPanel>
@@ -152,23 +157,22 @@ export const TradePage = () => {
                 <Panel defaultSize={18} minSize={12}>
                     <RightPanel>
                         <RightContent>
-                            {/* <CatchError name="HealthBoard" fallback={<PanelFallback name="HEALTH_BOARD" />}>
-                                <HealthBoard />
-                            </CatchError> */}
-                            <OrderFormWrapper>
-                                <CatchError name="OrderForm" fallback={<PanelFallback name="ORDER_ENTRY" />}>
-                                    <OrderForm
-                                        priceFromLevel2Book={selectedPrice?.value}
-                                        sideFromLevel2Book={selectedSide}
-                                        key={selectedPrice?.timestamp}
-                                    />
-                                </CatchError>
-                            </OrderFormWrapper>
-                            <Level2BookWrapper>
-                                <CatchError name="Level2Book" fallback={<PanelFallback name="Level2Book" />}>
-                                    <WorkPanel />
-                                </CatchError>
-                            </Level2BookWrapper>
+                            <AuthOverlay variant="component" title="Trading" description="Sign in to place orders">
+                                <OrderFormWrapper>
+                                    <CatchError name="OrderForm" fallback={<PanelFallback name="ORDER_ENTRY" />}>
+                                        <OrderForm
+                                            priceFromLevel2Book={selectedPrice?.value}
+                                            sideFromLevel2Book={selectedSide}
+                                            key={selectedPrice?.timestamp}
+                                        />
+                                    </CatchError>
+                                </OrderFormWrapper>
+                                <Level2BookWrapper>
+                                    <CatchError name="Level2Book" fallback={<PanelFallback name="Level2Book" />}>
+                                        <WorkPanel />
+                                    </CatchError>
+                                </Level2BookWrapper>
+                            </AuthOverlay>
                         </RightContent>
                     </RightPanel>
                 </Panel>

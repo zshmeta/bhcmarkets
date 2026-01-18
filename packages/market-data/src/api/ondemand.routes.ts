@@ -26,7 +26,7 @@ import http from 'http';
 import { URL } from 'url';
 import { getFmpService } from '../domains/collectors/fmp.service.js';
 import { logger } from '../utils/logger.js';
-import type { NormalizedTick } from '../domains/collectors/collector.types.js';
+import type { NormalizedTick } from '@repo/sdk';
 
 const log = logger.child({ component: 'on-demand-api' });
 
@@ -263,9 +263,12 @@ async function fetchStockQuote(symbol: string): Promise<OnDemandResponse<Normali
  */
 async function fetchForexRate(pair: string): Promise<OnDemandResponse<NormalizedTick>> {
     // Parse pair - handle both EUR/USD and EURUSD formats
-    let from: string, to: string;
+    let from = '';
+    let to = '';
     if (pair.includes('/')) {
-        [from, to] = pair.split('/');
+        const parts = pair.split('/');
+        from = parts[0] ?? '';
+        to = parts[1] ?? '';
     } else if (pair.length === 6) {
         from = pair.slice(0, 3);
         to = pair.slice(3, 6);

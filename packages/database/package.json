@@ -18,6 +18,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@repo/sdk": "*",
         "drizzle-orm": "catalog:",
         "ioredis": "catalog:",
         "pg": "catalog:",

@@ -3,7 +3,7 @@
  * Validates API key for incoming requests
  */
 
-import type { EmailWorkerEnv } from '../types';
+import type { EmailWorkerEnv } from '@repo/sdk';
 
 export interface AuthResult {
   authenticated: boolean;

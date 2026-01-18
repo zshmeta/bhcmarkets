@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Trigger, TriggerStatus } from '../../../../packages/bhcm-ui/src/types/automation';
-import type { ExecutionLog } from '@repo/types/triggers';
+import type { ExecutionLog } from '@repo/sdk/triggers';
 import { generateUUID } from '../../../../packages/sdk/utils/uuid';
 
 /* ═══════════════════════════════════════════════════════════

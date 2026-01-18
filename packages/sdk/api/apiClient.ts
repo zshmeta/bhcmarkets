@@ -28,7 +28,7 @@ export class ApiClient {
       // Try to parse error message from JSON
       let errorMessage = response.statusText;
       try {
-        const errorData = await response.json();
+        const errorData = await response.json() as any;
         if (errorData && errorData.message) {
           errorMessage = errorData.message;
         }
@@ -43,7 +43,7 @@ export class ApiClient {
       return {} as T;
     }
 
-    return response.json();
+    return response.json() as unknown as Promise<T>;
   }
 
   public get<T>(endpoint: string, options?: RequestInit): Promise<T> {

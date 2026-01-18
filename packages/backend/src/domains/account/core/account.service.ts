@@ -35,7 +35,7 @@ import type {
   UnlockFundsInput,
   UUID,
   WithdrawInput,
-} from "./account.types.js";
+} from "@repo/sdk";
 import { AccountError } from "./account.errors.js";
 import {
   validateAmount,

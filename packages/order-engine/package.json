@@ -18,7 +18,7 @@
   "dependencies": {
     "@repo/database": "*",
     "@repo/ledger": "*",
-    "@repo/types": "*",
+    "@repo/sdk": "*",
     "dotenv": "catalog:",
     "drizzle-orm": "catalog:",
     "ioredis": "catalog:",

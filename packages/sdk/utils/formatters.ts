@@ -1,4 +1,4 @@
-import Decimal from 'decimal.js';
+import { Decimal } from 'decimal.js';
 
 /* ═══════════════════════════════════════════════════════════
  * NUMBER FORMATTING UTILITIES
@@ -88,7 +88,7 @@ export const formatPercent = (
 };
 
 /**
- * Format a currency value (e.g., for USDT, USD).
+ * Format a currency value (e.g., for USD, USD).
  * @param value - The numeric value
  * @param symbol - Currency symbol prefix (default: '$')
  * @param decimals - Number of decimal places (default: 2)

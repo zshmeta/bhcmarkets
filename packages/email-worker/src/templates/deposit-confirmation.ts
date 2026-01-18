@@ -2,7 +2,7 @@
  * Deposit Confirmation Email Template
  */
 
-import type { DepositConfirmationPayload, TemplateContext, RenderedEmail } from '../types';
+import type { DepositConfirmationPayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderDepositConfirmation(

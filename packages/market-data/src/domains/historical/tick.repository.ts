@@ -19,7 +19,7 @@
 import { env } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 import { closeDb, getDbClient, type PostgresClient } from '@repo/database';
-import type { Candle, CandleQuery } from './historical.types.js';
+import type { Candle, CandleQuery } from '@repo/sdk';
 import type { Timeframe } from '../normalizer/data.validators.js';
 
 const log = logger.child({ component: 'tick-repository' });
@@ -116,7 +116,7 @@ export class TickRepository {
           'USD',
           'aggregator',
           ${new Date(candle.timestamp)},
-          ${metadata}
+          ${metadata as any}
         )
         ON CONFLICT (symbol, timestamp) DO NOTHING
       `;

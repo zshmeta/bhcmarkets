@@ -22,8 +22,10 @@ import type {
   PositionSide,
   PositionChangeEvent,
   AccountPositionSummary,
-} from './position.types.js';
-import { logger } from '../../utils/logger.js';
+} from '@repo/sdk';
+import * as PositionRepository from '@repo/sdk';
+export { PositionRepository };
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'position-manager' });
 

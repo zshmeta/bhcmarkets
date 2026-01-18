@@ -18,7 +18,7 @@ import type {
   SendEmailResponse,
   EmailMessage,
   TemplateContext,
-} from './types';
+} from '@repo/sdk';
 import { createEmailProvider } from './providers';
 import { createTemplateRenderer } from './templates';
 import {
@@ -39,7 +39,7 @@ import {
   corsPreflightResponse,
   withCors,
   jsonResponse,
-} from './utils';
+} from '@repo/sdk';
 
 /**
  * Main request handler
@@ -207,4 +207,4 @@ export type {
   SendEmailResponse,
   EmailType,
   EmailPayload,
-} from './types';
+} from '@repo/sdk';

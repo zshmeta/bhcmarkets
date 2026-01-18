@@ -7,7 +7,7 @@
 
 import { createHash } from "node:crypto";
 import type { DevicePolicy } from "../core/auth.policies.js";
-import type { DeviceMetadata } from "../core/auth.types.js";
+import type { DeviceMetadata } from "@repo/sdk";
 
 /**
  * Extended device information for fingerprinting.
@@ -52,7 +52,7 @@ export interface DeviceFingerprint {
  * Creates stable device identifiers for security purposes.
  */
 export class DeviceFingerprinter {
-  constructor(private readonly policy: DevicePolicy) {}
+  constructor(private readonly policy: DevicePolicy) { }
 
   /**
    * Generate device fingerprint from device information.

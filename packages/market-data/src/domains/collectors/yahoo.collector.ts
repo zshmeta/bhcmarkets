@@ -17,7 +17,7 @@ import {
   type SymbolDefinition,
 } from '../../config/index.js';
 import { env } from '../../config/env.js';
-import type { NormalizedTick, CollectorConfig } from './collector.types.js';
+import type { NormalizedTick, CollectorConfig } from '@repo/sdk';
 
 type YFinanceQuote = {
   symbol?: string;

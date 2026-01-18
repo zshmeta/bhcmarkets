@@ -21,12 +21,14 @@ import type {
   TradeEvent,
   AccountTrade,
   TradeStats,
-} from './trade.types.js';
+} from '@repo/sdk';
 import { FeeCalculator, type FeeTier } from './fee-calculator.js';
 import type { PositionManager } from '../positions/position-manager.js';
-// Import from the package public surface so we don't depend on internal file paths.
 import type { LedgerService } from '@repo/ledger';
-import { logger } from '../../utils/logger.js';
+// Import from the package public surface so we don't depend on internal file paths.
+import { getFeeRate } from './fee-schedule.js';
+import type { EngineOrder, EngineTrade, OrderSide } from '@repo/sdk';
+import { logger } from '@repo/sdk';
 import { saveTrades } from './trade-repository.js';
 
 const log = logger.child({ component: 'trade-processor' });

@@ -39,6 +39,8 @@
     "../sdk/walletStore.ts",
     "../sdk/walletStore_REMOTE_3375.ts",
     "../sdk/walletStore_LOCAL_3375.ts",
-    "../sdk/utils"
+    "../sdk/utils",
+    "../../apps/auth/src/utils/providers.tsx",
+    "../../apps/auth/src/utils/router.tsx"
   ]
 }

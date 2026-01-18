@@ -19,7 +19,7 @@ import type {
   LedgerEntry,
   LedgerRepositoryInterface,
   TransactionType,
-} from './ledger.types.js';
+} from '@repo/sdk';
 
 // =============================================================================
 // REPOSITORY CLASS
@@ -29,10 +29,10 @@ import type {
  * PostgreSQL-backed ledger repository.
  */
 export class LedgerRepository implements LedgerRepositoryInterface {
-  private sql: Sql | TransactionSql;
+  private sql: any;
   private isTransaction: boolean;
 
-  constructor(sql: Sql | TransactionSql, isTransaction = false) {
+  constructor(sql: any, isTransaction = false) {
     this.sql = sql;
     this.isTransaction = isTransaction;
   }
@@ -552,7 +552,7 @@ export class LedgerRepository implements LedgerRepositoryInterface {
     }
 
     // Start a new transaction
-    const result = await (this.sql as Sql).begin(async (txSql) => {
+    const result = await (this.sql as any).begin(async (txSql: any) => {
       const txRepo = new LedgerRepository(txSql, true);
       return fn(txRepo);
     });

@@ -14,7 +14,7 @@
 import { WebSocket } from 'ws';
 import { logger } from '../../utils/logger.js';
 import { SYMBOL_MAP } from '../../config/symbols.js';
-import type { ClientSubscription } from './stream.types.js';
+import type { ClientSubscription } from '@repo/sdk';
 
 const log = logger.child({ component: 'connection-manager' });
 

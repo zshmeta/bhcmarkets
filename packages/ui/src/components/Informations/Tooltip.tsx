@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 type TooltipPlacement = "top" | "bottom" | "left" | "right";
 
-export interface TooltipProps extends HTMLAttributes<HTMLDivElement> {
+export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'content'> {
 	children: ReactNode;
 	content: ReactNode;
 	placement?: TooltipPlacement;
@@ -47,10 +47,14 @@ const TooltipContent = styled.div<{ $visible: boolean; $placement: TooltipPlacem
 	}}
 `;
 
+
+
+
+
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 	({ children, content, placement = "top", delay = 300, ...props }, ref) => {
 		const [visible, setVisible] = useState(false);
-		const timeoutRef = useRef<NodeJS.Timeout>();
+		const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 		const handleMouseEnter = () => {
 			timeoutRef.current = setTimeout(() => setVisible(true), delay);

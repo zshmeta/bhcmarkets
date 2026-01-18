@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useRef } from 'react';
 import { OrderFormView } from './OrderForm.view';
 import type { OrderFormViewProps } from './OrderForm.view';
-import type { OrderFormData, OrderFormActions, OrderFormFormState } from './OrderForm.types';
+import type { OrderFormData, OrderFormActions, OrderFormFormState } from '@repo/sdk';
 
 /* ═══════════════════════════════════════════════════════════
  * OrderFormView Stories

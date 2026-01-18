@@ -20,12 +20,11 @@
   "dependencies": {
     "@repo/database": "*",
     "@repo/market-data": "workspace:*",
-    "@repo/types": "*",
+    "@repo/sdk": "*",
     "axios": "catalog:",
     "bcryptjs": "catalog:",
     "dayjs": "catalog:",
     "dotenv": "catalog:",
-    "drizzle-orm": "catalog:",
     "ioredis": "catalog:",
     "jose": "catalog:",
     "node-cron": "catalog:",

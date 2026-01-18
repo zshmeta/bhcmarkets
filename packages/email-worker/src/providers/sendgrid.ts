@@ -3,7 +3,7 @@
  * https://docs.sendgrid.com/api-reference/mail-send/mail-send
  */
 
-import type { IEmailProvider, EmailMessage, ProviderSendResult } from '../types';
+import type { IEmailProvider, EmailMessage, ProviderSendResult } from '@repo/sdk';
 
 export class SendGridProvider implements IEmailProvider {
   name = 'sendgrid' as const;
@@ -19,7 +19,7 @@ export class SendGridProvider implements IEmailProvider {
       // Parse 'from' field - could be "Name <email@domain.com>" or just "email@domain.com"
       const fromMatch = message.from.match(/^(.+?)\s*<(.+)>$/);
       const fromEmail = fromMatch ? fromMatch[2] : message.from;
-      const fromName = fromMatch ? fromMatch[1].trim() : undefined;
+      const fromName = (fromMatch && fromMatch[1]) ? fromMatch[1].trim() : undefined;
 
       const payload: Record<string, unknown> = {
         personalizations: [
@@ -43,7 +43,7 @@ export class SendGridProvider implements IEmailProvider {
 
       // Add custom args for tracking
       if (message.metadata) {
-        (payload.personalizations as Array<Record<string, unknown>>)[0].custom_args = {
+        (payload.personalizations as Array<Record<string, unknown>>)[0]!.custom_args = {
           email_ref: message.metadata.emailRef,
           user_id: message.metadata.userId,
         };

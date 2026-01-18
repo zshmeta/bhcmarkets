@@ -19,7 +19,7 @@
 
 import { z } from 'zod';
 import { SYMBOL_MAP } from '../../config/symbols.js';
-import type { NormalizedTick } from './collector.types.js';
+import type { NormalizedTick } from '@repo/sdk';
 
 /**
  * Maximum age for a tick timestamp (5 minutes).

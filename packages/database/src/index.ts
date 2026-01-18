@@ -78,4 +78,26 @@ export {
 // SCHEMA EXPORTS
 // =============================================================================
 
+
+// =============================================================================
+// DRIZZLE ORM UTILITIES
+// =============================================================================
+
+export {
+  eq, ne, gt, gte, lt, lte,
+  isNull, isNotNull,
+  inArray, notInArray,
+  exists, notExists,
+  between, notBetween,
+  like, ilike, notLike, notIlike,
+  and, or, not,
+  asc, desc,
+  sql,
+  type SQL,
+  type SQLWrapper,
+  relations,
+  count,
+} from 'drizzle-orm';
+export { type NodePgDatabase } from 'drizzle-orm/node-postgres';
+
 export * from './schema/index.js';

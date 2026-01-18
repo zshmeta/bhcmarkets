@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useWalletStore } from '@repo/sdk';
 import { useI18n } from '../../i18n';
-import { formatTime, formatDate } from '../../../../../../sdk/utils';
+import { formatTime, formatDate } from '@repo/sdk';
 import { Icons } from '../Icons';
-import type { LedgerFilter, LedgerType } from '../../types/wallet';
+import type { LedgerFilter, LedgerType } from '@repo/sdk';
 import {
   Container,
   HeaderLeft,

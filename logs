@@ -1,0 +1,1375 @@
+$ bun run dev:all
+$ bun run --filter=@repo/market-data dev & sleep 5 && bun run --filter=@repo/backend dev & bun run dev:apps
+$ bun run --filter='./apps/*' dev
+web dev: You are using Node.js 20.18.0. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.
+auth dev: You are using Node.js 20.18.0. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.
+bhcm-trader dev: You are using Node.js 20.18.0. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.
+admin dev: You are using Node.js 20.18.0. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.
+web dev: 
+web dev:   VITE v7.3.1  ready in 350 ms
+web dev: 
+web dev:   ➜  Local:   http://localhost:5175/
+web dev:   ➜  Network: http://192.168.1.151:5175/
+web dev:   ➜  Network: http://100.93.156.57:5175/
+admin dev: 
+admin dev:   VITE v7.3.1  ready in 356 ms
+admin dev: 
+auth dev: 
+auth dev:   VITE v7.3.1  ready in 358 ms
+auth dev: 
+admin dev:   ➜  Local:   http://localhost:5174/
+auth dev:   ➜  Local:   http://localhost:5000/
+admin dev:   ➜  Network: http://192.168.1.151:5174/
+admin dev:   ➜  Network: http://100.93.156.57:5174/
+auth dev:   ➜  Network: http://192.168.1.151:5000/
+auth dev:   ➜  Network: http://100.93.156.57:5000/
+bhcm-trader dev: 
+bhcm-trader dev:   VITE v7.3.1  ready in 368 ms
+bhcm-trader dev: 
+bhcm-trader dev:   ➜  Local:   http://localhost:5173/
+bhcm-trader dev:   ➜  Network: http://192.168.1.151:5173/
+bhcm-trader dev:   ➜  Network: http://100.93.156.57:5173/
+@repo/market-data dev: [06:38:40.346] [32mINFO[39m: [36mStarting Market Data Service...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev:     env: "development"
+@repo/market-data dev: [06:38:40.347] [32mINFO[39m: [36mInitializing services...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.347] [32mINFO[39m: [36mConnecting to database...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.553] [32mINFO[39m: [36mDatabase connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.553] [32mINFO[39m: [36mConnecting to Redis...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.586] [32mINFO[39m: [36mRedis connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "redis-client"
+@repo/market-data dev: [06:38:40.674] [32mINFO[39m: [36mRedis client initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "redis-client"
+@repo/market-data dev: [06:38:40.763] [32mINFO[39m: [36mRedis subscriber client initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "redis-client"
+@repo/market-data dev: [06:38:40.763] [32mINFO[39m: [36mRedis connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.764] [32mINFO[39m: [36mInitializing collectors...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev: [06:38:40.764] [32mINFO[39m: [36mCollectors initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collectors: [
+@repo/market-data dev:       "binance",
+@repo/market-data dev:       "yahoo",
+@repo/market-data dev:       "rabbitforex",
+@repo/market-data dev:       "fx-commodities"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:40.794] [32mINFO[39m: [36mDatabase connection established[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev: [06:38:40.794] [32mINFO[39m: [36mHistorical service initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "historical-service"
+@repo/market-data dev: [06:38:40.794] [32mINFO[39m: [36mServices initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.794] [32mINFO[39m: [36mWiring data pipeline...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.794] [32mINFO[39m: [36mData pipeline wired[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.794] [32mINFO[39m: [36mStarting servers...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.796] [32mINFO[39m: [36mWebSocket server listening[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "websocket-server"
+@repo/market-data dev:     port: 6060
+@repo/market-data dev: [06:38:40.796] [32mINFO[39m: [36mHTTP API server listening[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev:     port: 6000
+@repo/market-data dev: [06:38:40.797] [32mINFO[39m: [36mStarting data collection...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:38:40.797] [32mINFO[39m: [36mStarting all collectors...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev: [06:38:40.797] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:38:40.797] [32mINFO[39m: [36mConnecting to Binance WebSocket...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: 
+@repo/market-data dev: ╔══════════════════════════════════════════════════╗
+@repo/market-data dev: ║  📈 BHC Markets - Market Data Service           ║
+@repo/market-data dev: ╠══════════════════════════════════════════════════╣
+@repo/market-data dev: ║  HTTP API:     http://localhost:6000             ║
+@repo/market-data dev: ║  WebSocket:    ws://localhost:6060 /ws          ║
+@repo/market-data dev: ╠══════════════════════════════════════════════════╣
+@repo/market-data dev: ║  Endpoints:                                       ║
+@repo/market-data dev: ║    GET  /health           Health status           ║
+@repo/market-data dev: ║    GET  /api/prices       All prices              ║
+@repo/market-data dev: ║    GET  /api/candles/:sym Historical candles      ║
+@repo/market-data dev: ║    GET  /api/symbols      Available symbols       ║
+@repo/market-data dev: ╠══════════════════════════════════════════════════╣
+@repo/market-data dev: ║  WebSocket Commands:                              ║
+@repo/market-data dev: ║    { "type": "subscribe", "symbols": ["BTC/USD"] }║
+@repo/market-data dev: ║    { "type": "unsubscribe", "symbols": [...] }    ║
+@repo/market-data dev: ║    { "type": "ping" }                             ║
+@repo/market-data dev: ╚══════════════════════════════════════════════════╝
+@repo/market-data dev: 
+@repo/market-data dev: [06:38:41.884] [32mINFO[39m: [36mWebSocket connection established[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:38:41.884] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:38:41.884] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:38:41.884] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:38:41.884] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:38:41.884] [32mINFO[39m: [36mVerifying yfinance-service accessibility (stocks)...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:38:41.964] [32mINFO[39m: [36myfinance-service connection verified[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     testSymbol: "AAPL"
+@repo/market-data dev:     price: 255.53
+@repo/market-data dev: [06:38:41.964] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:38:41.964] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:38:41.964] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:38:41.964] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:38:41.964] [32mINFO[39m: [36mVerifying RabbitForexAPI accessibility...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     baseUrl: "http://100.100.13.10:3000"
+@repo/market-data dev: [06:38:42.089] [32mINFO[39m: [36mUpstream connectivity verified[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     fxOk: true
+@repo/market-data dev:     metalsOk: true
+@repo/market-data dev: [06:38:42.089] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:38:42.089] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev: [06:38:42.089] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev: [06:38:42.089] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:38:42.089] [32mINFO[39m: [36mVerifying yfinance-service accessibility...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:38:42.121] [32mINFO[39m: [36mUpstream connectivity verified[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     yfinanceOk: true
+@repo/market-data dev: [06:38:42.121] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:38:42.121] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:38:42.121] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:38:42.121] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "BTC/USD",
+@repo/market-data dev:       "ETH/USD",
+@repo/market-data dev:       "BNB/USD",
+@repo/market-data dev:       "XRP/USD",
+@repo/market-data dev:       "SOL/USD",
+@repo/market-data dev:       "ADA/USD",
+@repo/market-data dev:       "DOGE/USD",
+@repo/market-data dev:       "DOT/USD",
+@repo/market-data dev:       "AVAX/USD",
+@repo/market-data dev:       "LINK/USD",
+@repo/market-data dev:       "MATIC/USD",
+@repo/market-data dev:       "LTC/USD",
+@repo/market-data dev:       "USDC/USD"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.121] [32mINFO[39m: [36mSending subscription request[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     streams: [
+@repo/market-data dev:       "btcUSD@ticker",
+@repo/market-data dev:       "ethUSD@ticker",
+@repo/market-data dev:       "bnbUSD@ticker",
+@repo/market-data dev:       "xrpUSD@ticker",
+@repo/market-data dev:       "solUSD@ticker",
+@repo/market-data dev:       "adaUSD@ticker",
+@repo/market-data dev:       "dogeUSD@ticker",
+@repo/market-data dev:       "dotUSD@ticker",
+@repo/market-data dev:       "avaxUSD@ticker",
+@repo/market-data dev:       "linkUSD@ticker",
+@repo/market-data dev:       "maticUSD@ticker",
+@repo/market-data dev:       "ltcUSD@ticker",
+@repo/market-data dev:       "usdcUSD@ticker"
+@repo/market-data dev:     ]
+@repo/market-data dev:     id: 1
+@repo/market-data dev: [06:38:42.123] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     symbolCount: 13
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "BTC/USD",
+@repo/market-data dev:       "ETH/USD",
+@repo/market-data dev:       "BNB/USD",
+@repo/market-data dev:       "XRP/USD",
+@repo/market-data dev:       "SOL/USD"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.123] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "AAPL",
+@repo/market-data dev:       "MSFT",
+@repo/market-data dev:       "GOOGL",
+@repo/market-data dev:       "AMZN",
+@repo/market-data dev:       "NVDA",
+@repo/market-data dev:       "META",
+@repo/market-data dev:       "TSLA",
+@repo/market-data dev:       "JPM",
+@repo/market-data dev:       "V",
+@repo/market-data dev:       "JNJ",
+@repo/market-data dev:       "AIR.PA",
+@repo/market-data dev:       "OR.PA",
+@repo/market-data dev:       "MC.PA",
+@repo/market-data dev:       "TTE.PA",
+@repo/market-data dev:       "SAN.PA"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.123] [32mINFO[39m: [36mStarting poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     intervalMs: 15000
+@repo/market-data dev: [06:38:42.123] [32mINFO[39m: [36mFetching initial quotes[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "AAPL",
+@repo/market-data dev:       "MSFT",
+@repo/market-data dev:       "GOOGL",
+@repo/market-data dev:       "AMZN",
+@repo/market-data dev:       "NVDA",
+@repo/market-data dev:       "META",
+@repo/market-data dev:       "TSLA",
+@repo/market-data dev:       "JPM",
+@repo/market-data dev:       "V",
+@repo/market-data dev:       "JNJ",
+@repo/market-data dev:       "AIR.PA",
+@repo/market-data dev:       "OR.PA",
+@repo/market-data dev:       "MC.PA",
+@repo/market-data dev:       "TTE.PA",
+@repo/market-data dev:       "SAN.PA"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.195] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     symbolCount: 15
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "AAPL",
+@repo/market-data dev:       "MSFT",
+@repo/market-data dev:       "GOOGL",
+@repo/market-data dev:       "AMZN",
+@repo/market-data dev:       "NVDA"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.195] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "EUR/USD",
+@repo/market-data dev:       "GBP/USD",
+@repo/market-data dev:       "USD/JPY",
+@repo/market-data dev:       "USD/CHF",
+@repo/market-data dev:       "AUD/USD",
+@repo/market-data dev:       "USD/CAD",
+@repo/market-data dev:       "NZD/USD",
+@repo/market-data dev:       "EUR/GBP",
+@repo/market-data dev:       "EUR/JPY",
+@repo/market-data dev:       "GBP/JPY",
+@repo/market-data dev:       "XAU/USD",
+@repo/market-data dev:       "XAG/USD",
+@repo/market-data dev:       "WTI",
+@repo/market-data dev:       "BRENT",
+@repo/market-data dev:       "NATGAS"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.195] [32mINFO[39m: [36mStarting poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     intervalMs: 1000
+@repo/market-data dev: [06:38:42.263] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     symbolCount: 15
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "EUR/USD",
+@repo/market-data dev:       "GBP/USD",
+@repo/market-data dev:       "USD/JPY",
+@repo/market-data dev:       "USD/CHF",
+@repo/market-data dev:       "AUD/USD"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.263] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "SPX",
+@repo/market-data dev:       "NDX",
+@repo/market-data dev:       "DJI",
+@repo/market-data dev:       "VIX",
+@repo/market-data dev:       "FTSE",
+@repo/market-data dev:       "DAX",
+@repo/market-data dev:       "N225",
+@repo/market-data dev:       "XAU/USD",
+@repo/market-data dev:       "XAG/USD",
+@repo/market-data dev:       "WTI",
+@repo/market-data dev:       "BRENT",
+@repo/market-data dev:       "NATGAS"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.263] [32mINFO[39m: [36mStarting poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     intervalMs: 15000
+@repo/market-data dev: [06:38:42.299] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     symbolCount: 12
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "SPX",
+@repo/market-data dev:       "NDX",
+@repo/market-data dev:       "DJI",
+@repo/market-data dev:       "VIX",
+@repo/market-data dev:       "FTSE"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:38:42.299] [32mINFO[39m: [36mAll collectors started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev: [06:38:42.299] [32mINFO[39m: [36m✅ Market Data Service started successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev:     httpPort: 6000
+@repo/market-data dev:     wsPort: 6060
+@repo/backend dev: {"level":"info","msg":"admin_routes_registered","routes":["GET /admin/users","POST /admin/users/suspend","POST /admin/users/unsuspend","POST /admin/users/role","GET /admin/accounts","POST /admin/accounts/deposit","POST /admin/accounts/withdraw","POST /admin/accounts/freeze","POST /admin/accounts/unfreeze","GET /admin/risk/dashboard","POST /admin/risk/circuit-breaker/activate","POST /admin/risk/circuit-breaker/deactivate","GET /admin/symbols","POST /admin/symbols","POST /admin/symbols/enable","POST /admin/symbols/disable","GET /admin/audit","GET /admin/orders","GET /admin/orders/:id","POST /admin/orders/cancel","POST /admin/orders/cancel-all","GET /admin/positions","GET /admin/positions/:id","POST /admin/positions/force-close","GET /admin/reports/trading","GET /admin/reports/users","GET /admin/reports/pnl"]}
+bhcm-trader dev: 7:39:00 AM [vite] (client) Pre-transform error: Failed to resolve import "@react-native/assets-registry/registry" from "../../node_modules/.bun/expo-haptics@15.0.8+818f62f6a42d5baf/node_modules/expo-haptics/src/Haptics.ts". Does the file exist?
+bhcm-trader dev:   Plugin: vite:import-analysis
+bhcm-trader dev:   File: /home/zshmeta/bhcmarkets/apps/platform/node_modules/.vite/deps/expo-haptics.js?v=ad309aec:15:47
+bhcm-trader dev:   13 |  
+bhcm-trader dev:   14 |  // ../../node_modules/.bun/expo-asset@11.0.5+818f62f6a42d5baf/node_modules/expo-asset/build/Asset.js
+bhcm-trader dev:   15 |  import { getAssetByID as getAssetByID2 } from "@react-native/assets-registry/registry";
+bhcm-trader dev:      |                                                 ^
+bhcm-trader dev:   16 |  import { Platform as Platform5 } from "expo-modules-core";
+bhcm-trader dev:   17 |  
+@repo/market-data dev: [06:39:00.886] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+bhcm-trader dev: 7:39:01 AM [vite] Internal server error: Failed to resolve import "@react-native/assets-registry/registry" from "../../node_modules/.bun/expo-haptics@15.0.8+818f62f6a42d5baf/node_modules/expo-haptics/src/Haptics.ts". Does the file exist?
+bhcm-trader dev:   Plugin: vite:import-analysis
+bhcm-trader dev:   File: /home/zshmeta/bhcmarkets/apps/platform/node_modules/.vite/deps/expo-haptics.js?v=ad309aec:15:47
+bhcm-trader dev:   13 |  
+bhcm-trader dev:   14 |  // ../../node_modules/.bun/expo-asset@11.0.5+818f62f6a42d5baf/node_modules/expo-asset/build/Asset.js
+bhcm-trader dev:   15 |  import { getAssetByID as getAssetByID2 } from "@react-native/assets-registry/registry";
+bhcm-trader dev:      |                                                 ^
+bhcm-trader dev:   16 |  import { Platform as Platform5 } from "expo-modules-core";
+bhcm-trader dev:   17 |  
+bhcm-trader dev:       at TransformPluginContext._formatLog (file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:28999:43)
+bhcm-trader dev:       at TransformPluginContext.error (file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:28996:14)
+bhcm-trader dev:       at normalizeUrl (file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:27119:18)
+bhcm-trader dev:       at async file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:27177:32
+bhcm-trader dev:       at async Promise.all (index 4)
+bhcm-trader dev:       at async TransformPluginContext.transform (file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:27145:4)
+bhcm-trader dev:       at async EnvironmentPluginContainer.transform (file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:28797:14)
+bhcm-trader dev:       at async loadAndTransform (file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:22670:26)
+bhcm-trader dev:       at async viteTransformMiddleware (file:///home/zshmeta/bhcmarkets/node_modules/.bun/vite@7.3.1+87b85e6cf123cbb7/node_modules/vite/dist/node/chunks/config.js:24542:20)
+@repo/market-data dev: [06:39:40.764] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 808
+@repo/market-data dev:     validationErrors: 0
+bhcm-trader dev: 7:39:58 AM [vite] vite.config.ts changed, restarting server...
+bhcm-trader dev: 7:39:58 AM [vite] (client) Re-optimizing dependencies because vite config has changed
+bhcm-trader dev: 7:39:58 AM [vite] server restarted.
+@repo/market-data dev: [06:40:01.064] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:40:03.657] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403657_1"
+@repo/market-data dev:     totalClients: 1
+@repo/market-data dev: [06:40:03.672] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403672_2"
+@repo/market-data dev:     totalClients: 2
+@repo/market-data dev: [06:40:03.685] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403685_3"
+@repo/market-data dev:     totalClients: 3
+@repo/market-data dev: [06:40:03.697] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403697_4"
+@repo/market-data dev:     totalClients: 4
+@repo/market-data dev: [06:40:04.038] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403657_1"
+@repo/market-data dev:     totalClients: 3
+@repo/market-data dev: [06:40:04.200] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403672_2"
+@repo/market-data dev:     totalClients: 2
+@repo/market-data dev: [06:40:04.285] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403685_3"
+@repo/market-data dev:     totalClients: 1
+bhcm-trader dev: 7:40:14 AM [vite] vite.config.ts changed, restarting server...
+bhcm-trader dev: 7:40:14 AM [vite] (client) Re-optimizing dependencies because vite config has changed
+bhcm-trader dev: 7:40:14 AM [vite] server restarted.
+@repo/market-data dev: [06:40:15.442] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718403697_4"
+@repo/market-data dev:     totalClients: 0
+@repo/market-data dev: [06:40:22.650] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422650_5"
+@repo/market-data dev:     totalClients: 1
+@repo/market-data dev: [06:40:22.677] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422677_6"
+@repo/market-data dev:     totalClients: 2
+@repo/market-data dev: [06:40:22.716] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422716_7"
+@repo/market-data dev:     totalClients: 3
+@repo/market-data dev: [06:40:22.739] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422739_8"
+@repo/market-data dev:     totalClients: 4
+@repo/market-data dev: [06:40:23.392] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422650_5"
+@repo/market-data dev:     totalClients: 3
+@repo/market-data dev: [06:40:23.748] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422677_6"
+@repo/market-data dev:     totalClients: 2
+@repo/market-data dev: [06:40:24.164] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422716_7"
+@repo/market-data dev:     totalClients: 1
+@repo/market-data dev: 7:40:30 AM [tsx] change in ./src/schemas/message.schema.ts Restarting...
+@repo/market-data dev: [06:40:31.110] [32mINFO[39m: [36mReceived SIGTERM[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:31.111] [32mINFO[39m: [36m🛑 Stopping Market Data Service...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:31.112] [32mINFO[39m: [36mStopping all collectors...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev: [06:40:31.112] [32mINFO[39m: [36mStopping collector[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:40:31.114] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     from: "connected"
+@repo/market-data dev:     to: "stopped"
+@repo/market-data dev: [06:40:31.114] [32mINFO[39m: [36mCollector stopped[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:40:31.114] [32mINFO[39m: [36mStopping collector[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:40:31.114] [32mINFO[39m: [36mStopped poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:40:31.115] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     from: "connected"
+@repo/market-data dev:     to: "stopped"
+@repo/market-data dev: [06:40:31.115] [32mINFO[39m: [36mCollector stopped[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:40:31.115] [32mINFO[39m: [36mStopping collector[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev: [06:40:31.116] [32mINFO[39m: [36mStopped poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev: [06:40:31.116] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     from: "connected"
+@repo/market-data dev:     to: "stopped"
+@repo/market-data dev: [06:40:31.116] [32mINFO[39m: [36mCollector stopped[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev: [06:40:31.116] [32mINFO[39m: [36mStopping collector[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:40:31.116] [32mINFO[39m: [36mStopped poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:40:31.116] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     from: "connected"
+@repo/market-data dev:     to: "stopped"
+@repo/market-data dev: [06:40:31.117] [32mINFO[39m: [36mCollector stopped[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:40:31.118] [32mINFO[39m: [36mCandle aggregator stopped[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "candle-aggregator"
+@repo/market-data dev: [06:40:31.157] [32mINFO[39m: [36mDatabase connection closed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev: [06:40:31.158] [32mINFO[39m: [36mHistorical service stopped[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "historical-service"
+@repo/market-data dev: [06:40:31.164] [32mINFO[39m: [36mWebSocket server closed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "websocket-server"
+@repo/market-data dev: [06:40:31.166] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768718422739_8"
+@repo/market-data dev:     totalClients: 0
+@repo/market-data dev: [06:40:31.224] [32mINFO[39m: [36m✅ Service stopped gracefully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: c[06:40:36.228] [32mINFO[39m: [36mStarting Market Data Service...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev:     env: "development"
+@repo/market-data dev: [06:40:36.231] [32mINFO[39m: [36mInitializing services...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.231] [32mINFO[39m: [36mConnecting to database...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.521] [32mINFO[39m: [36mDatabase connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.522] [32mINFO[39m: [36mConnecting to Redis...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.595] [32mINFO[39m: [36mRedis connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "redis-client"
+@repo/market-data dev: [06:40:36.731] [32mINFO[39m: [36mRedis client initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "redis-client"
+@repo/market-data dev: [06:40:36.835] [32mINFO[39m: [36mRedis subscriber client initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "redis-client"
+@repo/market-data dev: [06:40:36.835] [32mINFO[39m: [36mRedis connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.841] [32mINFO[39m: [36mInitializing collectors...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev: [06:40:36.844] [32mINFO[39m: [36mCollectors initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collectors: [
+@repo/market-data dev:       "binance",
+@repo/market-data dev:       "yahoo",
+@repo/market-data dev:       "rabbitforex",
+@repo/market-data dev:       "fx-commodities"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:36.879] [32mINFO[39m: [36mDatabase connection established[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev: [06:40:36.879] [32mINFO[39m: [36mHistorical service initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "historical-service"
+@repo/market-data dev: [06:40:36.880] [32mINFO[39m: [36mServices initialized[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.881] [32mINFO[39m: [36mWiring data pipeline...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.881] [32mINFO[39m: [36mData pipeline wired[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.882] [32mINFO[39m: [36mStarting servers...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.895] [32mINFO[39m: [36mWebSocket server listening[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "websocket-server"
+@repo/market-data dev:     port: 6060
+@repo/market-data dev: [06:40:36.898] [32mINFO[39m: [36mHTTP API server listening[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev:     port: 6000
+@repo/market-data dev: [06:40:36.899] [32mINFO[39m: [36mStarting data collection...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: [06:40:36.899] [32mINFO[39m: [36mStarting all collectors...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev: [06:40:36.901] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:40:36.902] [32mINFO[39m: [36mConnecting to Binance WebSocket...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:40:38.178] [32mINFO[39m: [36mWebSocket connection established[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:40:38.179] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:40:38.180] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:40:38.180] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev: [06:40:38.181] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:40:38.181] [32mINFO[39m: [36mVerifying yfinance-service accessibility (stocks)...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:40:38.366] [32mINFO[39m: [36myfinance-service connection verified[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     testSymbol: "AAPL"
+@repo/market-data dev:     price: 255.53
+@repo/market-data dev: [06:40:38.366] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:40:38.366] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:40:38.367] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev: [06:40:38.367] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:40:38.367] [32mINFO[39m: [36mVerifying RabbitForexAPI accessibility...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     baseUrl: "http://100.100.13.10:3000"
+@repo/market-data dev: [06:40:38.519] [32mINFO[39m: [36mUpstream connectivity verified[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     fxOk: true
+@repo/market-data dev:     metalsOk: true
+@repo/market-data dev: [06:40:38.520] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:40:38.520] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev: [06:40:38.520] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev: [06:40:38.520] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     from: "disconnected"
+@repo/market-data dev:     to: "connecting"
+@repo/market-data dev: [06:40:38.520] [32mINFO[39m: [36mVerifying yfinance-service accessibility...[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:40:38.563] [32mINFO[39m: [36mUpstream connectivity verified[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     yfinanceOk: true
+@repo/market-data dev: [06:40:38.564] [32mINFO[39m: [36mCollector state changed[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     from: "connecting"
+@repo/market-data dev:     to: "connected"
+@repo/market-data dev: [06:40:38.564] [32mINFO[39m: [36mConnected successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:40:38.564] [32mINFO[39m: [36mCollector started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev: [06:40:38.566] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "BTC/USD",
+@repo/market-data dev:       "ETH/USD",
+@repo/market-data dev:       "BNB/USD",
+@repo/market-data dev:       "XRP/USD",
+@repo/market-data dev:       "SOL/USD",
+@repo/market-data dev:       "ADA/USD",
+@repo/market-data dev:       "DOGE/USD",
+@repo/market-data dev:       "DOT/USD",
+@repo/market-data dev:       "AVAX/USD",
+@repo/market-data dev:       "LINK/USD",
+@repo/market-data dev:       "MATIC/USD",
+@repo/market-data dev:       "LTC/USD",
+@repo/market-data dev:       "USDC/USD"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.567] [32mINFO[39m: [36mSending subscription request[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     streams: [
+@repo/market-data dev:       "btcUSD@ticker",
+@repo/market-data dev:       "ethUSD@ticker",
+@repo/market-data dev:       "bnbUSD@ticker",
+@repo/market-data dev:       "xrpUSD@ticker",
+@repo/market-data dev:       "solUSD@ticker",
+@repo/market-data dev:       "adaUSD@ticker",
+@repo/market-data dev:       "dogeUSD@ticker",
+@repo/market-data dev:       "dotUSD@ticker",
+@repo/market-data dev:       "avaxUSD@ticker",
+@repo/market-data dev:       "linkUSD@ticker",
+@repo/market-data dev:       "maticUSD@ticker",
+@repo/market-data dev:       "ltcUSD@ticker",
+@repo/market-data dev:       "usdcUSD@ticker"
+@repo/market-data dev:     ]
+@repo/market-data dev:     id: 1
+@repo/market-data dev: [06:40:38.579] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "binance"
+@repo/market-data dev:     symbolCount: 13
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "BTC/USD",
+@repo/market-data dev:       "ETH/USD",
+@repo/market-data dev:       "BNB/USD",
+@repo/market-data dev:       "XRP/USD",
+@repo/market-data dev:       "SOL/USD"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.580] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "AAPL",
+@repo/market-data dev:       "MSFT",
+@repo/market-data dev:       "GOOGL",
+@repo/market-data dev:       "AMZN",
+@repo/market-data dev:       "NVDA",
+@repo/market-data dev:       "META",
+@repo/market-data dev:       "TSLA",
+@repo/market-data dev:       "JPM",
+@repo/market-data dev:       "V",
+@repo/market-data dev:       "JNJ",
+@repo/market-data dev:       "AIR.PA",
+@repo/market-data dev:       "OR.PA",
+@repo/market-data dev:       "MC.PA",
+@repo/market-data dev:       "TTE.PA",
+@repo/market-data dev:       "SAN.PA"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.581] [32mINFO[39m: [36mStarting poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     intervalMs: 15000
+@repo/market-data dev: [06:40:38.581] [32mINFO[39m: [36mFetching initial quotes[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "AAPL",
+@repo/market-data dev:       "MSFT",
+@repo/market-data dev:       "GOOGL",
+@repo/market-data dev:       "AMZN",
+@repo/market-data dev:       "NVDA",
+@repo/market-data dev:       "META",
+@repo/market-data dev:       "TSLA",
+@repo/market-data dev:       "JPM",
+@repo/market-data dev:       "V",
+@repo/market-data dev:       "JNJ",
+@repo/market-data dev:       "AIR.PA",
+@repo/market-data dev:       "OR.PA",
+@repo/market-data dev:       "MC.PA",
+@repo/market-data dev:       "TTE.PA",
+@repo/market-data dev:       "SAN.PA"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.694] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "yahoo"
+@repo/market-data dev:     symbolCount: 15
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "AAPL",
+@repo/market-data dev:       "MSFT",
+@repo/market-data dev:       "GOOGL",
+@repo/market-data dev:       "AMZN",
+@repo/market-data dev:       "NVDA"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.694] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "EUR/USD",
+@repo/market-data dev:       "GBP/USD",
+@repo/market-data dev:       "USD/JPY",
+@repo/market-data dev:       "USD/CHF",
+@repo/market-data dev:       "AUD/USD",
+@repo/market-data dev:       "USD/CAD",
+@repo/market-data dev:       "NZD/USD",
+@repo/market-data dev:       "EUR/GBP",
+@repo/market-data dev:       "EUR/JPY",
+@repo/market-data dev:       "GBP/JPY",
+@repo/market-data dev:       "XAU/USD",
+@repo/market-data dev:       "XAG/USD",
+@repo/market-data dev:       "WTI",
+@repo/market-data dev:       "BRENT",
+@repo/market-data dev:       "NATGAS"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.695] [32mINFO[39m: [36mStarting poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     intervalMs: 1000
+@repo/market-data dev: [06:40:38.782] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "rabbitforex"
+@repo/market-data dev:     symbolCount: 15
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "EUR/USD",
+@repo/market-data dev:       "GBP/USD",
+@repo/market-data dev:       "USD/JPY",
+@repo/market-data dev:       "USD/CHF",
+@repo/market-data dev:       "AUD/USD"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.783] [32mINFO[39m: [36mSubscribing to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "SPX",
+@repo/market-data dev:       "NDX",
+@repo/market-data dev:       "DJI",
+@repo/market-data dev:       "VIX",
+@repo/market-data dev:       "FTSE",
+@repo/market-data dev:       "DAX",
+@repo/market-data dev:       "N225",
+@repo/market-data dev:       "XAU/USD",
+@repo/market-data dev:       "XAG/USD",
+@repo/market-data dev:       "WTI",
+@repo/market-data dev:       "BRENT",
+@repo/market-data dev:       "NATGAS"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.784] [32mINFO[39m: [36mStarting poll loop[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     intervalMs: 15000
+@repo/market-data dev: 
+@repo/market-data dev: ╔══════════════════════════════════════════════════╗
+@repo/market-data dev: ║  📈 BHC Markets - Market Data Service           ║
+@repo/market-data dev: ╠══════════════════════════════════════════════════╣
+@repo/market-data dev: ║  HTTP API:     http://localhost:6000             ║
+@repo/market-data dev: ║  WebSocket:    ws://localhost:6060 /ws          ║
+@repo/market-data dev: ╠══════════════════════════════════════════════════╣
+@repo/market-data dev: ║  Endpoints:                                       ║
+@repo/market-data dev: ║    GET  /health           Health status           ║
+@repo/market-data dev: ║    GET  /api/prices       All prices              ║
+@repo/market-data dev: ║    GET  /api/candles/:sym Historical candles      ║
+@repo/market-data dev: ║    GET  /api/symbols      Available symbols       ║
+@repo/market-data dev: ╠══════════════════════════════════════════════════╣
+@repo/market-data dev: ║  WebSocket Commands:                              ║
+@repo/market-data dev: ║    { "type": "subscribe", "symbols": ["BTC/USD"] }║
+@repo/market-data dev: ║    { "type": "unsubscribe", "symbols": [...] }    ║
+@repo/market-data dev: ║    { "type": "ping" }                             ║
+@repo/market-data dev: ╚══════════════════════════════════════════════════╝
+@repo/market-data dev: 
+@repo/market-data dev: [06:40:38.836] [32mINFO[39m: [36mSubscribed to symbols[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     collector: "fx-commodities"
+@repo/market-data dev:     symbolCount: 12
+@repo/market-data dev:     symbols: [
+@repo/market-data dev:       "SPX",
+@repo/market-data dev:       "NDX",
+@repo/market-data dev:       "DJI",
+@repo/market-data dev:       "VIX",
+@repo/market-data dev:       "FTSE"
+@repo/market-data dev:     ]
+@repo/market-data dev: [06:40:38.836] [32mINFO[39m: [36mAll collectors started[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev: [06:40:38.836] [32mINFO[39m: [36m✅ Market Data Service started successfully[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev:     httpPort: 6000
+@repo/market-data dev:     wsPort: 6060
+@repo/market-data dev: [06:41:07.168] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:41:36.837] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 808
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:42:07.150] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:42:36.838] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 808
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:43:07.137] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:43:36.838] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:44:07.152] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:44:36.839] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:45:07.193] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:45:36.840] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:46:07.213] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:46:36.840] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:47:07.224] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:47:36.841] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:48:07.241] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:48:36.842] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:49:07.242] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:49:36.842] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+bhcm-trader dev: 7:49:38 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/account/MobileAccountPage.tsx
+bhcm-trader dev: 7:50:01 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/wallet/MobileWalletPage.tsx
+@repo/market-data dev: [06:50:07.247] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+bhcm-trader dev: 7:50:29 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/markets/MobileMarketsPage.tsx
+@repo/market-data dev: [06:50:36.842] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+bhcm-trader dev: 7:50:56 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/trade/MobileTradePage.tsx
+@repo/market-data dev: [06:51:07.260] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:51:36.843] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+bhcm-trader dev: 7:51:52 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/components/Typography.tsx
+@repo/market-data dev: [06:52:07.272] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+bhcm-trader dev: 7:52:10 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/components/Card.tsx
+bhcm-trader dev: 7:52:12 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/components/Button.tsx
+bhcm-trader dev: 7:52:31 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/components/Input.tsx
+bhcm-trader dev: 7:52:32 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/components/Header.tsx
+@repo/market-data dev: [06:52:36.844] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:53:07.260] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:53:36.845] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+bhcm-trader dev: 7:54:03 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/components/GlassView.tsx
+bhcm-trader dev: 7:54:04 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/context/MarketDataContext.tsx
+bhcm-trader dev: 7:54:04 AM [vite] (client) hmr invalidate /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/context/MarketDataContext.tsx Could not Fast Refresh ("useMarketDataContext" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react-swc#consistent-components-exports
+bhcm-trader dev: 7:54:04 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/markets/MobileMarketsPage.tsx
+@repo/market-data dev: [06:54:07.287] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:54:36.845] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+bhcm-trader dev: 7:54:43 AM [vite] changed tsconfig file detected: /home/zshmeta/bhcmarkets/apps/mobile/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+admin dev: 7:54:43 AM [vite] changed tsconfig file detected: /home/zshmeta/bhcmarkets/apps/mobile/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+web dev: 7:54:43 AM [vite] changed tsconfig file detected: /home/zshmeta/bhcmarkets/apps/mobile/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+auth dev: 7:54:43 AM [vite] changed tsconfig file detected: /home/zshmeta/bhcmarkets/apps/mobile/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+@repo/market-data dev: [06:54:57.362] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297362_1"
+@repo/market-data dev:     totalClients: 1
+@repo/market-data dev: [06:54:57.431] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297430_2"
+@repo/market-data dev:     totalClients: 2
+@repo/market-data dev: [06:54:57.520] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297519_3"
+@repo/market-data dev:     totalClients: 3
+@repo/market-data dev: [06:54:57.633] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297632_4"
+@repo/market-data dev:     totalClients: 4
+@repo/market-data dev: [06:54:58.818] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297362_1"
+@repo/market-data dev:     totalClients: 3
+@repo/market-data dev: [06:54:59.448] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297430_2"
+@repo/market-data dev:     totalClients: 2
+@repo/market-data dev: [06:54:59.868] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297519_3"
+@repo/market-data dev:     totalClients: 1
+@repo/market-data dev: [06:55:07.097] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:55:36.846] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:56:07.084] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+bhcm-trader dev: 7:56:09 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/markets/MobileMarketsPage.tsx
+bhcm-trader dev: 7:56:11 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/packages/bhcm-ui/src/mobile/components/MobilePositionCard.tsx
+bhcm-trader dev: 7:56:15 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/packages/bhcm-ui/src/mobile/components/MobileOrderCard.tsx
+bhcm-trader dev: 7:56:16 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/orders/MobileOrdersPage.tsx
+bhcm-trader dev: 7:56:18 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/apps/mobile/src/pages/orders/MobileOrdersPage.tsx
+bhcm-trader dev: 7:56:30 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/packages/bhcm-ui/src/mobile/components/MobilePositionCard.tsx
+bhcm-trader dev: 7:56:35 AM [vite] (client) hmr update /@fs/home/zshmeta/bhcmarkets/packages/bhcm-ui/src/mobile/components/MobileOrderCard.tsx
+@repo/market-data dev: [06:56:36.847] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:56:38.397] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719297632_4"
+@repo/market-data dev:     totalClients: 0
+@repo/market-data dev: [06:56:38.427] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719398426_5"
+@repo/market-data dev:     totalClients: 1
+@repo/market-data dev: [06:56:38.461] [32mINFO[39m: [36mClient connected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719398461_6"
+@repo/market-data dev:     totalClients: 2
+@repo/market-data dev: [06:56:39.044] [32mINFO[39m: [36mClient disconnected[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "connection-manager"
+@repo/market-data dev:     clientId: "client_1768719398426_5"
+@repo/market-data dev:     totalClients: 1
+@repo/market-data dev: [06:57:07.111] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:57:36.847] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:58:07.102] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:58:36.847] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [06:59:07.098] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [06:59:36.848] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 818
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:00:07.284] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:00:36.848] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 822
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:01:07.094] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:01:36.848] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 818
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:02:07.107] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:02:36.848] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 822
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:03:07.108] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:03:36.849] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 818
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:04:07.290] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:04:36.848] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 822
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:05:07.112] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:05:36.857] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 818
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:06:07.109] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:06:36.858] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 822
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:07:07.104] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:07:36.858] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:08:07.108] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:08:36.858] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 818
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:09:07.295] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:09:36.858] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:10:07.119] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:10:36.859] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 822
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:11:07.116] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:11:36.858] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 818
+@repo/market-data dev:     validationErrors: 0
+@repo/market-data dev: [07:12:07.308] [32mINFO[39m: [36mCandle batch saved[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "tick-repository"
+@repo/market-data dev:     count: 37
+@repo/market-data dev: [07:12:36.858] [32mINFO[39m: [36mTick rate summary[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "collector-registry"
+@repo/market-data dev:     ticksPerMinute: 820
+@repo/market-data dev:     validationErrors: 0
+@repo/backend dev: Exited with code 2
+@repo/market-data dev: [07:13:06.732] [32mINFO[39m: [36mReceived SIGINT[39m
+@repo/market-data dev:     service: "market-data"
+@repo/market-data dev:     component: "bootstrap"
+@repo/market-data dev: 8:13:07 AM [tsx] Previous process hasn't exited yet. Force killing...
+@repo/market-data dev: Exited with code 0

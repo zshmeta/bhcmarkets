@@ -83,15 +83,18 @@ const DesktopLayout = () => {
             <button
               onClick={loginWithRedirect}
               style={{
-                background: 'var(--accent, #58A6FF)',
+                background: '#58A6FF',
                 color: '#fff',
                 border: 'none',
-                padding: '6px 12px',
-                borderRadius: '4px',
+                padding: '0.375rem 0.75rem',
+                borderRadius: '0.25rem',
                 cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: '0.875rem',
-                marginLeft: '8px'
+                fontWeight: 500,
+                fontSize: '0.75rem',
+                marginLeft: '0.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
               }}
             >
               Sign In

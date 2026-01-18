@@ -98,7 +98,7 @@ const useUserOverview = (): UseUserOverviewReturn => {
 
             if (qty.lte(0)) continue;
 
-            if (b.asset === 'USDT') {
+            if (b.asset === 'USD') {
                 available = available.plus(avail);
                 frozen = frozen.plus(froz);
                 total = total.plus(qty);

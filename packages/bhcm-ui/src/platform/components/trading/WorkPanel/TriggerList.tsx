@@ -1,7 +1,7 @@
 import { useI18n } from '../../i18n';
 import { useAutomationStore } from '@repo/sdk';
 import { Icons } from '../Icons';
-import { Trigger, TriggerStatus } from '@repo/types/triggers';
+import { Trigger, TriggerStatus } from '@repo/sdk/triggers';
 import { formatTime } from '../../../../../../sdk/utils';
 import {
   Container, TriggerItem, Header, SymbolType, Symbol, Type, Status, StatusDot,
@@ -18,7 +18,7 @@ interface TriggerItemProps { trigger: Trigger; onDelete: () => void; onToggle: (
 
 const CompactTriggerRow = ({ trigger, onDelete, onToggle }: TriggerItemProps) => {
   const isBuy = trigger.action.side === 'buy';
-  const baseAsset = trigger.symbol.replace('USDT', '');
+  const baseAsset = trigger.symbol.replace('USD', '');
   return (
     <CompactRow>
       <td><CompactSymbol>{baseAsset}</CompactSymbol></td>

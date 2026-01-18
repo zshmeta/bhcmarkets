@@ -6,7 +6,7 @@
  */
 
 import type { AnomalyDetectionPolicy } from "../core/auth.policies.js";
-import type { UUID } from "../core/auth.types.js";
+import type { UUID } from "@repo/sdk";
 
 /**
  * Anomaly type.

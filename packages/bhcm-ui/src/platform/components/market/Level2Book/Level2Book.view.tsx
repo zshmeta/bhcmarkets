@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Icons } from '../../core/Icons';
-import { formatPrice, formatQuantity } from '../../../../../../sdk/utils';
-import type { Level2BookLevel } from '../../types/market';
+import { formatPrice, formatQuantity } from '@repo/sdk';
+import type { Level2BookLevel } from '@repo/sdk';
 import type { Level2BookMetrics, DataConfidenceState } from './useLevel2Book';
 import {
     Container,

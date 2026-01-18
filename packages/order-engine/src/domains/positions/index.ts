@@ -10,7 +10,7 @@ export type {
   PositionSnapshot,
   PositionChangeEvent,
   AccountPositionSummary,
-} from './position.types.js';
+} from '@repo/sdk';
 
 export { PositionManager } from './position-manager.js';
 

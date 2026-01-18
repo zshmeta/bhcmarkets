@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import RecentPositionsView from './RecentPositions.view';
-import type { Trade } from '../../types/market';
+import type { Trade } from '../../../../../../sdk/utils/types/market';
 
 /* ═══════════════════════════════════════════════════════════
  * RECENT TRADES STORIES

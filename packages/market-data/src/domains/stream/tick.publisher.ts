@@ -15,8 +15,8 @@
 
 import { ConnectionManager } from './connection.manager.js';
 import { logger } from '../../utils/logger.js';
-import type { EnrichedTick } from '../normalizer/normalizer.types.js';
-import type { TickMessage } from './stream.types.js';
+import type { EnrichedTick } from '@repo/sdk';
+import type { TickMessage } from '@repo/sdk';
 
 const log = logger.child({ component: 'tick-publisher' });
 

@@ -16,7 +16,7 @@ import type {
   SymbolRiskLimits,
   UserRiskLimits,
   PlatformRiskLimits,
-} from "./risk.types.js";
+} from "@repo/sdk";
 
 // =============================================================================
 // PLATFORM-WIDE DEFAULTS
@@ -156,7 +156,7 @@ export type AssetClass = "crypto" | "forex" | "commodity" | "stock" | "unknown";
  * Classifies a symbol into an asset class based on naming convention.
  *
  * Convention:
- * - Crypto: Contains BTC, ETH, SOL, etc. (or ends with -USD, -USDT)
+ * - Crypto: Contains BTC, ETH, SOL, etc. (or ends with -USD, -USD)
  * - Forex: Standard 6-letter pairs (EURUSD, GBPUSD) or with slash
  * - Commodity: XAU, XAG, OIL, etc.
  */
@@ -176,7 +176,7 @@ export function classifySymbol(symbol: string): AssetClass {
     "MATIC",
     "LINK",
     "UNI",
-    "USDT",
+    "USD",
     "USDC",
   ];
   if (cryptoTokens.some((token) => upper.includes(token))) {

@@ -46,7 +46,7 @@ const DepositDrawer = ({ isOpen, onClose }: DepositDrawerProps) => {
   const createDeposit = useWalletStore((state) => state.createDeposit);
   const confirmDeposit = useWalletStore((state) => state.confirmDeposit);
 
-  const [asset, setAsset] = useState<'USDT' | 'CNY'>('USDT');
+  const [asset, setAsset] = useState<'USD' | 'CNY'>('USD');
   const [amount, setAmount] = useState('');
   const [sourceType, setSourceType] = useState<'bank' | 'crypto'>('crypto');
   const [sourceId, setSourceId] = useState('');
@@ -76,7 +76,7 @@ const DepositDrawer = ({ isOpen, onClose }: DepositDrawerProps) => {
   const handleConfirmDemo = () => { if (pendingDepositId) confirmDeposit(pendingDepositId); };
 
   const handleClose = () => {
-    setAsset('USDT'); setAmount(''); setSourceType('crypto'); setSourceId(''); setPendingDepositId(null);
+    setAsset('USD'); setAmount(''); setSourceType('crypto'); setSourceId(''); setPendingDepositId(null);
     onClose();
   };
 
@@ -125,7 +125,7 @@ const DepositDrawer = ({ isOpen, onClose }: DepositDrawerProps) => {
               <Field>
                 <Label>{t.wallet?.selectAsset || 'Select Asset'}</Label>
                 <AssetButtons>
-                  <AssetButton $active={asset === 'USDT'} onClick={() => setAsset('USDT')}>USDT</AssetButton>
+                  <AssetButton $active={asset === 'USD'} onClick={() => setAsset('USD')}>USD</AssetButton>
                   <AssetButton $active={asset === 'CNY'} onClick={() => setAsset('CNY')}>CNY</AssetButton>
                 </AssetButtons>
               </Field>

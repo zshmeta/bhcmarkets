@@ -25,8 +25,8 @@ import { EventEmitter } from 'events';
 import { SYMBOL_MAP } from '../../config/symbols.js';
 import { logger } from '../../utils/logger.js';
 import { formatPrice, formatChange } from './symbol.mapper.js';
-import type { NormalizedTick } from '../collectors/collector.types.js';
-import type { EnrichedTick } from './normalizer.types.js';
+import type { NormalizedTick } from '@repo/sdk';
+import type { EnrichedTick } from '@repo/sdk';
 
 /**
  * Handler for enriched ticks.

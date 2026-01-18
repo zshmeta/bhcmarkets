@@ -29,7 +29,7 @@ import { createServer, type Server, type IncomingMessage, type ServerResponse } 
 import { URL } from 'url';
 import type { OrderManager } from '../domains/orders/order-manager.js';
 import { getOrdersByAccount, getTradesByAccount, getRecentTrades } from '../domains/orders/order-repository.js';
-import { logger } from '../utils/logger.js';
+import { logger } from '@repo/sdk';
 import { env } from '../config/env.js';
 import { isDatabaseConnected } from '@repo/database';
 

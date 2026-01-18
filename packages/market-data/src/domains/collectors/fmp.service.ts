@@ -24,8 +24,8 @@
  */
 
 import { logger } from '../../utils/logger.js';
-import { retry } from '../../utils/retry.js';
-import type { NormalizedTick } from '../collectors/collector.types.js';
+import { retry } from '@repo/sdk';
+import type { NormalizedTick } from '@repo/sdk';
 
 const log = logger.child({ component: 'fmp-service' });
 

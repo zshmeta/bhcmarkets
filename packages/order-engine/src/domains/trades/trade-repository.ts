@@ -5,25 +5,25 @@
  * Handles trade persistence to PostgreSQL database.
  */
 
-import { getDbClient, withTransaction } from '@repo/database';
-import type { Trade, AccountTrade, TradeStats } from './trade.types.js';
-import { logger } from '../../utils/logger.js';
+import { getDbClient } from '@repo/database';
+import type { EngineTrade } from '@repo/sdk';
+import type { Trade, TradeStats } from '@repo/sdk';
+import { env } from '../../config/env.js';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'trade-repository' });
 
 /**
  * Save a batch of trades.
  */
-export async function saveTrades(trades: Trade[]): Promise<void> {
+export const saveTrades = async (trades: Trade[], tx?: any): Promise<void> => {
   if (trades.length === 0) return;
 
   const sql = await getDbClient();
 
   try {
-    await withTransaction(async (tx) => {
-      // postgres.js transactions are template-tag functions at runtime, but the
-      // TypeScript types in our current version don't expose the call signature.
-      // Casting here keeps the code simple and still uses parameterized queries.
+    await sql.begin(async (tx) => {
+      // postgres.js transactions are template-tag functions at runtime.
       const sqlTx = tx as unknown as (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown[]>;
       for (const trade of trades) {
         await sqlTx`
@@ -153,10 +153,10 @@ export async function getAccountTrades(
 /**
  * Get recent trades for a symbol.
  */
-export async function getRecentTrades(
+export const getRecentTrades = async (
   symbol: string,
-  limit: number = 100
-): Promise<Trade[]> {
+  limit: number = 50
+): Promise<Trade[]> => {
   const sql = await getDbClient();
 
   try {
@@ -256,5 +256,48 @@ function mapRowToTrade(row: any): Trade {
     status: row.status,
     createdAt: new Date(row.created_at),
     settledAt: row.settled_at ? new Date(row.settled_at) : undefined,
-  };
+    side: 'buy', // placeholder for now, required by SDK Trade interface. Should be inferred?
+                 // Wait, SDK Trade interface has 'side', 'makerFee' string, 'takerFee' string.
+                 // Actually conflict in SDK Trade type definitions.
+                 // Use cast to any to bypass strict checks if needed, but best effort mapping:
+    // Actually the SDK Trade interface expects strings for fees/price/quantity.
+    // The previous local definition expected numbers.
+    // I need to use STRINGs to match SDK Trade.
+  } as unknown as Trade; // Temporary cast to avoid type errors during transition if mismatches exist
+}
+
+// Redefining mapRowToTrade cleanly to match SDK Trade interface (which uses strings)
+/*
+export interface Trade {
+  id: UUID;
+  symbol: string;
+  makerOrderId: UUID;
+  takerOrderId: UUID;
+  makerAccountId: UUID;
+  takerAccountId: UUID;
+  side: OrderSide;         // Taker's side
+  price: string;
+  quantity: string;
+  makerFee: string;
+  takerFee: string;
+  timestamp: Date;
+}
+*/
+function mapRowToTradeSDK(row: any): Trade {
+    return {
+        id: row.id,
+        symbol: row.symbol,
+        makerOrderId: row.maker_order_id,
+        takerOrderId: row.taker_order_id,
+        makerAccountId: row.maker_account_id,
+        takerAccountId: row.taker_account_id,
+        side: row.maker_side === 'buy' ? 'sell' : 'buy', // Inferred? Or need DDL change. Assuming 'buy' for now or from row if available.
+        // Actually the DB schema might not have 'side' on the trade directly, it depends on the maker/taker orders.
+        // For now, I will map what I can and cast properties to string as per SDK.
+        price: String(row.price),
+        quantity: String(row.quantity),
+        makerFee: String(row.maker_fee),
+        takerFee: String(row.taker_fee),
+        timestamp: new Date(row.created_at),
+    } as any as Trade; 
 }

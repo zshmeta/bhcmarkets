@@ -1,7 +1,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 import styled from "styled-components";
 
-export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
 	label?: string;
 	size?: "sm" | "md" | "lg";
 }
@@ -36,7 +36,7 @@ const ToggleTrack = styled.div<{ $checked: boolean; $size: string }>`
 
 	&:hover {
 		box-shadow: ${({ $checked, theme }) =>
-			$checked ? `0 0 16px ${theme.colors.primary}70` : "none"};
+		$checked ? `0 0 16px ${theme.colors.primary}70` : "none"};
 	}
 `;
 

@@ -10,10 +10,8 @@
  * - We use Drizzle's type-safe query builder
  */
 
-import { eq, and } from "drizzle-orm";
-import { accounts } from "@repo/database";
+import { accounts, createDrizzleClient, eq, and } from "@repo/database";
 import type { Pool } from "pg";
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import type {
   AccountEntity,
   AccountRepository,
@@ -22,7 +20,7 @@ import type {
   CurrencyCode,
   DecimalString,
   UUID,
-} from "../core/account.types.js";
+} from "@repo/sdk";
 
 /**
  * Maps a database row to our AccountEntity type.
@@ -58,7 +56,7 @@ function toEntity(row: typeof accounts.$inferSelect): AccountEntity {
  * ```
  */
 export function createAccountRepository(pool: Pool): AccountRepository {
-  const db: NodePgDatabase = drizzle(pool);
+  const db = createDrizzleClient(pool);
 
   return {
     /**
@@ -68,11 +66,11 @@ export function createAccountRepository(pool: Pool): AccountRepository {
     async getById(id: UUID): Promise<AccountEntity | null> {
       const [row] = await db
         .select()
-        .from(accounts)
-        .where(eq(accounts.id, id))
+        .from(accounts as any)
+        .where(eq(accounts.id as any, id))
         .limit(1);
 
-      return row ? toEntity(row) : null;
+      return row ? toEntity(row as any) : null;
     },
 
     /**
@@ -88,16 +86,16 @@ export function createAccountRepository(pool: Pool): AccountRepository {
     ): Promise<AccountEntity | null> {
       const [row] = await db
         .select()
-        .from(accounts)
+        .from(accounts as any)
         .where(
           and(
-            eq(accounts.userId, userId),
-            eq(accounts.currency, currency)
+            eq(accounts.userId as any, userId),
+            eq(accounts.currency as any, currency)
           )
         )
         .limit(1);
 
-      return row ? toEntity(row) : null;
+      return row ? toEntity(row as any) : null;
     },
 
     /**
@@ -107,10 +105,10 @@ export function createAccountRepository(pool: Pool): AccountRepository {
     async listByUser(userId: UUID): Promise<AccountEntity[]> {
       const rows = await db
         .select()
-        .from(accounts)
-        .where(eq(accounts.userId, userId));
+        .from(accounts as any)
+        .where(eq(accounts.userId as any, userId));
 
-      return rows.map(toEntity);
+      return rows.map((r) => toEntity(r as any));
     },
 
     /**
@@ -120,11 +118,11 @@ export function createAccountRepository(pool: Pool): AccountRepository {
     async exists(userId: UUID, currency: CurrencyCode): Promise<boolean> {
       const [row] = await db
         .select({ id: accounts.id })
-        .from(accounts)
+        .from(accounts as any)
         .where(
           and(
-            eq(accounts.userId, userId),
-            eq(accounts.currency, currency)
+            eq(accounts.userId as any, userId),
+            eq(accounts.currency as any, currency)
           )
         )
         .limit(1);
@@ -139,8 +137,8 @@ export function createAccountRepository(pool: Pool): AccountRepository {
      * @returns The newly created account entity
      */
     async create(input: CreateAccountInput): Promise<AccountEntity> {
-      const [row] = await db
-        .insert(accounts)
+      const [row] = (await db
+        .insert(accounts as any)
         .values({
           userId: input.userId,
           currency: input.currency,
@@ -149,13 +147,13 @@ export function createAccountRepository(pool: Pool): AccountRepository {
           accountType: input.accountType ?? "spot",
           status: "active",
         })
-        .returning();
+        .returning()) as any[];
 
       if (!row) {
         throw new Error("Failed to create account - no row returned");
       }
 
-      return toEntity(row);
+      return toEntity(row as any);
     },
 
     /**
@@ -166,19 +164,19 @@ export function createAccountRepository(pool: Pool): AccountRepository {
      */
     async updateBalance(id: UUID, newBalance: DecimalString): Promise<AccountEntity> {
       const [row] = await db
-        .update(accounts)
+        .update(accounts as any)
         .set({
           balance: newBalance,
           updatedAt: new Date(),
         })
-        .where(eq(accounts.id, id))
+        .where(eq(accounts.id as any, id))
         .returning();
 
       if (!row) {
         throw new Error(`Account ${id} not found for balance update`);
       }
 
-      return toEntity(row);
+      return toEntity(row as any);
     },
 
     /**
@@ -189,19 +187,19 @@ export function createAccountRepository(pool: Pool): AccountRepository {
      */
     async updateLocked(id: UUID, newLocked: DecimalString): Promise<AccountEntity> {
       const [row] = await db
-        .update(accounts)
+        .update(accounts as any)
         .set({
           locked: newLocked,
           updatedAt: new Date(),
         })
-        .where(eq(accounts.id, id))
+        .where(eq(accounts.id as any, id))
         .returning();
 
       if (!row) {
         throw new Error(`Account ${id} not found for locked update`);
       }
 
-      return toEntity(row);
+      return toEntity(row as any);
     },
 
     /**
@@ -219,20 +217,20 @@ export function createAccountRepository(pool: Pool): AccountRepository {
       newLocked: DecimalString
     ): Promise<AccountEntity> {
       const [row] = await db
-        .update(accounts)
+        .update(accounts as any)
         .set({
           balance: newBalance,
           locked: newLocked,
           updatedAt: new Date(),
         })
-        .where(eq(accounts.id, id))
+        .where(eq(accounts.id as any, id))
         .returning();
 
       if (!row) {
         throw new Error(`Account ${id} not found for balance/locked update`);
       }
 
-      return toEntity(row);
+      return toEntity(row as any);
     },
 
     /**
@@ -243,19 +241,19 @@ export function createAccountRepository(pool: Pool): AccountRepository {
      */
     async setStatus(id: UUID, status: AccountStatus): Promise<AccountEntity> {
       const [row] = await db
-        .update(accounts)
+        .update(accounts as any)
         .set({
           status,
           updatedAt: new Date(),
         })
-        .where(eq(accounts.id, id))
+        .where(eq(accounts.id as any, id))
         .returning();
 
       if (!row) {
         throw new Error(`Account ${id} not found for status update`);
       }
 
-      return toEntity(row);
+      return toEntity(row as any);
     },
   };
 }

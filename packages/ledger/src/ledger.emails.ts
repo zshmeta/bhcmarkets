@@ -5,7 +5,7 @@
  * Listens to deposit/withdrawal events and sends confirmation emails.
  */
 
-import type { LedgerEvent } from './ledger.types.js';
+import type { LedgerEvent } from '@repo/sdk';
 
 /**
  * Email client interface (matches backend email client).
@@ -68,11 +68,11 @@ export function createLedgerEmailHandler(config: LedgerEmailHandlerConfig) {
     try {
       switch (event.type) {
         case 'deposit_completed':
-          await handleDepositCompleted(event, emailClient, userResolver, logger);
+          await handleDepositCompleted(event as LedgerEvent & { type: 'deposit_completed' }, emailClient, userResolver, logger);
           break;
 
         case 'withdrawal_completed':
-          await handleWithdrawalCompleted(event, emailClient, userResolver, logger);
+          await handleWithdrawalCompleted(event as LedgerEvent & { type: 'withdrawal_completed' }, emailClient, userResolver, logger);
           break;
 
         // Other events don't trigger emails

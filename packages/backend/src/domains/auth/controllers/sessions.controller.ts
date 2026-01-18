@@ -7,7 +7,7 @@
 
 import type { HttpRequest, HttpResponse } from "../../../api/types.js";
 import type { AuthService } from "../core/auth.service.js";
-import type { SessionInvalidationReason } from "../core/auth.types.js";
+import type { SessionInvalidationReason } from "@repo/sdk";
 import { validateLogoutAll } from "../validators/auth.validator.js";
 import { AuthError } from "../core/auth.errors.js";
 
@@ -22,7 +22,7 @@ export function createListSessionsController(authService: AuthService) {
     try {
       // Get userId from query parameters
       const userId = req.query?.["userId"];
-      
+
       if (!userId || typeof userId !== "string") {
         return {
           status: 400,

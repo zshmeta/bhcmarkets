@@ -17,7 +17,7 @@ interface User {
 interface Preferences {
     theme: 'light' | 'dark' | 'system';
     language: 'en-US' | 'en-US';
-    quoteAsset: 'USDT' | 'BTC';
+    quoteAsset: 'USD' | 'BTC';
 }
 
 interface AuthState {
@@ -55,7 +55,7 @@ const mockUser: User = {
 const defaultPreferences: Preferences = {
     theme: 'dark',
     language: 'en-US',
-    quoteAsset: 'USDT',
+    quoteAsset: 'USD',
 };
 
 export const useAuthStore = create<AuthState & AuthActions>((set) => ({

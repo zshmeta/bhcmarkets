@@ -14,7 +14,7 @@ import { registerAuthRoutes } from "../domains/auth/index.js";
 import { registerAccountRoutes } from "../domains/account/index.js";
 import { registerAdminApiRoutes } from "../domains/admin/index.js";
 import { registerTradingRoutes } from "../domains/trading/index.js";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { DrizzleClient } from "@repo/database";
 import type { DbHealth } from "../infra/db-health.js";
 
 export type ApiServices = {
@@ -24,7 +24,7 @@ export type ApiServices = {
 	account: AccountServiceInterface;
 	trading: TradingService;
 	risk: RiskService;
-	db: NodePgDatabase<Record<string, unknown>>;
+	db: DrizzleClient;
 	dbHealth: DbHealth;
 };
 

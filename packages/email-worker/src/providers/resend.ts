@@ -3,7 +3,7 @@
  * https://resend.com/docs/api-reference/emails/send-email
  */
 
-import type { IEmailProvider, EmailMessage, ProviderSendResult } from '../types';
+import type { IEmailProvider, EmailMessage, ProviderSendResult } from '@repo/sdk';
 
 export class ResendProvider implements IEmailProvider {
   name = 'resend' as const;
@@ -29,7 +29,7 @@ export class ResendProvider implements IEmailProvider {
           html: message.html,
           text: message.text,
           reply_to: message.replyTo,
-          tags: message.tags?.map(tag => ({ name: tag, value: tag })),
+          tags: message.tags?.map((tag: string) => ({ name: tag, value: tag })),
           headers: message.metadata ? {
             'X-Email-Ref': message.metadata.emailRef,
             'X-User-Id': message.metadata.userId,

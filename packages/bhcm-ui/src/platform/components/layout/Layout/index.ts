@@ -6,6 +6,6 @@ export { TopNav } from './TopNav';
 
 export { default as AdaptiveLayout } from './AdaptiveLayout';
 export { default as DesktopLayout } from './DesktopLayout';
-export { default as MobileLayout } from './MobileLayout';
-export { default as MobileHeader } from './MobileHeader';
+export { default as MobileLayout } from '../../../../mobile/layouts/MobileLayout';
+export { default as MobileHeader } from '../../../../mobile/components/MobileHeader';
 

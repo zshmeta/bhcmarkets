@@ -1,7 +1,7 @@
-import {useOrderForm} from './useOrderForm';
-import {OrderFormView} from './OrderForm.view';
+import { useOrderForm } from './useOrderForm';
+import { OrderFormView } from './OrderForm.view';
 import { useI18n } from '../../i18n';
-import type { OrderSide } from '../../types/trading';
+import type { OrderSide } from '@repo/sdk';
 
 /* ═══════════════════════════════════════════════════════════
  * ORDER ENTRY CONTAINER

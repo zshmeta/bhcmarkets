@@ -6,8 +6,9 @@
  */
 
 import { getDbClient } from '@repo/database';
-import type { EnginePosition, PositionSnapshot } from './position.types.js';
-import { logger } from '../../utils/logger.js';
+import type { Position, PositionSide } from '@repo/sdk';
+import type { EnginePosition } from '@repo/sdk';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'position-repository' });
 

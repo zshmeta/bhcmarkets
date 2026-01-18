@@ -15,7 +15,7 @@ import {
 } from '@repo/sdk';
 import { useTradingStore, selectPositions } from '@repo/sdk';
 import { useMarketStore } from '@repo/sdk';
-import { getSymbolDef, type AssetKind } from '@repo/types';
+import { getSymbolDef, type AssetKind } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 
 /* ═══════════════════════════════════════════════════════════

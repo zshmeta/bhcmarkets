@@ -1,6 +1,6 @@
-import {Icons}  from '../Icons';
+import { Icons } from '../Icons';
 import { TPSLForm } from './TPSLForm';
-import type { Position, PositionPnL, BalanceInfo, PositionsTranslations } from './Positions.types';
+import type { Position, PositionPnL, BalanceInfo, PositionsTranslations } from '@repo/sdk';
 import {
     Container,
     Header,
@@ -42,7 +42,6 @@ import {
     ConfirmBtn,
     TPSLModalOverlay,
     TPSLModalContent,
-    BlurMask,
 } from './Positions.styles';
 
 /* ═══════════════════════════════════════════════════════════
@@ -60,8 +59,8 @@ export interface PositionsViewProps {
     currentPrice: number;
     /** Total unrealized P&L */
     totalPnL: number;
-    /** USDT balance info */
-    usdtBalance?: BalanceInfo;
+    /** USD balance info */
+    USDBalance?: BalanceInfo;
     /** Translations */
     translations: PositionsTranslations;
 
@@ -88,7 +87,7 @@ const PositionsView = ({
     currentSymbol,
     currentPrice,
     totalPnL,
-    usdtBalance,
+    USDBalance,
     translations: t,
     confirmClose,
     tpslSymbol,
@@ -152,7 +151,7 @@ const PositionsView = ({
                                         <tr key={symbol}>
                                             <td>
                                                 <SymbolCell>
-                                                    <Symbol>{symbol.replace('USDT', '')}</Symbol>
+                                                    <Symbol>{symbol.replace('USD', '')}</Symbol>
                                                     <SideBadge $long>LONG</SideBadge>
                                                 </SymbolCell>
                                             </td>
@@ -198,12 +197,12 @@ const PositionsView = ({
                 )}
             </Body>
 
-            {usdtBalance && (
+            {USDBalance && (
                 <BalanceRow>
                     <BalanceItem>
-                        <BalanceAsset>USDT</BalanceAsset>
-                        <BalanceValue className="tabular-nums">{renderValue(parseFloat(usdtBalance.available).toFixed(2))}</BalanceValue>
-                        <BalanceLocked>(Locked: {renderValue(parseFloat(usdtBalance.locked).toFixed(2))})</BalanceLocked>
+                        <BalanceAsset>USD</BalanceAsset>
+                        <BalanceValue className="tabular-nums">{renderValue(parseFloat(USDBalance.available).toFixed(2))}</BalanceValue>
+                        <BalanceLocked>(Locked: {renderValue(parseFloat(USDBalance.locked).toFixed(2))})</BalanceLocked>
                     </BalanceItem>
                 </BalanceRow>
             )}

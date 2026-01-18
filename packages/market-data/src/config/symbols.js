@@ -1,2 +1,2 @@
-export * from '@repo/types/symbols';
+export * from '@repo/sdk/symbols';
 //# sourceMappingURL=symbols.js.map

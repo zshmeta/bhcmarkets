@@ -23,7 +23,7 @@ export const SUPPORTED_ASSETS = [
     // Cryptocurrencies
     'BTC',
     'ETH',
-    'USDT',
+    'USD',
     'USDC',
     'XRP',
     'SOL',
@@ -60,7 +60,7 @@ export const LEDGER_CONFIG = {
     PRECISION: {
         FIAT: 2,        // USD, EUR, etc.
         CRYPTO: 8,      // BTC, ETH, etc.
-        STABLECOIN: 6,  // USDT, USDC
+        STABLECOIN: 6,  // USD, USDC
         COMMODITY: 2,   // XAU, XAG, etc.
     },
 
@@ -69,7 +69,7 @@ export const LEDGER_CONFIG = {
      */
     getPrecision(asset: string): number {
         const fiat = ['USD', 'EUR', 'GBP', 'JPY', 'CHF', 'AUD', 'CAD', 'NZD'];
-        const stablecoin = ['USDT', 'USDC', 'DAI', 'BUSD'];
+        const stablecoin = ['USD', 'USDC', 'DAI', 'BUSD'];
         const commodity = ['XAU', 'XAG', 'XPT', 'XPD', 'BRENT', 'WTI', 'NATGAS'];
 
         if (fiat.includes(asset)) return this.PRECISION.FIAT;

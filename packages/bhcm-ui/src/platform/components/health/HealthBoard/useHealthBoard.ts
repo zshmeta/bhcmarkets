@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useMarketStore, selectMetrics, selectLevel2Book, selectDataConfidence, selectCanTrustMetrics } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import { formatPrice, formatVolume } from '../../../../../../sdk/utils';
-import type { DataConfidenceLevel } from '../../types/market';
+import type { DataConfidenceLevel } from '../../../../../../sdk/utils/types/market';
 
 /* ═══════════════════════════════════════════════════════════
  * useHealthBoard Hook

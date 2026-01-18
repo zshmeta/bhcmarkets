@@ -19,8 +19,8 @@
 import { getRedisClient, getSubscriberClient, isRedisConnected, isUsingFallback } from './redis.client.js';
 import { ALL_SYMBOLS } from '../../config/symbols.js';
 import { logger } from '../../utils/logger.js';
-import type { EnrichedTick } from '../normalizer/normalizer.types.js';
-import type { CachedPrice, PriceSnapshot, CacheStats } from './cache.types.js';
+import type { EnrichedTick } from '@repo/sdk';
+import type { CachedPrice, PriceSnapshot, CacheStats } from '@repo/sdk';
 
 const log = logger.child({ component: 'price-cache' });
 

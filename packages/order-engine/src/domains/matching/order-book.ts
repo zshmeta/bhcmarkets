@@ -14,8 +14,8 @@
  * - Generates incremental updates for WebSocket streaming
  */
 
-import type { EngineOrder, OrderSide, OrderBookSnapshot, OrderBookLevel } from '../../types/order.types.js';
-import { logger } from '../../utils/logger.js';
+import type { EngineOrder, OrderSide, OrderBookSnapshot, OrderBookLevel } from '@repo/sdk';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'order-book' });
 

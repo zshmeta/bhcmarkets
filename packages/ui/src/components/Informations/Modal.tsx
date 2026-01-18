@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, type HTMLAttributes, type ReactNode } from "react";
 import styled, { css, keyframes } from "styled-components";
 
-export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
+export interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
 	open: boolean;
 	onClose?: () => void;
 	title?: ReactNode;
@@ -58,14 +58,14 @@ const ModalContainer = styled.div<{ $size: string; $open: boolean }>`
 	animation: ${({ $open }) => ($open ? css`${slideUp} 0.3s cubic-bezier(0.4, 0, 0.2, 1)` : "none")};
 
 	${({ $size }) => {
-		const sizes = {
+		const sizes: Record<string, string> = {
 			sm: "400px",
 			md: "600px",
 			lg: "800px",
 			xl: "1000px",
 			full: "calc(100vw - 48px)",
 		};
-		
+
 		return css`width: 100%; max-width: ${sizes[$size] || sizes.md};`;
 	}}
 `;

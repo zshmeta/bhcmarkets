@@ -7,10 +7,18 @@
  * Uses the shared @repo/database schema.
  */
 
-import { getDbClient, withTransaction } from '@repo/database';
-import type { EngineOrder, EngineTrade, Order } from '../../types/order.types.js';
+import { getDbClient } from '@repo/database';
+// Import types explicitly from order.types.js to avoid conflict with trading.types.js
+import type {
+  EngineOrder,
+  EngineTrade,
+  OrderStatus,
+  OrderSide,
+  Order as SdkOrder,
+  TimeInForce
+} from '@repo/sdk';
 import { env } from '../../config/env.js';
-import { logger } from '../../utils/logger.js';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'order-repository' });
 
@@ -26,17 +34,13 @@ async function getSql() {
  * Save a new order to the database.
  */
 
-
-
 type PersistedOrder = EngineOrder & {
   timeInForce: string,
   clientOrderId?: string
 };
 
 export async function saveOrder(order: PersistedOrder): Promise<void> {
-
   const sql = await getSql();
-
 
   try {
     await sql`
@@ -83,8 +87,8 @@ export async function updateOrderStatus(
     await sql`
       UPDATE orders
       SET status = ${status},
-          filled_quantity = ${filledQuantity},
-          updated_at = NOW()
+      filled_quantity = ${filledQuantity},
+      updated_at = NOW()
       WHERE id = ${orderId}
     `;
 
@@ -104,7 +108,7 @@ export async function cancelOrder(orderId: string): Promise<boolean> {
     const result = await sql`
       UPDATE orders
       SET status = 'cancelled',
-          updated_at = NOW()
+      updated_at = NOW()
       WHERE id = ${orderId}
         AND status IN ('open', 'partially_filled')
       RETURNING id
@@ -177,7 +181,7 @@ export async function getOrdersByAccount(
     limit?: number;
     offset?: number;
   } = {}
-): Promise<Order[]> {
+): Promise<SdkOrder[]> {
   const sql = await getSql();
   const { symbol, status, limit = 100, offset = 0 } = options;
 
@@ -237,18 +241,24 @@ export async function getOrdersByAccount(
       symbol: row.symbol,
       side: row.side,
       type: row.type,
-      timeInForce: row.time_in_force,
+      timeInForce: row.time_in_force as TimeInForce,
       quantity: String(row.quantity),
       filledQuantity: String(row.filled_quantity),
       remainingQuantity: String(Number(row.quantity) - Number(row.filled_quantity)),
       price: row.price ? String(row.price) : null,
       stopPrice: row.stop_price ? String(row.stop_price) : null,
       averageFillPrice: row.average_fill_price ? String(row.average_fill_price) : null,
-      status: row.status,
+      status: row.status as OrderStatus,
       clientOrderId: row.client_order_id,
+      // Ensure Dates are used as expected by SDK
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
-    }));
+      cancelledAt: row.cancelled_at ? new Date(row.cancelled_at) : undefined,
+      cancelReason: row.cancel_reason ?? undefined,
+      // If SDK expects strings for nullables, these casts handle it.
+      // Actually checking SDK again: for Order, it expects Date objects for timestamps?
+      // Yes: createdAt: Date; updatedAt: Date;
+    } as unknown as SdkOrder));
   } catch (error) {
     log.error({ error, accountId }, 'Failed to get orders');
     throw error;
@@ -258,7 +268,7 @@ export async function getOrdersByAccount(
 /**
  * Get single order by ID.
  */
-export async function getOrderById(orderId: string): Promise<Order | null> {
+export async function getOrderById(orderId: string): Promise<SdkOrder | null> {
   const sql = await getSql();
 
   try {
@@ -282,8 +292,8 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
       symbol: row.symbol,
       side: row.side,
       type: row.type,
-      status: row.status,
-      timeInForce: row.time_in_force,
+      status: row.status as OrderStatus,
+      timeInForce: row.time_in_force as TimeInForce,
       price: row.price ? String(row.price) : null,
       stopPrice: row.stop_price ? String(row.stop_price) : null,
       quantity: String(row.quantity),
@@ -296,7 +306,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
       updatedAt: new Date(row.updated_at),
       cancelledAt: row.cancelled_at ? new Date(row.cancelled_at) : undefined,
       cancelReason: row.cancel_reason ?? undefined,
-    };
+    } as unknown as SdkOrder;
   } catch (error) {
     log.error({ error, orderId }, 'Failed to get order');
     throw error;
@@ -315,12 +325,12 @@ export async function saveTrades(trades: (EngineTrade & { id: string; symbol: st
 
   try {
     // Ensure the singleton DB client is initialized with the env connection string.
-    await getSql();
+    const sql = await getSql();
 
-    await withTransaction(async (tx) => {
-      // postgres.js transactions are template-tag functions at runtime, but the
-      // TypeScript types in our current version don't expose the call signature.
-      const sqlTx = tx as unknown as (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown[]>;
+    await sql.begin(async (tx) => {
+      // postgres.js transactions are template-tag functions at runtime.
+      // We cast tx to any or strict definition if available, but for now strict any is safest.
+      const sqlTx = tx as any;
       for (const trade of trades) {
         await sqlTx`
           INSERT INTO execution_trades (

@@ -1,6 +1,6 @@
 import { useMemo, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWalletStore } from '@repo/sdk';
+import { useWalletStore, useAuthStore } from '@repo/sdk';
 import { useI18n } from '../../i18n';
 import { Icons } from '../Icons';
 import {
@@ -16,9 +16,11 @@ import {
 /**
  * ASSET SNAPSHOT - Quick equity display in header
  * Navigates to assets on click
+ * Hidden when user is not authenticated
  */
 
 export const AssetSnapshot: FC = () => {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { t } = useI18n();
   const navigate = useNavigate();
   const balances = useWalletStore((state) => state.balances);
@@ -30,13 +32,16 @@ export const AssetSnapshot: FC = () => {
 
   const hasFunds = parseFloat(equity) > 0;
 
+  // Hide when not logged in
+  if (!isAuthenticated) return null;
+
   return (
     <Container onClick={() => navigate('/assets')}>
       <Item>
         <Label>{t.account.totalValue}</Label>
         <ValueWrapper>
           <Value className="tabular-nums">{equity}</Value>
-          <Unit>USDT</Unit>
+          <Unit>USD</Unit>
         </ValueWrapper>
       </Item>
 

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useMemo } from 'react';
 import { useMarketStore, selectLevel2Book, selectMetrics, selectDataConfidence } from '@repo/sdk';
 import { useI18n } from '../../i18n';
-import type { Level2BookLevel } from '../../types/market';
+import type { Level2BookLevel } from '@repo/sdk';
 import type { ConfidenceLevel } from './Level2Book.styles';
 
 /* ═══════════════════════════════════════════════════════════
@@ -27,7 +27,7 @@ export interface Level2BookMetrics {
 
 export interface DataConfidenceState {
     level: ConfidenceLevel;
-    reason: string;
+    reason?: string;
     isResyncing: boolean;
     isStale: boolean;
 }
@@ -110,11 +110,11 @@ const useLevel2Book = (): UseLevel2BookReturn => {
 
     // Translations
     const translations = useMemo(() => ({
-        title: t.Level2Book.title,
-        price: t.Level2Book.price,
-        amount: t.Level2Book.amount,
-        buyOrders: t.Level2Book?.buyOrders || 'Bids',
-        sellOrders: t.Level2Book?.sellOrders || 'Asks',
+        title: t.Level2Book?.title || 'Order Book',
+        price: t.Level2Book?.price || 'Price',
+        amount: t.Level2Book?.amount || 'Amount',
+        buyOrders: 'Bids',
+        sellOrders: 'Asks',
     }), [t]);
 
     return {

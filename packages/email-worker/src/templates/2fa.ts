@@ -2,7 +2,7 @@
  * Two-Factor Authentication Email Template
  */
 
-import type { TwoFactorPayload, TemplateContext, RenderedEmail } from '../types';
+import type { TwoFactorPayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function render2FA(

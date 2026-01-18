@@ -39,24 +39,21 @@ const envSchema = z.object({
   ORDER_ENGINE_WS_PORT: z.coerce.number().default(4040),
 
   // Order engine configuration
-  // Maximum orders per account (prevents abuse)
-//  MAX_ORDERS_PER_ACCOUNT: z.coerce.number().default(100),
-//
-//  // Order expiration for GTC orders (in days, 0 = no expiration)
-//  ORDER_EXPIRATION_DAYS: z.coerce.number().default(30),
-//
-//  // Price validation tolerance (percentage deviation from market price)
-//  PRICE_DEVIATION_TOLERANCE: z.coerce.number().default(0.1), // 10%
-//
-//  // Matching engine configuration
-//  // How often to persist order book snapshots (ms)
-//  ORDER_BOOK_SNAPSHOT_INTERVAL_MS: z.coerce.number().default(60000),
-//
-//  // Maximum trades per batch before flushing to DB
-//  TRADE_BATCH_SIZE: z.coerce.number().default(100),
-//
-//  // Trade flush interval (ms)
-//  TRADE_FLUSH_INTERVAL_MS: z.coerce.number().default(1000),
+  // Order expiration for GTC orders (in days, 0 = no expiration)
+  ORDER_EXPIRATION_DAYS: z.coerce.number().default(30),
+
+  // Price validation tolerance (percentage deviation from market price)
+  PRICE_DEVIATION_TOLERANCE: z.coerce.number().default(0.1), // 10%
+
+  // Matching engine configuration
+  // How often to persist order book snapshots (ms)
+  ORDER_BOOK_SNAPSHOT_INTERVAL_MS: z.coerce.number().default(60000),
+
+  // Maximum trades per batch before flushing to DB
+  TRADE_BATCH_SIZE: z.coerce.number().default(100),
+
+  // Trade flush interval (ms)
+  TRADE_FLUSH_INTERVAL_MS: z.coerce.number().default(1000),
 
   // Circuit breaker settings
   CIRCUIT_BREAKER_THRESHOLD: z.coerce.number().default(5),

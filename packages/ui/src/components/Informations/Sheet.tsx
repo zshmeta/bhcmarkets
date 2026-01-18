@@ -17,7 +17,7 @@ import styled, { css, keyframes } from "styled-components";
 type SheetSide = "left" | "right" | "top" | "bottom";
 type SheetSize = "sm" | "md" | "lg" | "xl" | "full";
 
-export interface SheetProps extends HTMLAttributes<HTMLDivElement> {
+export interface SheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
 	/** Whether the sheet is open */
 	open: boolean;
 	/** Called when sheet should close */

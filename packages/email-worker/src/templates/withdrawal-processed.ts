@@ -2,7 +2,7 @@
  * Withdrawal Processed Email Template
  */
 
-import type { WithdrawalProcessedPayload, TemplateContext, RenderedEmail } from '../types';
+import type { WithdrawalProcessedPayload, TemplateContext, RenderedEmail } from '@repo/sdk';
 import { wrapInBaseTemplate, createPlainTextWrapper, BaseTemplateConfig } from './base';
 
 export function renderWithdrawalProcessed(

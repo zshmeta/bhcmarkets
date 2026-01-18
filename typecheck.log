@@ -1,0 +1,135 @@
+$ bun run --filter='*' typecheck
+web typecheck: Exited with code 0
+bhcm-trader typecheck: Exited with code 0
+@repo/bhcm-ui typecheck: Exited with code 0
+mobile typecheck: src/pages/AccountPage.mobile.styles.ts(1,20): error TS2307: Cannot find module 'styled-components' or its corresponding type declarations.
+mobile typecheck: src/pages/MarketsPage.mobile.styles.ts(1,29): error TS2307: Cannot find module 'styled-components' or its corresponding type declarations.
+mobile typecheck: src/pages/MarketsPage.mobile.styles.ts(311,8): error TS7031: Binding element '$positive' implicitly has an 'any' type.
+mobile typecheck: src/pages/MarketsPage.mobile.styles.ts(316,8): error TS7031: Binding element '$negative' implicitly has an 'any' type.
+mobile typecheck: src/pages/MarketsPage.mobile.styles.ts(373,8): error TS7031: Binding element '$active' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(1,29): error TS2307: Cannot find module 'styled-components' or its corresponding type declarations.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(53,8): error TS7031: Binding element '$active' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(53,17): error TS7031: Binding element '$buy' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(59,8): error TS7031: Binding element '$active' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(59,17): error TS7031: Binding element '$sell' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(91,8): error TS7031: Binding element '$active' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(254,15): error TS7031: Binding element '$width' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(280,8): error TS7031: Binding element '$active' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(302,8): error TS7031: Binding element '$active' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(344,8): error TS7031: Binding element '$buy' implicitly has an 'any' type.
+mobile typecheck: src/pages/MobileOrderEntry.styles.ts(349,8): error TS7031: Binding element '$sell' implicitly has an 'any' type.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(1,29): error TS2307: Cannot find module 'styled-components' or its corresponding type declarations.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(135,8): error TS7031: Binding element '$buy' implicitly has an 'any' type.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(140,8): error TS7031: Binding element '$sell' implicitly has an 'any' type.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(157,8): error TS7031: Binding element '$status' implicitly has an 'any' type.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(235,8): error TS7031: Binding element '$buy' implicitly has an 'any' type.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(236,8): error TS7031: Binding element '$sell' implicitly has an 'any' type.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(335,8): error TS7031: Binding element '$buy' implicitly has an 'any' type.
+mobile typecheck: src/pages/OrdersPage.mobile.styles.ts(336,8): error TS7031: Binding element '$sell' implicitly has an 'any' type.
+mobile typecheck: src/pages/TradePage.mobile.styles.ts(1,40): error TS2307: Cannot find module 'styled-components' or its corresponding type declarations.
+mobile typecheck: src/pages/TradePage.mobile.styles.ts(96,8): error TS7031: Binding element '$positive' implicitly has an 'any' type.
+mobile typecheck: src/pages/TradePage.mobile.styles.ts(101,8): error TS7031: Binding element '$negative' implicitly has an 'any' type.
+mobile typecheck: src/pages/TradePage.mobile.styles.ts(238,8): error TS7031: Binding element '$hidden' implicitly has an 'any' type.
+mobile typecheck: src/pages/WalletPage.mobile.styles.ts(1,29): error TS2307: Cannot find module 'styled-components' or its corresponding type declarations.
+mobile typecheck: src/pages/WalletPage.mobile.styles.ts(172,8): error TS7031: Binding element '$positive' implicitly has an 'any' type.
+mobile typecheck: src/pages/WalletPage.mobile.styles.ts(173,8): error TS7031: Binding element '$negative' implicitly has an 'any' type.
+mobile typecheck: src/pages/WalletPage.mobile.styles.ts(292,8): error TS7031: Binding element '$clickable' implicitly has an 'any' type.
+mobile typecheck: Exited with code 2
+@repo/ledger typecheck: Exited with code 0
+@repo/email-worker typecheck: Exited with code 0
+@repo/database typecheck: Exited with code 0
+@repo/order-engine typecheck: Exited with code 0
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(18,15): error TS2305: Module '"@repo/sdk"' has no exported member 'Router'.
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(18,23): error TS2305: Module '"@repo/sdk"' has no exported member 'RouteContext'.
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(112,43): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(132,47): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(173,44): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(218,56): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(280,57): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+@repo/backend typecheck: src/domains/account/routes/account.routes.ts(340,54): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+@repo/backend typecheck: src/domains/admin/index.ts(63,10): error TS2305: Module '"./routes/admin.routes.js"' has no exported member 'createAdminRoutes'.
+@repo/backend typecheck: Exited with code 2
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(112,11): error TS2741: Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(127,27): error TS2769: No overload matches this call.
+@repo/market-data typecheck:   Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number | Date'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number | Date'.
+@repo/market-data typecheck:   Overload 2 of 4, '(value: string | number): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(179,5): error TS2741: Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: false; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(200,20): error TS2345: Argument of type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: false; }' is not assignable to parameter of type 'Candle'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: false; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(285,40): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+@repo/market-data typecheck:   Type 'undefined' is not assignable to type 'number'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(290,21): error TS2345: Argument of type '{ timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; isComplete: true; symbol: string; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; }' is not assignable to parameter of type 'Candle'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; isComplete: true; symbol: string; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(305,9): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+@repo/market-data typecheck:   Type 'undefined' is not assignable to type 'number'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(307,9): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+@repo/market-data typecheck:   Type 'undefined' is not assignable to type 'number'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(314,32): error TS18048: 'candle.volume' is possibly 'undefined'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(315,35): error TS18048: 'candle.tickCount' is possibly 'undefined'.
+@repo/market-data typecheck: src/domains/historical/candle.aggregator.ts(321,17): error TS2345: Argument of type '{ timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; isComplete: true; symbol: string; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; }' is not assignable to parameter of type 'Candle'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; isComplete: true; symbol: string; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/historical.service.ts(14,35): error TS2307: Cannot find module '@repo/sdk  ' or its corresponding type declarations.
+@repo/market-data typecheck: src/domains/historical/historical.service.ts(124,46): error TS2769: No overload matches this call.
+@repo/market-data typecheck:   Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number | Date'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number | Date'.
+@repo/market-data typecheck:   Overload 2 of 4, '(value: string | number): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number'.
+@repo/market-data typecheck: src/domains/historical/historical.service.ts(143,11): error TS2322: Type '{ symbol: string; timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }[]' is not assignable to type 'Candle[]'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/historical.service.ts(186,9): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+@repo/market-data typecheck:   Type 'undefined' is not assignable to type 'number'.
+@repo/market-data typecheck: src/domains/historical/historical.service.ts(234,15): error TS2322: Type '{ symbol: string; timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }[]' is not assignable to type 'Candle[]'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/historical.service.ts(296,20): error TS2345: Argument of type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }' is not assignable to parameter of type 'Candle'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/index.ts.ts(5,15): error TS2307: Cannot find module '' or its corresponding type declarations.
+@repo/market-data typecheck: src/domains/historical/tick.repository.ts(118,22): error TS2769: No overload matches this call.
+@repo/market-data typecheck:   Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number | Date'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number | Date'.
+@repo/market-data typecheck:   Overload 2 of 4, '(value: string | number): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number'.
+@repo/market-data typecheck: src/domains/historical/tick.repository.ts(126,29): error TS2769: No overload matches this call.
+@repo/market-data typecheck:   Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number | Date'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number | Date'.
+@repo/market-data typecheck:   Overload 2 of 4, '(value: string | number): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number'.
+@repo/market-data typecheck: src/domains/historical/tick.repository.ts(145,29): error TS2769: No overload matches this call.
+@repo/market-data typecheck:   Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number | Date'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number | Date'.
+@repo/market-data typecheck:   Overload 2 of 4, '(value: string | number): Date', gave the following error.
+@repo/market-data typecheck:     Argument of type 'number | undefined' is not assignable to parameter of type 'string | number'.
+@repo/market-data typecheck:       Type 'undefined' is not assignable to type 'string | number'.
+@repo/market-data typecheck: src/domains/historical/tick.repository.ts(200,7): error TS2322: Type '{ symbol: string; timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }[]' is not assignable to type 'Candle[]'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/historical/tick.repository.ts(243,7): error TS2322: Type '{ symbol: string; timeframe: "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w"; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }[]' is not assignable to type 'Candle[]'.
+@repo/market-data typecheck:   Property 'ts' is missing in type '{ symbol: string; timeframe: Timeframe; open: number; high: number; low: number; close: number; volume: number; timestamp: number; tickCount: number; isComplete: true; }' but required in type 'Candle'.
+@repo/market-data typecheck: src/domains/normalizer/index.ts(7,1): error TS2308: Module '@repo/sdk' has already exported a member named 'formatPrice'. Consider explicitly re-exporting to resolve the ambiguity.
+@repo/market-data typecheck: src/domains/normalizer/index.ts(8,1): error TS2308: Module '@repo/sdk' has already exported a member named 'Timeframe'. Consider explicitly re-exporting to resolve the ambiguity.
+@repo/market-data typecheck: src/domains/stream/websocket.server.ts(29,75): error TS2307: Cannot find module '@bhcmarkets/market-data' or its corresponding type declarations.
+@repo/market-data typecheck: Exited with code 2
+@repo/ui typecheck: Exited with code 0
+auth typecheck: Exited with code 0
+admin typecheck: src/features/auth/Login.tsx(3,18): error TS2305: Module '"@repo/ui"' has no exported member 'Input'.
+admin typecheck: src/features/auth/Login.tsx(4,20): error TS7016: Could not find a declaration file for module 'styled-components'. '/home/zshmeta/bhcmarkets/node_modules/.bun/styled-components@6.3.1+67f6792bdf102c28/node_modules/styled-components/dist/styled-components.cjs.js' implicitly has an 'any' type.
+admin typecheck:   If the 'styled-components' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/styled-components'
+admin typecheck: src/features/auth/Login.tsx(68,33): error TS2769: No overload matches this call.
+admin typecheck:   Overload 1 of 2, '(props: { content?: string | undefined; defaultChecked?: boolean | undefined; defaultValue?: string | number | readonly string[] | undefined; suppressContentEditableWarning?: boolean | undefined; ... 283 more ...; as?: ElementType<...> | undefined; } & { ...; } & { ...; }): ReactElement<...>', gave the following error.
+admin typecheck:     Type '"red"' is not assignable to type '"primary" | "secondary" | "tertiary" | "muted" | "accent" | "success" | "warning" | "danger" | "inverted" | undefined'.
+admin typecheck:   Overload 2 of 2, '(props: StyledComponentPropsWithAs<"p", DefaultTheme, TextProps, never, "p", "p">): ReactElement<StyledComponentPropsWithAs<"p", DefaultTheme, TextProps, never, "p", "p">, string | JSXElementConstructor<...>>', gave the following error.
+admin typecheck:     Type '"red"' is not assignable to type '"primary" | "secondary" | "tertiary" | "muted" | "accent" | "success" | "warning" | "danger" | "inverted" | undefined'.
+admin typecheck: src/features/dashboard/Dashboard.tsx(3,20): error TS7016: Could not find a declaration file for module 'styled-components'. '/home/zshmeta/bhcmarkets/node_modules/.bun/styled-components@6.3.1+67f6792bdf102c28/node_modules/styled-components/dist/styled-components.cjs.js' implicitly has an 'any' type.
+admin typecheck:   If the 'styled-components' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/styled-components'
+admin typecheck: src/features/dashboard/Dashboard.tsx(4,30): error TS2305: Module '"@repo/ui"' has no exported member 'Input'.
+admin typecheck: src/features/dashboard/Dashboard.tsx(190,44): error TS7006: Parameter 'e' implicitly has an 'any' type.
+admin typecheck: Exited with code 1

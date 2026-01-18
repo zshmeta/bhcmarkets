@@ -9,7 +9,7 @@ import type {
   RenderedEmail,
   ITemplateRenderer,
   EmailWorkerEnv,
-} from '../types';
+} from '@repo/sdk';
 import { BaseTemplateConfig } from './base';
 
 // Import all template renderers

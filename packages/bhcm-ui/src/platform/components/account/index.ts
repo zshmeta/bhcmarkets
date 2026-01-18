@@ -4,3 +4,4 @@ export * from './AccountStatus';
 export * from './Avatar';
 export * from './UserOverview';
 export * from './RiskBanner';
+export * from './AuthOverlay';

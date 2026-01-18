@@ -20,7 +20,7 @@ import type {
   UserStatus,
   PasswordResetTokenRepository,
   UUID,
-} from "./auth.types.js";
+} from "@repo/sdk";
 import type { AccountService } from "../../account/account.service.js";
 import { AuthError } from "./auth.errors.js";
 
@@ -396,7 +396,7 @@ export const createAuthService = (deps: AuthServiceDependencies): AuthService =>
     const credential = await credentialRepository.create(credentialRecord);
 
     if (accountService) {
-      await accountService.createAccount(user.id);
+      await accountService.createAccount({ userId: user.id, currency: "USD" });
     }
 
     // Send welcome email (fire and forget - don't block registration)

@@ -23,7 +23,7 @@ import {
   type CurrencyCode,
   type DecimalString,
   type AccountEntity,
-} from "../core/account.types.js";
+} from "@repo/sdk";
 
 // =============================================================================
 // BASIC VALIDATORS

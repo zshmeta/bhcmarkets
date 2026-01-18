@@ -22,7 +22,8 @@
     },
     "dependencies": {
         "@repo/database": "*",
-        "@repo/types": "workspace:*",
+        "@repo/sdk": "*",
+        "@types/react": "^19.2.8",
         "axios": "catalog:",
         "dotenv": "catalog:",
         "drizzle-orm": "catalog:",
@@ -39,7 +40,7 @@
         "@types/node": "catalog:",
         "@types/ws": "catalog:",
         "tsx": "catalog:",
-        "typescript": "catalog:",
+        "typescript": "^5.9.3",
         "vitest": "catalog:"
     }
 }

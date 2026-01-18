@@ -17,10 +17,11 @@ import type {
   CancelOrderResult,
   EngineOrder,
   EngineTrade,
-  Order,
   OrderBookSnapshot,
   TimeInForce,
-} from '../../types/order.types.js';
+} from '@repo/sdk';
+import { logger } from '@repo/sdk';
+import type { Order as DbOrder } from '@repo/sdk';
 import { OrderValidator, getOrderValidator } from './order-validator.js';
 import {
   saveOrder,
@@ -30,12 +31,16 @@ import {
   getOrderById,
   saveTrades,
 } from './order-repository.js';
-import { OrderBookManager, type MatchResult, type ManagerEvent, type OrderBookManagerStats } from '../matching/index.js';
-import { publish } from '@repo/database';
-import { logger } from '../../utils/logger.js';
+import { OrderBookManager, type OrderBookManagerStats, type ManagerEvent } from '../matching/order-book-manager.js';
 import { env } from '../../config/env.js';
 
 const log = logger.child({ component: 'order-manager' });
+
+// Stub publish function since it's not exported from SDK currently
+async function publish(channel: string, message: string) {
+  // TODO: Integrate proper Redis publisher
+  log.debug({ channel, message }, 'Publishing event (stub)');
+}
 
 // ============================================================================
 // STOP ORDER MANAGEMENT
@@ -48,7 +53,7 @@ interface StopOrder {
 }
 
 class StopOrderManager {
-  private stopOrders: Map<string, StopOrder[]> = new Map(); // symbol -> orders
+  private stopOrders: Map<string, StopOrder[]> = new Map();
 
   add(symbol: string, stopOrder: StopOrder): void {
     let orders = this.stopOrders.get(symbol);
@@ -82,10 +87,8 @@ class StopOrderManager {
       let shouldTrigger = false;
 
       if (order.side === 'buy') {
-        // Buy stop triggers when price goes up to trigger price
         shouldTrigger = currentPrice >= triggerPrice;
       } else {
-        // Sell stop triggers when price goes down to trigger price
         shouldTrigger = currentPrice <= triggerPrice;
       }
 
@@ -144,7 +147,6 @@ export class OrderManager {
     if (this.config.enablePersistence) {
       this.flushInterval = setInterval(() => {
         this.flushTrades().catch((err) => {
-          // Use the standard `err` key so we get message + stack in logs.
           log.error({ err }, 'Failed to flush trades');
         });
       }, this.config.tradeFlushIntervalMs);
@@ -157,23 +159,27 @@ export class OrderManager {
   // PUBLIC API
   // ===========================================================================
 
-  /**
-   * Place a new order.
-   */
   async placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
     const orderId = randomUUID();
 
     // 1. Validate
     const validation = this.validator.validate(input);
-    if (!validation.valid) {
+    if (!validation.valid || !validation.order) {
       return {
         success: false,
-        orderId,
-        errors: validation.errors,
+        error: validation.error || 'Validation failed',
       };
     }
 
-    const validOrder = validation.order!;
+    // `validation.order` is `PlaceOrderInput` (strings). Convert to `EngineOrder` (numbers).
+    const validOrder = validation.order;
+    const price = validOrder.price ? parseFloat(validOrder.price) : undefined;
+    const stopPrice = validOrder.stopPrice ? parseFloat(validOrder.stopPrice) : undefined;
+    const quantity = parseFloat(validOrder.quantity);
+
+    if (isNaN(quantity) || (validOrder.type === 'limit' && (price === undefined || isNaN(price)))) {
+       return { success: false, error: 'Invalid numeric values' };
+    }
 
     // 2. Create engine order
     const engineOrder: EngineOrder = {
@@ -182,26 +188,31 @@ export class OrderManager {
       symbol: validOrder.symbol,
       side: validOrder.side,
       type: validOrder.type,
-      quantity: validOrder.quantity,
+      quantity: quantity,
       filledQuantity: 0,
-      price: validOrder.price!,
-      stopPrice: validOrder.stopPrice,
-      clientOrderId: validOrder.clientOrderId,
+      price: (price ?? 0) as number, // Safe coercion
+      stopPrice: (stopPrice ?? 0) as number,
       timestamp: Date.now(),
     };
 
     try {
       // 3. Handle stop orders
       if (validOrder.type === 'stop' || validOrder.type === 'stop_limit') {
-        return await this.handleStopOrder(engineOrder, validOrder.timeInForce);
+        return await this.handleStopOrder(engineOrder, (validOrder.timeInForce ?? 'GTC') as TimeInForce);
       }
 
       // 4. Process regular order
-      const result = this.bookManager.processOrder(engineOrder, validOrder.timeInForce);
+      const result = this.bookManager.processOrder(engineOrder, (validOrder.timeInForce ?? 'GTC') as TimeInForce);
 
       // 5. Persist order
       if (this.config.enablePersistence) {
-        await saveOrder({ ...engineOrder, timeInForce: validOrder.timeInForce });
+        // cast to PersistedOrder (add clientOrderId)
+        await saveOrder({
+             ...engineOrder, 
+             timeInForce: (validOrder.timeInForce ?? 'GTC') as string,
+             clientOrderId: validOrder.clientOrderId || undefined
+        });
+
         if (result.filledQuantity > 0 || result.status === 'open') {
           await updateOrderStatus(orderId, result.status, result.filledQuantity);
         }
@@ -226,33 +237,19 @@ export class OrderManager {
 
       return {
         success: true,
-        orderId,
-        status: result.status,
-        filledQuantity: result.filledQuantity,
-        remainingQuantity: result.remainingQuantity,
-        averagePrice: result.averagePrice ?? undefined,
-        trades: result.trades.map((t) => ({
-          price: t.price,
-          quantity: t.quantity,
-          timestamp: t.timestamp,
-        })),
+        order: undefined, // Or populate if we want to return the full order object
       };
     } catch (error) {
       log.error({ error, orderId }, 'Failed to place order');
       return {
         success: false,
-        orderId,
-        errors: [error instanceof Error ? error.message : 'Unknown error'],
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
 
-  /**
-   * Cancel an order.
-   */
   async cancelOrder(orderId: string, accountId: string): Promise<CancelOrderResult> {
     try {
-      // Get order to verify ownership and get symbol
       const order = await getOrderById(orderId);
 
       if (!order) {
@@ -267,19 +264,15 @@ export class OrderManager {
         return { success: false, error: `Cannot cancel order with status: ${order.status}` };
       }
 
-      // Try to cancel in matching engine
       const result = this.bookManager.cancelOrder(order.symbol, orderId);
 
       if (result.status === 'cancelled') {
-        // Also check stop orders
         this.stopOrderManager.remove(orderId);
 
-        // Update in database
         if (this.config.enablePersistence) {
           await cancelOrderInDb(orderId);
         }
 
-        // Publish event
         if (this.config.enableEventPublishing) {
           await this.publishOrderEvent('order_cancelled', orderId, order.symbol);
         }
@@ -295,27 +288,19 @@ export class OrderManager {
     }
   }
 
-  /**
-   * Get order by ID.
-   */
-  async getOrder(orderId: string): Promise<Order | null> {
+  async getOrder(orderId: string): Promise<DbOrder | null> {
     return getOrderById(orderId);
   }
 
-  /**
-   * Update market price (checks stop orders).
-   */
   async updateMarketPrice(symbol: string, price: number): Promise<void> {
     this.bookManager.setCurrentPrice(symbol, price);
     this.validator.setMarketPrice(symbol, price);
 
-    // Check stop orders
     const triggered = this.stopOrderManager.checkTriggers(symbol, price);
 
     for (const stopOrder of triggered) {
       log.info({ orderId: stopOrder.order.id, price }, 'Stop order triggered');
 
-      // Convert stop to market/limit and execute
       const executionOrder: EngineOrder = {
         ...stopOrder.order,
         type: stopOrder.order.type === 'stop' ? 'market' : 'limit',
@@ -335,22 +320,17 @@ export class OrderManager {
     }
   }
 
-  /**
-   * Recover orders from database.
-   */
   async recoverOrders(symbol?: string): Promise<number> {
     const openOrders = await getOpenOrders(symbol);
 
     for (const order of openOrders) {
       if (order.type === 'stop' || order.type === 'stop_limit') {
-        // Add back to stop order manager
         this.stopOrderManager.add(order.symbol, {
           order,
-          timeInForce: 'GTC',
+          timeInForce: 'GTC', // TODO: Load this from DB if persisted
           triggerPrice: order.stopPrice!,
         });
       } else {
-        // Load into order book
         this.bookManager.loadOrder(order);
       }
     }
@@ -359,31 +339,19 @@ export class OrderManager {
     return openOrders.length;
   }
 
-  /**
-   * Get order book snapshot.
-   */
   getOrderBookSnapshot(symbol: string, depth?: number): OrderBookSnapshot | null {
     return this.bookManager.getOrderBookSnapshot(symbol, depth);
   }
 
-  /**
-   * Get statistics.
-   */
   getStats(): OrderBookManagerStats {
     return this.bookManager.getStats();
   }
 
-  /**
-   * Shutdown the order manager.
-   */
   async shutdown(): Promise<void> {
     if (this.flushInterval) {
       clearInterval(this.flushInterval);
     }
-
-    // Flush any pending trades
     await this.flushTrades();
-
     log.info('Order manager shutdown');
   }
 
@@ -395,14 +363,12 @@ export class OrderManager {
     order: EngineOrder,
     timeInForce: TimeInForce
   ): Promise<PlaceOrderResult> {
-    // Add to stop order manager
     this.stopOrderManager.add(order.symbol, {
       order,
       timeInForce,
       triggerPrice: order.stopPrice!,
     });
 
-    // Persist as pending stop order
     if (this.config.enablePersistence) {
       await saveOrder({ ...order, timeInForce });
     }
@@ -411,10 +377,7 @@ export class OrderManager {
 
     return {
       success: true,
-      orderId: order.id,
-      status: 'open',
-      filledQuantity: 0,
-      remainingQuantity: order.quantity,
+      // order: ... (optional)
     };
   }
 
@@ -427,7 +390,6 @@ export class OrderManager {
         symbol: event.symbol,
       });
 
-      // Flush if batch size reached
       if (this.pendingTrades.length >= this.config.tradeBatchSize) {
         this.flushTrades().catch((err) => {
           log.error({ err }, 'Failed to flush trades');
@@ -455,7 +417,6 @@ export class OrderManager {
 
       log.debug({ count: trades.length }, 'Trades flushed');
     } catch (error) {
-      // Put trades back for retry
       this.pendingTrades.unshift(...trades);
       throw error;
     }

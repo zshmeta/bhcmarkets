@@ -3,7 +3,7 @@
  * Simple rate limiting using Cloudflare KV (optional)
  */
 
-import type { EmailWorkerEnv, RateLimitConfig, RateLimitResult } from '../types';
+import type { EmailWorkerEnv, RateLimitConfig, RateLimitResult } from '@repo/sdk';
 
 const DEFAULT_CONFIG: RateLimitConfig = {
   maxRequests: 100,  // Max requests per window

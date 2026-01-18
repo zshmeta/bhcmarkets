@@ -19,13 +19,13 @@ export interface MarketIndicators {
 
 export async function fetchAllTickers(): Promise<MarketTicker[]> {
     return [
-        { symbol: 'BTCUSDT', price: 95000, priceChangePercent: 1.5, quoteVolume24h: 5000000000 },
-        { symbol: 'ETHUSDT', price: 3400, priceChangePercent: 2.1, quoteVolume24h: 2000000000 },
+        { symbol: 'BTCUSD', price: 95000, priceChangePercent: 1.5, quoteVolume24h: 5000000000 },
+        { symbol: 'ETHUSD', price: 3400, priceChangePercent: 2.1, quoteVolume24h: 2000000000 },
     ];
 }
 
 export async function fetchLineChart(symbol: string): Promise<MarketLineChart> {
-    const base = symbol === 'BTCUSDT' ? 95000 : 3400;
+    const base = symbol === 'BTCUSD' ? 95000 : 3400;
     return {
         prices: Array.from({ length: 24 }, (_, i) => base + (Math.random() - 0.5) * base * 0.02)
     };
@@ -54,7 +54,7 @@ export function formatPrice(price: number | string): string {
 }
 
 export function parseSymbol(symbol: string): { base: string; quote: string } {
-    const quotes = ['USDT', 'USD', 'EUR', 'BTC', 'ETH'];
+    const quotes = ['USD', 'USD', 'EUR', 'BTC', 'ETH'];
     for (const quote of quotes) {
         if (symbol.endsWith(quote)) {
             return { base: symbol.slice(0, -quote.length), quote };

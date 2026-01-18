@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import CurrentOrdersView from './CurrentOrders.view';
-import type { PaperOrder } from '../../types/trading';
+import type { PaperOrder } from '../../../../../../sdk/utils/types/trading';
 
 /* ═══════════════════════════════════════════════════════════
  * OPEN ORDERS STORIES
@@ -34,7 +34,7 @@ const mockTranslations = {
 
 const createMockOrder = (overrides: Partial<PaperOrder> = {}): PaperOrder => ({
     clientOrderId: `order-${Math.random().toString(36).slice(2)}`,
-    symbol: 'BTCUSDT',
+    symbol: 'BTCUSD',
     side: 'buy',
     type: 'limit',
     price: '98500.00',
@@ -55,7 +55,7 @@ const mockOrders: PaperOrder[] = [
         quantity: '0.010000',
         filledQty: '0.003500',
     }),
-    createMockOrder({ status: 'open', side: 'sell', symbol: 'ETHUSDT', price: '3450.50' }),
+    createMockOrder({ status: 'open', side: 'sell', symbol: 'ETHUSD', price: '3450.50' }),
 ];
 
 /* ═══════════════════════════════════════════════════════════

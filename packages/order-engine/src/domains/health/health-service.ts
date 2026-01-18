@@ -6,7 +6,7 @@
  */
 
 import { isDatabaseConnected, getDbClient, isRedisConnected, isUsingFallback } from '@repo/database';
-import { logger } from '../../utils/logger.js';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'health-service' });
 
@@ -205,7 +205,7 @@ export class HealthService {
 
       if (connected) {
         // Also test a simple query
-        const sql = getDbClient();
+        const sql = await getDbClient();
         await sql`SELECT 1`;
 
         return {

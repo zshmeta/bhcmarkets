@@ -27,7 +27,7 @@ export const MarketDataProvider = ({ children }: { children: React.ReactNode }) 
 
     // In emulator, localhost is 10.0.2.2 usually, but for physical device need IP.
     // For now defaulting to localhost or ENV.
-    const URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
+    const URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
     const socketRef = useRef<Socket | null>(null);
     const subCounts = useRef<Record<string, number>>({});

@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponse } from "../../../../api/types.js";
+import type { HttpRequest, HttpResponse } from "../../../api/types.js";
 import type { AuthService } from "../core/auth.service.js";
 import { z } from "zod";
 import { AuthError } from "../core/auth.errors.js";

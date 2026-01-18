@@ -39,7 +39,7 @@ import type {
   NormalizedTick,
   CollectorHealth,
   CollectorError,
-} from './collector.types.js';
+} from '@repo/sdk';
 
 /**
  * Aggregated health status for all collectors.

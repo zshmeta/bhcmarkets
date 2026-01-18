@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { clamp } from '../../../../../../sdk/utils';
+import { clamp } from '@repo/sdk';
 import { useMarketStore, selectLevel2Book, selectMetrics, selectBestBid, selectBestAsk, selectDataConfidence } from '@repo/sdk';
 import { useTradingStore, selectFocusMode } from '@repo/sdk';
 import { useWalletStore, selectBalances } from '@repo/sdk';
 import { useI18n, formatMessage } from '../../i18n';
 import { toast } from '../Toast';
-import type { OrderSide, OrderType, TrailingType } from '../../types/trading';
+import type { OrderSide, OrderType, TrailingType } from '@repo/sdk';
 import type {
     OrderCategory,
     OrderFormFormState,
@@ -15,7 +15,7 @@ import type {
     OrderFormTranslations,
     OrderFormData,
     OrderFormActions
-} from './OrderForm.types';
+} from '@repo/sdk';
 
 /* ═══════════════════════════════════════════════════════════
  * useOrderForm Hook
@@ -85,9 +85,9 @@ const useOrderForm = (
     const activeInputRef = useRef<string | null>(null);
 
     // ─── Derived Values ───
-    const symbol = Level2Book?.symbol ?? 'BTCUSDT';
-    const baseAsset = symbol.replace('USDT', '');
-    const quoteAsset = 'USDT';
+    const symbol = Level2Book?.symbol ?? 'BTCUSD';
+    const baseAsset = symbol.replace('USD', '');
+    const quoteAsset = 'USD';
     const baseBalance = storeBalances.find(b => b.asset === baseAsset);
     const quoteBalance = storeBalances.find(b => b.asset === quoteAsset);
 
@@ -368,7 +368,7 @@ const useOrderForm = (
     // ─── Validation ───
     const errors = useMemo(() => {
         const errs: OrderFormData['errors'] = {};
-        
+
         // Quantity validation
         if (quantity && parseFloat(quantity) > 0) {
             const max = getMaxQuantity();
@@ -376,7 +376,7 @@ const useOrderForm = (
                 errs.quantity = t.OrderForm.insufficientBalance;
             }
         } else if (quantity && parseFloat(quantity) <= 0) {
-             errs.quantity = t.OrderForm.invalidAmount;
+            errs.quantity = t.OrderForm.invalidAmount;
         }
 
         // Price validation
@@ -391,12 +391,12 @@ const useOrderForm = (
                     errs.trailingValue = t.OrderForm.invalidTrailingValue;
                 }
             } else {
-                 if (triggerPrice && parseFloat(triggerPrice) <= 0) {
+                if (triggerPrice && parseFloat(triggerPrice) <= 0) {
                     errs.triggerPrice = t.OrderForm.invalidTriggerPrice;
-                 }
-                 if (['stop_limit', 'take_profit_limit'].includes(type) && limitPrice && parseFloat(limitPrice) <= 0) {
-                     errs.limitPrice = t.OrderForm.invalidLimitPrice;
-                 }
+                }
+                if (['stop_limit', 'take_profit_limit'].includes(type) && limitPrice && parseFloat(limitPrice) <= 0) {
+                    errs.limitPrice = t.OrderForm.invalidLimitPrice;
+                }
             }
         }
         return errs;

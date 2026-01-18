@@ -44,17 +44,21 @@ const Actions = styled.div`
 `;
 
 const PrimaryButton = styled.button`
-  border: 1px solid var(--border);
-  background: var(--bg-tertiary);
+  border: 1px solid rgba(88, 166, 255, 0.35);
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.2) 0%, rgba(59, 130, 246, 0.15) 100%);
   color: var(--text-primary);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px 12px;
   font-size: 12px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  &:hover { background: var(--surface-hover); }
+  transition: all 0.2s ease;
+  &:hover { 
+    background: linear-gradient(135deg, rgba(88, 166, 255, 0.3) 0%, rgba(59, 130, 246, 0.25) 100%);
+    border-color: rgba(88, 166, 255, 0.5);
+  }
 `;
 
 const SecondaryButton = styled.button`

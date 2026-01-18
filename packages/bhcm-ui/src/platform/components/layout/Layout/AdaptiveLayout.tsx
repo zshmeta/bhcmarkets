@@ -1,5 +1,5 @@
 import { useIsMobile } from '../../hooks/useMediaQuery';
-import MobileLayout from './MobileLayout';
+import MobileLayout from '../../../../mobile/layouts/MobileLayout';
 import DesktopLayout from './DesktopLayout';
 
 /**

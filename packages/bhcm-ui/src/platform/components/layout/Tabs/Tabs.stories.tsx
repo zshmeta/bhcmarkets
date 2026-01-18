@@ -19,7 +19,7 @@ const defaultProps = {
         paused: 1,
         triggered: 5,
     },
-    selectedSymbol: 'BTCUSDT',
+    selectedSymbol: 'BTCUSD',
     onLeftTabChange: () => { },
     onRightTabChange: () => { },
     onPriceClick: () => { },

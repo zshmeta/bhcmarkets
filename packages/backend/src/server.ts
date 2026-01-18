@@ -10,7 +10,7 @@ import { AddressInfo } from "net";
 import "dotenv/config";
 import { loadEnv } from "./config/env.js";
 import { createPgPool, createDrizzleClient } from "@repo/database";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "@repo/database";
 import { accounts, positions } from "@repo/database";
 import { createDbHealth } from "./infra/db-health.js";
 import {
@@ -154,7 +154,7 @@ const services = await (async () => {
       refreshTokenTtlSeconds: config.refreshTtlSec,
       maxSessionsPerUser: config.maxSessionsPerUser,
     },
-    // Note: Auth creates accounts via its own logic, but we could inject accountService if needed
+    accountService, // Auto-create account on registration
   });
 
   return {

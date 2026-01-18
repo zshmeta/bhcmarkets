@@ -17,7 +17,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('Binance WebSocket', () => {
     it('should connect and receive BTC ticker data', async () => {
-        const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
+        const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcUSD@ticker');
 
         const result = await new Promise<{ success: boolean; data?: unknown; error?: string }>(
             (resolve) => {
@@ -52,7 +52,7 @@ describe('Binance WebSocket', () => {
     }, 10000);
 
     it('should receive valid ETH price', async () => {
-        const ws = new WebSocket('wss://stream.binance.com:9443/ws/ethusdt@ticker');
+        const ws = new WebSocket('wss://stream.binance.com:9443/ws/ethUSD@ticker');
 
         const price = await new Promise<number | null>((resolve) => {
             const timeout = setTimeout(() => {
@@ -80,7 +80,7 @@ describe('Binance WebSocket', () => {
     }, 10000);
 
     it('should fetch multiple crypto prices in one connection', async () => {
-        const symbols = ['btcusdt', 'ethusdt', 'solusdt'];
+        const symbols = ['btcUSD', 'ethUSD', 'solUSD'];
         const streams = symbols.map((s) => `${s}@ticker`).join('/');
         const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
 

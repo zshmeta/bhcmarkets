@@ -1,5 +1,5 @@
-import {usePositions} from './usePositions';
-import {PositionsView} from './Positions.view';
+import { usePositions } from './usePositions';
+import { PositionsView } from './Positions.view';
 
 /* ═══════════════════════════════════════════════════════════
  * POSITIONS CONTAINER
@@ -14,7 +14,7 @@ const Positions = () => {
         currentSymbol,
         currentPrice,
         totalPnL,
-        usdtBalance,
+        USDBalance,
         translations,
         confirmClose,
         tpslSymbol,
@@ -38,7 +38,7 @@ const Positions = () => {
             currentSymbol={currentSymbol}
             currentPrice={currentPrice}
             totalPnL={totalPnL}
-            usdtBalance={usdtBalance}
+            USDBalance={USDBalance}
             translations={translations}
             confirmClose={confirmClose}
             tpslSymbol={tpslSymbol}

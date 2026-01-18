@@ -9,7 +9,7 @@ import { Icons } from '../Icons';
 import type {
     OrderFormData,
     OrderFormActions
-} from './OrderForm.types';
+} from '@repo/sdk';
 import {
     AdvancedSection,
     SpreadBadge,

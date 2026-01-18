@@ -9,8 +9,7 @@
  * The audit log is append-only - no updates or deletes allowed.
  */
 
-import { eq, and, desc, gte, lte, sql, like, or, count } from "drizzle-orm";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { eq, and, desc, gte, lte, sql, like, or, count, type NodePgDatabase } from "@repo/database";
 import { adminAuditLog, symbols } from "@repo/database";
 import type {
   AdminRepository,
@@ -24,7 +23,7 @@ import type {
   SymbolConfig,
   UserRole,
   UserActivitySummary,
-} from "../core/admin.types.js";
+} from "@repo/sdk";
 
 // =============================================================================
 // REPOSITORY FACTORY

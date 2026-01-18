@@ -3,7 +3,7 @@
  * https://postmarkapp.com/developer/api/email-api
  */
 
-import type { IEmailProvider, EmailMessage, ProviderSendResult } from '../types';
+import type { IEmailProvider, EmailMessage, ProviderSendResult } from '@repo/sdk';
 
 export class PostmarkProvider implements IEmailProvider {
   name = 'postmark' as const;
@@ -19,7 +19,7 @@ export class PostmarkProvider implements IEmailProvider {
       // Parse 'from' field
       const fromMatch = message.from.match(/^(.+?)\s*<(.+)>$/);
       const fromEmail = fromMatch ? fromMatch[2] : message.from;
-      const fromName = fromMatch ? fromMatch[1].trim() : undefined;
+      const fromName = (fromMatch && fromMatch[1]) ? fromMatch[1].trim() : undefined;
 
       const payload: Record<string, unknown> = {
         From: fromName ? `${fromName} <${fromEmail}>` : fromEmail,

@@ -8,7 +8,7 @@ export interface TabItem {
 	disabled?: boolean;
 }
 
-export interface TabsProps extends HTMLAttributes<HTMLDivElement> {
+export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
 	items: TabItem[];
 	defaultActive?: string;
 	onChange?: (tabId: string) => void;
@@ -47,8 +47,8 @@ const Tab = styled.button<{ $active: boolean; $variant: string; $disabled: boole
 		$disabled
 			? theme.colors.text.muted
 			: $active
-			? theme.colors.text.primary
-			: theme.colors.text.tertiary};
+				? theme.colors.text.primary
+				: theme.colors.text.tertiary};
 	font-family: ${({ theme }) => theme.typography.fontFamily};
 	font-size: ${({ theme }) => theme.typography.sizes.sm};
 	font-weight: ${({ theme, $active }) =>
@@ -62,7 +62,7 @@ const Tab = styled.button<{ $active: boolean; $variant: string; $disabled: boole
 	&:hover:not(:disabled) {
 		color: ${({ theme }) => theme.colors.text.primary};
 		background: ${({ theme, $variant }) =>
-			$variant === "pills" ? "rgba(255, 255, 255, 0.05)" : "transparent"};
+		$variant === "pills" ? "rgba(255, 255, 255, 0.05)" : "transparent"};
 	}
 
 	${({ $variant, $active, theme }) =>

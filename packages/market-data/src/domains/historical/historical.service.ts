@@ -11,8 +11,8 @@ import { TickRepository } from './tick.repository.js';
 import { logger } from '../../utils/logger.js';
 import { env } from '../../config/env.js';
 import { TIMEFRAME_MS, type Timeframe } from '../normalizer/data.validators.js';
-import type { EnrichedTick } from '../normalizer/normalizer.types.js';
-import type { Candle, CandleQuery } from './historical.types.js';
+import type { EnrichedTick } from '@repo/sdk  ';
+import type { Candle, CandleQuery } from '@repo/sdk';
 
 const log = logger.child({ component: 'historical-service' });
 

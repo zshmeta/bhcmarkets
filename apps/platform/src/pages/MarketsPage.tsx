@@ -5,7 +5,7 @@ import { LineChart } from '@repo/bhcm-ui/market';
 import { Icons, IconsName } from '@repo/bhcm-ui/core';
 import { useWatchlistStore } from '@repo/sdk';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { MobileMarketsPage } from './mobile';
+import { MobileMarketsPage } from '../../../mobile/src/pages';
 import {
     fetchAllTickers,
     fetchLineChart,
@@ -289,7 +289,7 @@ export const MarketsPage = () => {
                         <PairCount>{stats.totalPairs} pairs</PairCount>
                     </StatHeader>
                     <StatValue>${formatVolume(stats.totalVol)}</StatValue>
-                    <VolumeSubtext>Aggregate USDT Volume</VolumeSubtext>
+                    <VolumeSubtext>Aggregate USD Volume</VolumeSubtext>
                 </StatCard>
 
                 {/* Card 3: Top Performer */}
@@ -302,7 +302,7 @@ export const MarketsPage = () => {
                         <AssetHighlight>
                             <AssetMain>
                                 <AssetSymbol>{parseSymbol(stats.topGainer.symbol).base}</AssetSymbol>
-                                <AssetQuote>/ USDT</AssetQuote>
+                                <AssetQuote>/ USD</AssetQuote>
                             </AssetMain>
                             <AssetMetrics>
                                 <ChangeValue $positive>
@@ -326,7 +326,7 @@ export const MarketsPage = () => {
                         <AssetHighlight>
                             <AssetMain>
                                 <AssetSymbol>{parseSymbol(stats.volumeLeader.symbol).base}</AssetSymbol>
-                                <AssetQuote>/ USDT</AssetQuote>
+                                <AssetQuote>/ USD</AssetQuote>
                             </AssetMain>
                             <AssetMetrics>
                                 <VolumeValue>${formatVolume(stats.volumeLeader.ticker.quoteVolume24h)}</VolumeValue>
@@ -423,7 +423,7 @@ export const MarketsPage = () => {
                                         <td>
                                             <AssetCell>
                                                 <Base>{parseSymbol(m.symbol).base}</Base>
-                                                <Quote>/USDT</Quote>
+                                                <Quote>/USD</Quote>
                                             </AssetCell>
                                         </td>
                                         <td className="tabular-nums font-medium">

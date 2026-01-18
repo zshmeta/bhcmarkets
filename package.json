@@ -42,6 +42,9 @@
       "./eslint-config",
       "./typescript-config"
     ],
+    "resolutions": {
+      "drizzle-orm": "0.45.1"
+    },
     "catalog": {
       "@babel/core": "^7.20.0",
       "@cloudflare/vitest-pool-workers": "^0.8.0",
@@ -65,7 +68,7 @@
       "dayjs": "^1.11.10",
       "dotenv": "^16.6.1",
       "drizzle-kit": "^0.31.8",
-      "drizzle-orm": "^0.45.1",
+      "drizzle-orm": "0.45.1",
       "eslint": "^9.39.1",
       "eslint-config-prettier": "^10.1.1",
       "eslint-plugin-only-warn": "^1.1.0",
@@ -115,11 +118,14 @@
       "@storybook/addon-vitest": "",
       "@storybook/react": "",
       "@storybook/react-vite": "",
+      "@testing-library/jest-dom": "^6.6.3",
+      "@testing-library/react": "^16.3.0",
       "@types/styled-components": "",
       "@types/uuid": "",
       "@vitest/browser-playwright": "",
       "@vitest/coverage-v8": "",
       "eslint-plugin-storybook": "",
+      "jsdom": "^26.1.0",
       "playwright": "",
       "storybook": "",
       "uuid": ""
@@ -135,5 +141,8 @@
         "socket.io-client": "^4.8.1"
       }
     }
+  },
+  "dependencies": {
+    "zod": "^4.3.5"
   }
 }

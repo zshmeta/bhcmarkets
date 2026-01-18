@@ -118,37 +118,37 @@ const PopoverContent = styled.div<{
 				height: 0;
 				border: 6px solid transparent;
 				${({ $placement }: { $placement: PopoverPlacement }) => {
-					if ($placement.startsWith("top")) {
-						return css`
+				if ($placement.startsWith("top")) {
+					return css`
 							bottom: -12px;
 							left: 50%;
 							transform: translateX(-50%);
 							border-top-color: ${theme.colors.backgrounds.elevated};
 						`;
-					} else if ($placement.startsWith("bottom")) {
-						return css`
+				} else if ($placement.startsWith("bottom")) {
+					return css`
 							top: -12px;
 							left: 50%;
 							transform: translateX(-50%);
 							border-bottom-color: ${theme.colors.backgrounds.elevated};
 						`;
-					} else if ($placement === "left") {
-						return css`
+				} else if ($placement === "left") {
+					return css`
 							right: -12px;
 							top: 50%;
 							transform: translateY(-50%);
 							border-left-color: ${theme.colors.backgrounds.elevated};
 						`;
-					} else if ($placement === "right") {
-						return css`
+				} else if ($placement === "right") {
+					return css`
 							left: -12px;
 							top: 50%;
 							transform: translateY(-50%);
 							border-right-color: ${theme.colors.backgrounds.elevated};
 						`;
-					}
-					return "";
-				}}
+				}
+				return "";
+			}}
 			}
 		`}
 `;
@@ -173,7 +173,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
 	) => {
 		const [visible, setVisible] = useState(false);
 		const containerRef = useRef<HTMLDivElement>(null);
-		const timeoutRef = useRef<NodeJS.Timeout>();
+		const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 		useEffect(() => {
 			if (disabled) {

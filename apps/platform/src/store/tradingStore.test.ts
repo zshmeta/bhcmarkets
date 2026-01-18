@@ -23,7 +23,7 @@ describe('tradingStore', () => {
   it('should create paper order in paper trading mode', async () => {
     const { createOrder } = useTradingStore.getState();
     const result = await createOrder({
-      symbol: 'BTCUSDT',
+      symbol: 'BTCUSD',
       side: 'buy',
       type: 'limit',
       price: '50000',
@@ -42,7 +42,7 @@ describe('tradingStore', () => {
 
     const { createOrder } = useTradingStore.getState();
     const result = await createOrder({
-      symbol: 'BTCUSDT',
+      symbol: 'BTCUSD',
       side: 'buy',
       type: 'limit',
       price: '50000',
@@ -51,7 +51,7 @@ describe('tradingStore', () => {
 
     expect(result.success).toBe(true);
     expect(apiClient.post).toHaveBeenCalledWith('/orders', expect.objectContaining({
-      symbol: 'BTCUSDT',
+      symbol: 'BTCUSD',
       side: 'buy',
       type: 'limit',
       price: '50000',
@@ -63,7 +63,7 @@ describe('tradingStore', () => {
 
   it('should fetch orders in live mode', async () => {
     useTradingStore.getState().setTradingMode(false);
-    const mockOrders = [{ clientOrderId: '1', symbol: 'BTCUSDT' }];
+    const mockOrders = [{ clientOrderId: '1', symbol: 'BTCUSD' }];
     vi.mocked(apiClient.get).mockResolvedValue(mockOrders);
 
     await useTradingStore.getState().fetchOrders();
@@ -74,13 +74,13 @@ describe('tradingStore', () => {
 
   it('should fetch positions in live mode', async () => {
     useTradingStore.getState().setTradingMode(false);
-    const mockPositions = [{ symbol: 'BTCUSDT', side: 'long', quantity: '1', avgEntryPrice: '50000' }];
+    const mockPositions = [{ symbol: 'BTCUSD', side: 'long', quantity: '1', avgEntryPrice: '50000' }];
     vi.mocked(apiClient.get).mockResolvedValue(mockPositions);
 
     await useTradingStore.getState().fetchPositions();
 
     expect(apiClient.get).toHaveBeenCalledWith('/positions');
     const positions = useTradingStore.getState().positions;
-    expect(positions.get('BTCUSDT')).toEqual(mockPositions[0]);
+    expect(positions.get('BTCUSD')).toEqual(mockPositions[0]);
   });
 });

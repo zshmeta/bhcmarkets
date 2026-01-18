@@ -6,7 +6,7 @@
  *
  * THE SYMBOL PROBLEM:
  * Every exchange, data provider, and trading system uses different symbol formats:
- *   - Binance: "BTCUSDT" (concatenated, no separator)
+ *   - Binance: "BTCUSD" (concatenated, no separator)
  *   - Coinbase: "BTC-USD" (hyphen separator)
  *   - Yahoo: "BTC-USD" or "AAPL" (various formats)
  *   - FIX Protocol: "BTC/USD" (slash separator)
@@ -58,12 +58,12 @@ buildReverseMaps();
 /**
  * Convert an external symbol to our internal format.
  *
- * @param externalSymbol - Symbol from external source (e.g., "btcusdt")
+ * @param externalSymbol - Symbol from external source (e.g., "btcUSD")
  * @param source - Which source the symbol came from
  * @returns Internal symbol or undefined if not found
  *
  * @example
- * toInternal('btcusdt', 'binance') // Returns 'BTC/USD'
+ * toInternal('btcUSD', 'binance') // Returns 'BTC/USD'
  * toInternal('AAPL', 'yahoo')       // Returns 'AAPL'
  * toInternal('unknown', 'binance')  // Returns undefined
  */
@@ -82,7 +82,7 @@ export function toInternal(externalSymbol: string, source: ExternalSource): stri
  * @returns External symbol or undefined if no mapping exists
  *
  * @example
- * toExternal('BTC/USD', 'binance') // Returns 'btcusdt'
+ * toExternal('BTC/USD', 'binance') // Returns 'btcUSD'
  * toExternal('AAPL', 'yahoo')      // Returns 'AAPL'
  */
 export function toExternal(internalSymbol: string, source: ExternalSource): string | undefined {

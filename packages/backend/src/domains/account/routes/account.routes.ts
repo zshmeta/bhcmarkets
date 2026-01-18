@@ -16,7 +16,7 @@
  */
 
 import type { Router, RouteContext } from "../../../api/types.js";
-import type { AccountServiceInterface } from "../core/account.types.js";
+import type { AccountServiceInterface } from "@repo/sdk";
 import type { TokenManager } from "../../auth/tokens/tokens.js";
 import { AccountError } from "../core/account.errors.js";
 import {

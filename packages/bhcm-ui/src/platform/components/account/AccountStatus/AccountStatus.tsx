@@ -22,14 +22,14 @@ import {
  * ═══════════════════════════════════════════════════════════
  * Compact horizontal display of key account metrics:
  * - Total portfolio value
- * - Available USDT balance
+ * - Available USD balance
  * - Position value
  * - Unrealized P&L with percentage
  */
 
 interface AccountMetrics {
   totalValue: Decimal;
-  availableUsdt: Decimal;
+  availableUSD: Decimal;
   positionValue: Decimal;
   unrealizedPnl: Decimal;
   unrealizedPnlPercent: number;
@@ -48,9 +48,9 @@ const AccountStatus = () => {
   const currentSymbolMidPrice = metrics ? new Decimal(metrics.mid) : new Decimal(0);
 
   const accountMetrics = useMemo((): AccountMetrics => {
-    const usdtBalance = balances.find((b) => b.asset === 'USDT');
-    const usdtTotal = new Decimal(usdtBalance?.total ?? '0');
-    const usdtAvailable = new Decimal(usdtBalance?.available ?? '0');
+    const USDBalance = balances.find((b) => b.asset === 'USD');
+    const USDTotal = new Decimal(USDBalance?.total ?? '0');
+    const USDAvailable = new Decimal(USDBalance?.available ?? '0');
 
     // Extract positions from Map or plain object
     let positionEntries: [string, any][] = [];
@@ -89,14 +89,14 @@ const AccountStatus = () => {
         }
       });
 
-    const totalAccountValue = usdtTotal.plus(totalPositionValue);
+    const totalAccountValue = USDTotal.plus(totalPositionValue);
     const unrealizedPnlPercent = totalAccountValue.gt(0)
       ? totalUnrealizedPnl.div(totalAccountValue).times(100).toNumber()
       : 0;
 
     return {
       totalValue: totalAccountValue,
-      availableUsdt: usdtAvailable,
+      availableUSD: USDAvailable,
       positionValue: totalPositionValue,
       unrealizedPnl: totalUnrealizedPnl,
       unrealizedPnlPercent,
@@ -104,28 +104,28 @@ const AccountStatus = () => {
     };
   }, [balances, positions, currentSymbol, currentSymbolMidPrice]);
 
-  const formatUSDT = (value: Decimal): string => value.toFixed(2);
+  const formatUSD = (value: Decimal): string => value.toFixed(2);
   const pnlIsPositive = accountMetrics.unrealizedPnl.gte(0);
 
   return (
     <Container>
       <Item>
         <Label>{t.account?.totalValue || 'Total'}</Label>
-        <Value className="tabular-nums">${formatUSDT(accountMetrics.totalValue)}</Value>
+        <Value className="tabular-nums">${formatUSD(accountMetrics.totalValue)}</Value>
       </Item>
 
       <Divider />
 
       <Item>
         <Label>{t.account?.available || 'Available'}</Label>
-        <Value className="tabular-nums">${formatUSDT(accountMetrics.availableUsdt)}</Value>
+        <Value className="tabular-nums">${formatUSD(accountMetrics.availableUSD)}</Value>
       </Item>
 
       <Divider />
 
       <Item>
         <Label>Position</Label>
-        <Value className="tabular-nums">${formatUSDT(accountMetrics.positionValue)}</Value>
+        <Value className="tabular-nums">${formatUSD(accountMetrics.positionValue)}</Value>
       </Item>
 
       <Divider />
@@ -135,7 +135,7 @@ const AccountStatus = () => {
         <Value $positive={pnlIsPositive} $negative={!pnlIsPositive} className="tabular-nums">
           <PnlValue>
             {pnlIsPositive ? '+' : ''}
-            {formatUSDT(accountMetrics.unrealizedPnl)}
+            {formatUSD(accountMetrics.unrealizedPnl)}
             <PnlPercent>
               ({pnlIsPositive ? '+' : ''}
               {accountMetrics.unrealizedPnlPercent.toFixed(2)}%)

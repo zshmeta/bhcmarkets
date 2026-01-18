@@ -22,7 +22,7 @@ export interface TextProps {
 	align?: "left" | "center" | "right" | "justify";
 	truncate?: boolean;
 	noWrap?: boolean;
-	as?: keyof JSX.IntrinsicElements;
+	as?: React.ElementType;
 	gradient?: boolean;
 }
 

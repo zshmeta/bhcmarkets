@@ -6,10 +6,10 @@
 
 import type { Pool } from "pg";
 import type {
-  AuthCode,
-  AuthCodeRepository,
-  PasswordResetToken,
-  PasswordResetTokenRepository,
+	AuthCode,
+	AuthCodeRepository,
+	PasswordResetToken,
+	PasswordResetTokenRepository,
 	CreateCredentialParams,
 	CreateSessionParams,
 	CreateUserParams,
@@ -21,7 +21,7 @@ import type {
 	UserSession,
 	UserSessionRepository,
 	UUID,
-} from "../core/auth.types.js";
+} from "@repo/sdk";
 
 type Row = Record<string, unknown>;
 
@@ -245,82 +245,82 @@ export function createSessionRepository(pool: Pool): UserSessionRepository {
 }
 
 export function createAuthCodeRepository(pool: Pool): AuthCodeRepository {
-  return new PgAuthCodeRepository(pool);
+	return new PgAuthCodeRepository(pool);
 }
 
 export class PgAuthCodeRepository implements AuthCodeRepository {
-  constructor(private readonly pool: Pool) {}
+	constructor(private readonly pool: Pool) { }
 
-  async save(authCode: AuthCode): Promise<void> {
-    await this.pool.query(
-      `INSERT INTO auth_codes (code, user_id, expires_at, used_at)
+	async save(authCode: AuthCode): Promise<void> {
+		await this.pool.query(
+			`INSERT INTO auth_codes (code, user_id, expires_at, used_at)
        VALUES ($1, $2, $3, $4)`,
-      [authCode.code, authCode.userId, authCode.expiresAt, authCode.usedAt ?? null]
-    );
-  }
+			[authCode.code, authCode.userId, authCode.expiresAt, authCode.usedAt ?? null]
+		);
+	}
 
-  async findByCode(code: string): Promise<AuthCode | null> {
-    const { rows } = await this.pool.query(
-      `SELECT * FROM auth_codes WHERE code = $1`,
-      [code]
-    );
-    if (rows.length === 0) return null;
-    const r = rows[0];
-    return {
-      code: String(r.code),
-      userId: String(r.user_id),
-      expiresAt: toIsoString(r.expires_at),
-      usedAt: r.used_at ? toIsoString(r.used_at) : undefined,
-    };
-  }
+	async findByCode(code: string): Promise<AuthCode | null> {
+		const { rows } = await this.pool.query(
+			`SELECT * FROM auth_codes WHERE code = $1`,
+			[code]
+		);
+		if (rows.length === 0) return null;
+		const r = rows[0];
+		return {
+			code: String(r.code),
+			userId: String(r.user_id),
+			expiresAt: toIsoString(r.expires_at),
+			usedAt: r.used_at ? toIsoString(r.used_at) : undefined,
+		};
+	}
 
-  async markUsed(code: string): Promise<void> {
-    await this.pool.query(
-      `UPDATE auth_codes SET used_at = NOW() WHERE code = $1`,
-      [code]
-    );
-  }
+	async markUsed(code: string): Promise<void> {
+		await this.pool.query(
+			`UPDATE auth_codes SET used_at = NOW() WHERE code = $1`,
+			[code]
+		);
+	}
 }
 
 const mapPasswordResetToken = (r: Row): PasswordResetToken => ({
-  id: Number(r.id),
-  userId: String(r.user_id),
-  tokenHash: String(r.token_hash),
-  expiresAt: toIsoString(r.expires_at),
-  used: Boolean(r.used),
-  createdAt: toIsoString(r.created_at),
+	id: Number(r.id),
+	userId: String(r.user_id),
+	tokenHash: String(r.token_hash),
+	expiresAt: toIsoString(r.expires_at),
+	used: Boolean(r.used),
+	createdAt: toIsoString(r.created_at),
 });
 
 export function createPasswordResetTokenRepository(pool: Pool): PasswordResetTokenRepository {
-  return {
-    async create(input: { userId: UUID; tokenHash: string; expiresAt: string }) {
-      const { rows } = await pool.query(
-        `INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
+	return {
+		async create(input: { userId: UUID; tokenHash: string; expiresAt: string }) {
+			const { rows } = await pool.query(
+				`INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
          VALUES ($1, $2, $3)
          RETURNING *`,
-        [input.userId, input.tokenHash, input.expiresAt]
-      );
-      return mapPasswordResetToken(rows[0]);
-    },
-    async findByTokenHash(tokenHash: string) {
-      const { rows } = await pool.query(
-        `SELECT * FROM password_reset_tokens WHERE token_hash = $1`,
-        [tokenHash]
-      );
-      return rows[0] ? mapPasswordResetToken(rows[0]) : null;
-    },
-    async markUsed(id: number) {
-      await pool.query(
-        `UPDATE password_reset_tokens SET used = true WHERE id = $1`,
-        [id]
-      );
-    },
-    async revokeAllForUser(userId: UUID) {
-      await pool.query(
-        `UPDATE password_reset_tokens SET used = true WHERE user_id = $1`,
-        [userId]
-      );
-    },
-  };
+				[input.userId, input.tokenHash, input.expiresAt]
+			);
+			return mapPasswordResetToken(rows[0]);
+		},
+		async findByTokenHash(tokenHash: string) {
+			const { rows } = await pool.query(
+				`SELECT * FROM password_reset_tokens WHERE token_hash = $1`,
+				[tokenHash]
+			);
+			return rows[0] ? mapPasswordResetToken(rows[0]) : null;
+		},
+		async markUsed(id: number) {
+			await pool.query(
+				`UPDATE password_reset_tokens SET used = true WHERE id = $1`,
+				[id]
+			);
+		},
+		async revokeAllForUser(userId: UUID) {
+			await pool.query(
+				`UPDATE password_reset_tokens SET used = true WHERE user_id = $1`,
+				[userId]
+			);
+		},
+	};
 }
 

@@ -11,8 +11,8 @@
  * - VIP tiers: Special rates for VIP accounts
  */
 
-import type { FeeCalculation } from './trade.types.js';
-import { logger } from '../../utils/logger.js';
+import type { FeeCalculation } from '@repo/sdk';
+import { logger } from '@repo/sdk';
 
 const log = logger.child({ component: 'fee-calculator' });
 

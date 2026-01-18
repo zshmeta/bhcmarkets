@@ -45,7 +45,7 @@ const AssetBalancesPanel = ({ onDeposit, onWithdraw }: AssetBalancesPanelProps) 
     return balances.filter((b) => {
       const matchesSearch = b.asset.toLowerCase().includes(search.toLowerCase());
       const isNotSmall = !hideSmall || new Decimal(b.total).gt(0.00000001);
-      const isEssential = b.asset === 'USDT' || new Decimal(b.total).gt(0);
+      const isEssential = b.asset === 'USD' || new Decimal(b.total).gt(0);
       return matchesSearch && (hideSmall ? isNotSmall : isEssential);
     });
   }, [balances, search, hideSmall]);
@@ -56,7 +56,7 @@ const AssetBalancesPanel = ({ onDeposit, onWithdraw }: AssetBalancesPanelProps) 
 
   const formatAmount = (amount: string, asset: string) => {
     const dec = new Decimal(amount);
-    if (asset === 'USDT') return dec.toFixed(2);
+    if (asset === 'USD') return dec.toFixed(2);
     if (dec.eq(0)) return '0';
     if (dec.lt(0.0001)) return dec.toExponential(4);
     return dec.toFixed(8).replace(/\.?0+$/, '');

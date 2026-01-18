@@ -26,7 +26,7 @@ import { SubscriptionManager } from './subscription.manager.js';
 import { TickPublisher } from './tick.publisher.js';
 import { env } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
-import { clientMessageSchema, type ServerMessage, type PongMessage } from './stream.types.js';
+import { clientMessageSchema, type ServerMessage, type PongMessage } from '../../schemas/message.schema.js';
 
 const log = logger.child({ component: 'websocket-server' });
 

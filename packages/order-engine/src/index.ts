@@ -48,7 +48,7 @@
  */
 
 import { env } from './config/env.js';
-import { logger } from './utils/logger.js';
+import { logger } from '@repo/sdk';
 import { isDatabaseConnected, closeDb, isRedisConnectedWithConfig, closeRedis, subscribe, getDbClient, getPubSubWithConfig, getRedisWithConfig } from '@repo/database';
 import { OrderManager } from './domains/orders/order-manager.js';
 import { OrderEngineWebSocket } from './domains/stream/websocket-server.js';
@@ -81,7 +81,7 @@ async function assertDatabaseSchema(): Promise<void> {
   if (missing.length > 0) {
     throw new Error(
       `Database schema is missing required tables: ${missing.join(', ')}. ` +
-        `Run \`bun run db:push\` for dev, or \`bun run db:generate && bun run db:migrate\` to create migrations and apply them.`
+      `Run \`bun run db:push\` for dev, or \`bun run db:generate && bun run db:migrate\` to create migrations and apply them.`
     );
   }
 }
@@ -449,11 +449,10 @@ export type {
   EngineOrder,
   EngineTrade,
   OrderBookSnapshot,
-  OrderSide,
-  OrderType,
   OrderStatus,
-  TimeInForce,
-} from './types/order.types.js';
+} from '@repo/sdk';
+
+import { OrderSide, OrderType, TimeInForce } from '@repo/sdk';
 
 // Re-export core classes
 export { OrderManager, type OrderManagerConfig } from './domains/orders/order-manager.js';
@@ -473,7 +472,7 @@ export type {
   EnginePosition,
   PositionSnapshot,
   PositionChangeEvent,
-} from './domains/positions/position.types.js';
+} from '@repo/sdk';
 
 // Position email handler for trade notifications
 export {
@@ -496,7 +495,7 @@ export type {
   TradeExecution,
   FeeCalculation,
   TradeStats,
-} from './domains/trades/trade.types.js';
+} from '@repo/sdk';
 
 // Re-export @repo/ledger for direct usage
 export { createLedgerService } from '@repo/ledger';
@@ -525,5 +524,4 @@ export {
 
 // Re-export config and utils
 export { env } from './config/env.js';
-export { logger } from './utils/logger.js';
-
+export { logger } from '@repo/sdk';

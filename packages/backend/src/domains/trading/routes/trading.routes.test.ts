@@ -1,10 +1,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { registerTradingRoutes, TradingRouteDependencies } from './trading.routes';
-import { Router, HttpMethod, HttpRequest, HttpResponse } from '../../../api/types';
-import { TokenManager } from '../../auth/tokens/tokens';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { TradingService } from '../core/trading.service';
+import { registerTradingRoutes, TradingRouteDependencies } from './trading.routes.js';
+import { Router, HttpMethod, HttpRequest, HttpResponse } from '../../../api/types.js';
+import { TokenManager } from '../../auth/tokens/tokens.js';
+import { DrizzleClient } from '@repo/database';
+import { TradingService } from '../core/trading.service.js';
 
 // Mock types
 type MockRouter = Router & {
@@ -13,7 +13,7 @@ type MockRouter = Router & {
 
 describe('Trading Routes', () => {
   let router: MockRouter;
-  let db: NodePgDatabase<Record<string, unknown>>;
+  let db: DrizzleClient;
   let tokenManager: TokenManager;
   let tradingService: TradingService;
 
@@ -29,7 +29,7 @@ describe('Trading Routes', () => {
     // Mock dependencies
     db = {
       execute: vi.fn(),
-    } as unknown as NodePgDatabase<Record<string, unknown>>;
+    } as unknown as DrizzleClient;
 
     tokenManager = {
       verify: vi.fn(),
@@ -102,7 +102,7 @@ describe('Trading Routes', () => {
   });
 
   it('should return 400 on error', async () => {
-     const deps = { db, tokenManager, tradingService } as unknown as TradingRouteDependencies;
+    const deps = { db, tokenManager, tradingService } as unknown as TradingRouteDependencies;
     // @ts-ignore
     registerTradingRoutes(router, deps, { info: vi.fn(), error: vi.fn() });
 

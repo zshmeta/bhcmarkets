@@ -73,7 +73,7 @@ export type {
     LedgerEventType,
     // Repository interface
     LedgerRepositoryInterface,
-} from './ledger.types.js';
+} from '@repo/sdk';
 
 // =============================================================================
 // CONFIG EXPORTS

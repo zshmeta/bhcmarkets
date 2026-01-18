@@ -1,4 +1,4 @@
-import type { PaperOrder } from '../../types/trading';
+import type { PaperOrder } from '../../../../../../sdk/utils/types/trading';
 import {
     Container,
     Header,
@@ -70,7 +70,7 @@ function OrderRow({ order, onCancel }: OrderRowProps) {
                 </SideCell>
             </td>
             <td>
-                <Symbol>{order.symbol.replace('USDT', '')}</Symbol>
+                <Symbol>{order.symbol.replace('USD', '')}</Symbol>
             </td>
             <NumericCell>
                 {order.price ? parseFloat(order.price).toFixed(2) : '—'}

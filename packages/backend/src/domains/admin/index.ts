@@ -40,9 +40,9 @@ export type {
   DailyTradingSummary,
   UserActivitySummary,
   PlatformPnLSummary,
-} from "./core/admin.types.js";
+} from "@repo/sdk";
 
-export { ROLE_PERMISSIONS } from "./core/admin.types.js";
+export { ROLE_PERMISSIONS } from "@repo/sdk";
 
 // --- Errors ---
 export { AdminError, isAdminError, type AdminErrorCode } from "./core/admin.errors.js";
@@ -60,7 +60,8 @@ export { createAdminRepositoryPg } from "./repositories/admin.repository.pg.js";
 export { adminAuditLog, symbols } from "@repo/database";
 
 // --- Routes ---
-export { createAdminRoutes } from "./routes/admin.routes.js";
+// TODO: Implement admin routes
+// export { createAdminRoutes } from "./routes/admin.routes.js";
 
 // --- API Registration (integrates with existing Router) ---
 export { registerAdminApiRoutes } from "./api/admin.api.js";

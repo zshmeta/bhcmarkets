@@ -7,7 +7,7 @@
 
 import type { HttpRequest, HttpResponse } from "../../../api/types.js";
 import type { AuthService } from "../core/auth.service.js";
-import type { SessionInvalidationReason } from "../core/auth.types.js";
+import type { SessionInvalidationReason } from "@repo/sdk";
 import { validateLogout } from "../validators/auth.validator.js";
 import { AuthError } from "../core/auth.errors.js";
 

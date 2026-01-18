@@ -42,7 +42,7 @@ import type {
   DailyTradingSummary,
   UserActivitySummary,
   PlatformPnLSummary,
-} from "./admin.types.js";
+} from "@repo/sdk";
 import { AdminError } from "./admin.errors.js";
 
 // =============================================================================

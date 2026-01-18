@@ -3,7 +3,7 @@
  * Creates provider instances based on configuration
  */
 
-import type { IEmailProvider, EmailProvider, EmailWorkerEnv } from '../types';
+import type { IEmailProvider, EmailProvider, EmailWorkerEnv } from '@repo/sdk';
 import { ResendProvider } from './resend';
 import { SendGridProvider } from './sendgrid';
 import { MailgunProvider } from './mailgun';

@@ -43,7 +43,7 @@ export type {
   UserSessionRepository,
   AuthCode,
   AuthCodeRepository,
-} from "./core/auth.types.js";
+} from "@repo/sdk";
 
 // Errors
 export { AuthError } from "./core/auth.errors.js";

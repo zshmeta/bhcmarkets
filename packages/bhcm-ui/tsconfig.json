@@ -1,15 +1,21 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
-  ],
-    "compilerOptions": {
-      "jsx": "react",
-      "ignoreDeprecations": "5.0",
-      "baseUrl": ".",
-      "paths": {
-        "@bhcm-ui/*": ["src/*"]
-      }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
     }
-} 
+  ],
+  "compilerOptions": {
+    "jsx": "react",
+    "ignoreDeprecations": "5.0",
+    "baseUrl": ".",
+    "paths": {
+      "@bhcm-ui/*": [
+        "src/*"
+      ]
+    }
+  }
+}
