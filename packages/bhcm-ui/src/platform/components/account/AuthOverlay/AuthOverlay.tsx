@@ -59,14 +59,14 @@ export const AuthOverlay = ({
     className,
 }: AuthOverlayProps) => {
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-    const login = useAuthStore((s) => s.login);
+    const loginWithRedirect = useAuthStore((s) => s.loginWithRedirect);
 
     const handleLogin = () => {
         if (onLogin) {
             onLogin();
         } else {
-            // Default: use demo login
-            login('demo', 'demo');
+            // Redirect to auth app
+            loginWithRedirect();
         }
     };
 
@@ -95,7 +95,7 @@ export const AuthOverlay = ({
                     Sign In
                 </LoginButton>
 
-                <DemoHint>Demo mode available</DemoHint>
+                <DemoHint>Secure authentication</DemoHint>
             </Overlay>
         </Wrapper>
     );

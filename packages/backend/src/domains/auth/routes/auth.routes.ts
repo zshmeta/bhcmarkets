@@ -1,9 +1,9 @@
-  /**
- * Auth Routes.
- *
- * Defines HTTP routes for authentication endpoints.
- * Routes are thin adapters that delegate to controllers.
- */
+/**
+* Auth Routes.
+*
+* Defines HTTP routes for authentication endpoints.
+* Routes are thin adapters that delegate to controllers.
+*/
 
 import type { Router } from "../../../api/types.js";
 import type { AuthService } from "../core/auth.service.js";
@@ -12,6 +12,7 @@ import { createRegisterController } from "../controllers/register.controller.js"
 import { createRefreshController } from "../controllers/refresh.controller.js";
 import { createLogoutController } from "../controllers/logout.controller.js";
 import type { DbHealth } from "../../../infra/db-health.js";
+import type { TokenManager } from "../tokens/tokens.js";
 import {
   createListSessionsController,
   createRevokeAllSessionsController,
@@ -41,7 +42,7 @@ type LoggerLike = {
  */
 export function registerAuthRoutes(
   router: Router,
-  services: { auth: AuthService; dbHealth: DbHealth },
+  services: { auth: AuthService; dbHealth: DbHealth; tokenManager: TokenManager },
   logger: LoggerLike
 ): void {
   // Create controllers
@@ -69,13 +70,27 @@ export function registerAuthRoutes(
     };
   };
 
+  const authenticate = (handler: (req: any) => Promise<any>) => {
+    return async (req: any) => {
+      const authHeader = req.headers["authorization"];
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.slice(7);
+        const claims = await services.tokenManager.parseAccessToken(token);
+        if (claims) {
+          req.user = { id: claims.sub, role: claims.role };
+        }
+      }
+      return handler(req);
+    };
+  };
+
   // Register routes
   // Authentication endpoints
   router.route("POST", "/auth/login", requireDb(loginController));
   router.route("POST", "/auth/register", requireDb(registerController));
   router.route("POST", "/auth/refresh", requireDb(refreshController));
-  router.route("POST", "/auth/code", requireDb(createGenerateCodeController(services.auth)));
-  router.route("POST", "/auth/exchange", requireDb(createExchangeCodeController(services.auth)));
+  router.route("POST", "/auth/code", requireDb(authenticate(createGenerateCodeController(services.auth))));
+  router.route("POST", "/auth/exchange", requireDb(authenticate(createExchangeCodeController(services.auth))));
   router.route("POST", "/auth/forgot-password", requireDb(createRequestPasswordResetController(services.auth)));
   router.route("POST", "/auth/reset-password", requireDb(createConfirmPasswordResetController(services.auth)));
 

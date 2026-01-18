@@ -17,10 +17,10 @@ import { tokenStorage } from "./storage.js";
 export interface HttpOptions extends RequestInit {
   /** Request timeout in milliseconds */
   timeout?: number;
-  
+
   /** Number of retry attempts */
   retries?: number;
-  
+
   /** Retry delay in milliseconds */
   retryDelay?: number;
 }
@@ -31,13 +31,13 @@ export interface HttpOptions extends RequestInit {
 export interface HttpResponse<T = unknown> {
   /** Response data */
   data: T;
-  
+
   /** HTTP status code */
   status: number;
-  
+
   /** Response headers */
   headers: Headers;
-  
+
   /** Whether the request was successful */
   ok: boolean;
 }
@@ -118,7 +118,7 @@ export function createHttpClient(baseURL: string) {
         // Parse response
         let data: T;
         const contentType = response.headers.get("content-type");
-        
+
         if (contentType?.includes("application/json")) {
           data = await response.json();
         } else {
@@ -214,6 +214,7 @@ function getApiBaseUrl(): string {
     w.__API_BASE ||
     import.meta.env.VITE_API_BASE ||
     import.meta.env.VITE_API_BASE_URL ||
-    "http://localhost:3001/api"
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:8080"
   );
 }

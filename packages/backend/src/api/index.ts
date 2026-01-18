@@ -46,7 +46,7 @@ export function registerApiRoutes(router: Router, services: ApiServices, logger:
 	});
 
 	// Auth routes live in the auth domain module.
-	registerAuthRoutes(router, { auth: services.auth, dbHealth: services.dbHealth }, logger);
+	registerAuthRoutes(router, { auth: services.auth, dbHealth: services.dbHealth, tokenManager: services.tokenManager }, logger);
 
 	// Account routes - wallet and balance management
 	registerAccountRoutes(router, {

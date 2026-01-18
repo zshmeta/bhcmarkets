@@ -1,8 +1,13 @@
 # BHC Markets
 
+<h1 style="font-size: 35px;">THIS PROJECT IS STILL IN DEVELOPMENT AND IS NOT READY FOR PRODUCTION USE.</h1>
+
 > Enterprise-grade trading platform for crypto, forex, stocks, and commodities
 
-BHC Markets is a full-stack, production-ready trading platform built with modern web technologies. It features real-time order matching, professional trading tools, and comprehensive risk management.
+BHC Markets is a full-stack, trading platform built with modern web technologies. It features real-time order matching, professional trading tools, and comprehensive risk management.
+
+<img src="./docs/platform_screenshot.png" width="100%"/>
+
 
 ## ✨ Features
 

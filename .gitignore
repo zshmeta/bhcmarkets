@@ -9,6 +9,11 @@ node_modules
 bun.lock
 .bun
 
+.agent/
+.opencode/
+.vscode/
+docs/plans
+
 # Local env files
 .env
 .env.local

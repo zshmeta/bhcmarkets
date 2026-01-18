@@ -95,8 +95,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
     loginWithRedirect: () => {
         if (typeof window === 'undefined') return;
-        // TODO: Make this configurable via env vars
-        const AUTH_APP_URL = 'http://localhost:5174';
+        // Use auth URL from env, fallback to localhost:5000
+        const AUTH_APP_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:5000';
         const returnTo = `${window.location.origin}/auth/callback`;
         window.location.href = `${AUTH_APP_URL}/login?returnTo=${encodeURIComponent(returnTo)}`;
     },

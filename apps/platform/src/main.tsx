@@ -1,4 +1,5 @@
 import { StrictMode } from 'react'
+// Force HMR update
 import { createRoot } from 'react-dom/client'
 import { GlobalStyles } from '@repo/bhcm-ui/theme'
 import './index.css'

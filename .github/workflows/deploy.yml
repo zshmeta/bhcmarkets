@@ -1,0 +1,70 @@
+name: Deploy Platform to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      # ---------------------------------------------------------
+      # MAGIC STEP: Inject the Base URL without touching repo files
+      # ---------------------------------------------------------
+      - name: Inject Base URL for GitHub Pages
+        run: |
+          # 1. Get the repo name (e.g., "bhcmarkets")
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          
+          # 2. Use 'sed' to inject the base property into vite.config.ts 
+          # We look for "export default defineConfig({" and append the base line after it.
+          sed -i "s/export default defineConfig({/export default defineConfig({ base: '\/$REPO_NAME\/',/" apps/platform/vite.config.ts
+          
+          echo "✅ Injected base: /$REPO_NAME/ into vite.config.ts"
+
+      - name: Build Platform App
+        run: bun run build --filter='./apps/platform'
+
+      # ---------------------------------------------------------
+      # ROUTING FIX: Handle Client-Side Routing (SPA)
+      # ---------------------------------------------------------
+      - name: Fix Routing (404 Trick)
+        run: |
+          # Copy index.html to 404.html so GitHub Pages doesn't error on refresh
+          cp apps/platform/dist/index.html apps/platform/dist/404.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './apps/platform/dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

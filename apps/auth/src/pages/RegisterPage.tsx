@@ -367,10 +367,11 @@ export function RegisterPage() {
 					return;
 				} catch (handoffError) {
 					console.error("Handoff failed", handoffError);
-					navigate("/check-email", { replace: true, state: { email: formData.email } });
+					setLocalError(`Registration successful, but redirection failed: ${handoffError instanceof Error ? handoffError.message : String(handoffError)}`);
+                    setIsSubmitting(false); // Stop loading so they see the error
 				}
 			} else {
-				navigate("/check-email", { replace: true, state: { email: formData.email } });
+				redirectToReturnTo(safeReturnTo, navigate);
 			}
 		} catch (err) {
 			setLocalError(err instanceof Error ? err.message : "Registration failed.");

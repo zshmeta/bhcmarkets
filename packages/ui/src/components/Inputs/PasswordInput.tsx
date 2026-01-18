@@ -58,9 +58,9 @@ const StyledInput = styled.input<{ $hasError: boolean }>`
 
 	&:focus {
 		border-color: ${({ theme, $hasError }) =>
-			$hasError ? theme.colors.status.danger : theme.colors.primary};
+		$hasError ? theme.colors.status.danger : theme.colors.primary};
 		box-shadow: 0 0 0 4px ${({ theme, $hasError }) =>
-			$hasError ? toRgba(theme.colors.status.danger, 0.22) : theme.colors.focus};
+		$hasError ? toRgba(theme.colors.status.danger, 0.22) : theme.colors.focus};
 	}
 
 	&:disabled {
@@ -102,9 +102,9 @@ const StrengthBar = styled.div<{ $strength: number }>`
 		height: 100%;
 		width: ${({ $strength }) => $strength}%;
 		background: ${({ $strength, theme }) =>
-			$strength < 33
-				? theme.colors.status.danger
-				: $strength < 67
+		$strength < 33
+			? theme.colors.status.danger
+			: $strength < 67
 				? theme.colors.status.warning
 				: theme.colors.status.success};
 		transition: width 0.3s ease, background 0.3s ease;
@@ -171,4 +171,4 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
 PasswordInput.displayName = "PasswordInput";
 
-export default PasswordInput;
+export { PasswordInput };

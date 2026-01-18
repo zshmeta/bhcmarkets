@@ -6,7 +6,7 @@
 
 import { useMemo, useState, type FormEvent, type ChangeEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, EmailInput, Notification, PasswordInput, Text } from "@repo/ui";
+import { Button, EmailInput, Notification, PasswordInput, Text } from "@repo/ui/src";
 import { useAuth } from "../../auth/auth.hooks.js";
 import { authApi } from "../../auth/auth.api.js";
 import { AuthShell } from "../AuthShell.js";

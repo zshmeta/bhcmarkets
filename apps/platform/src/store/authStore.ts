@@ -1,6 +1,6 @@
 // Stub auth store for bhcm-ui components
 import { create } from 'zustand';
-import { apiClient } from '../../../../packages/bhcm-ui/src/platform/components/api/apiClient';
+import { apiClient } from '@repo/bhcm-ui';
 
 interface User {
     id: string;

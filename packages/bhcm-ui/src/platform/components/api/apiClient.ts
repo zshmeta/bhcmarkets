@@ -1,9 +1,18 @@
 export class ApiClient {
   private baseUrl: string;
 
-  constructor(baseUrl: string = '/api') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    if (baseUrl) {
+      this.baseUrl = baseUrl;
+    } else if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) {
+      this.baseUrl = import.meta.env.VITE_API_URL;
+    } else {
+      this.baseUrl = 'http://localhost:8080';
+    }
+    console.log('[DEBUG] ApiClient configured with baseUrl:', this.baseUrl);
   }
+
+
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('bhcm.accessToken');

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "echo 'mobile platform under construction' && exit 1",
-    "build": "echo 'mobile platform under construction' && exit 1",
+    "dev": "echo 'mobile platform under construction'",
+    "build": "echo 'mobile platform under construction'",
     "lint": "eslint .",
-    "preview": "echo 'mobile platform under construction' && exit 1"
+    "preview": "echo 'mobile platform under construction'"
   },
   "dependencies": {
     "@repo/bhcm-ui": "*",
